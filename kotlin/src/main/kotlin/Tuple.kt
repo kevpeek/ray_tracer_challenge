@@ -1,4 +1,3 @@
-private const val EPSILON = .00001
 private val ZERO_VECTOR = Tuple(0.0, 0.0, 0.0, 0.0)
 
 class Tuple(val x: Double, val y: Double, val z: Double, val w: Double) {
@@ -15,7 +14,6 @@ class Tuple(val x: Double, val y: Double, val z: Double, val w: Double) {
         is Tuple -> almost(x, other.x) && almost(y, other.y) && almost(z, other.z) && almost(w, other.w)
         else -> false
     }
-    private fun almost(a: Double, b: Double) = Math.abs(a - b) < EPSILON
 
     override fun toString() = "{x: $x, y: $y, z: $z, w: $w}"
 
