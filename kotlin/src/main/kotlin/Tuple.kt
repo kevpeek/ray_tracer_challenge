@@ -22,4 +22,6 @@ class Tuple(val x: Double, val y: Double, val z: Double, val w: Double) {
     fun add(vector: Tuple) = Tuple(x + vector.x, y + vector.y, z + vector.z, w + vector.w)
     fun minus(other: Tuple) = Tuple(x - other.x, y - other.y, z - other.z, w - other.w)
     fun negate() = ZERO_VECTOR.minus(this)
+    fun times(scalar: Double) = Tuple(x * scalar, y * scalar, z * scalar, w * scalar)
+    fun dividedBy(scalar: Double) = times(1 / scalar)
 }
