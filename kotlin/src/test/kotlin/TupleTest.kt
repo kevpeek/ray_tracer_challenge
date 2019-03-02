@@ -1,0 +1,72 @@
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Test
+
+class TupleTest {
+
+    @Test
+    fun `Tuple sets x value`() {
+        val tuple = Tuple(4.3, -4.2, 3.1, 1.0)
+        assertEquals(4.3, tuple.x)
+    }
+
+    @Test
+    fun `Tuple sets y value`() {
+        val tuple = Tuple(4.3, -4.2, 3.1, 1.0)
+        assertEquals(-4.2, tuple.y)
+    }
+
+    @Test
+    fun `Tuple sets z value`() {
+        val tuple = Tuple(4.3, -4.2, 3.1, 1.0)
+        assertEquals(3.1, tuple.z)
+    }
+
+    @Test
+    fun `Tuple with w = 1 is a point`() {
+        val tuple = Tuple(4.3, -4.2, 3.1, 1.0)
+        assertTrue(tuple.isPoint())
+        assertFalse(tuple.isVector())
+    }
+
+    @Test
+    fun `Tuple with w = 0 is a vector`() {
+        val tuple = Tuple(4.3, -4.2, 3.1, 0.0)
+        assertFalse(tuple.isPoint())
+        assertTrue(tuple.isVector())
+    }
+
+    @Test
+    fun `equals() returns true for equivalent tuples`() {
+        val tuple1 = Tuple(1.0, 2.0, 3.0, 1.0)
+        val tuple2 = Tuple(1.0, 2.0, 3.0, 1.0)
+        assertTrue(tuple1 == tuple2)
+    }
+
+    @Test
+    fun `equals() returns true when values are within tolerance`() {
+        val tuple1 = Tuple(1.000001, 2.0, 3.0, 1.0)
+        val tuple2 = Tuple(1.0, 2.0, 3.0, 1.0)
+        assertTrue(tuple1 == tuple2)
+    }
+
+    @Test
+    fun `equals() returns false for different tuples`() {
+        val tuple1 = Tuple(3.0, 1.0, 2.0, 0.0)
+        val tuple2 = Tuple(1.0, 2.0, 3.0, 1.0)
+        assertFalse(tuple1 == tuple2)
+    }
+
+    @Test
+    fun `point() creates a tuple with w=1`() {
+        val tuple = Tuple.point(4.0, -4.0, 3.0)
+        assertTrue(tuple.isPoint())
+    }
+
+    @Test
+    fun `vector() creates tuple with w=0`() {
+        val tuple = Tuple.vector(4.0, -4.0, 3.0)
+        assertTrue(tuple.isVector())
+    }
+}
