@@ -69,4 +69,22 @@ class TupleTest {
         val tuple = Tuple.vector(4.0, -4.0, 3.0)
         assertTrue(tuple.isVector())
     }
+
+    @Test
+    fun `adding point and vector yields correct point`() {
+        val point = Tuple.point(3.0, -2.0, 5.0)
+        val vector = Tuple.vector(-2.0, 3.0, 1.0)
+
+        val newPoint = point.add(vector)
+        assertEquals(Tuple.point(1.0, 1.0, 6.0), newPoint)
+    }
+
+    @Test
+    fun `adding vector and vector yields correct vector`() {
+        val vector1 = Tuple.vector(3.0, -2.0, 5.0)
+        val vector2 = Tuple.vector(-2.0, 3.0, 1.0)
+
+        val newVector = vector1.add(vector2)
+        assertEquals(Tuple.vector(1.0, 1.0, 6.0), newVector)
+    }
 }
