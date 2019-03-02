@@ -154,4 +154,73 @@ class TupleTest {
         val newTuple = tuple.dividedBy(2.0)
         assertEquals(Tuple(0.5, -1.0, 1.5, -2.0), newTuple)
     }
+
+    @Test
+    fun `Computing the magnitude of vector(1, 0, 0)`() {
+        val vector = Tuple.vector(1.0, 0.0, 0.0)
+        assertEquals(1.0, vector.magnitude())
+    }
+
+    @Test
+    fun `Computing the magnitude of vector(0, 1, 0)`() {
+        val vector = Tuple.vector(0.0, 1.0, 0.0)
+        assertEquals(1.0, vector.magnitude())
+    }
+
+    @Test
+    fun `Computing the magnitude of vector(0, 0, 1)`() {
+        val vector = Tuple.vector(0.0, 0.0, 1.0)
+        assertEquals(1.0, vector.magnitude())
+    }
+
+    @Test
+    fun `Computing the magnitude of vector(1, 2, 3)`() {
+        val vector = Tuple.vector(1.0, 2.0, 3.0)
+        assertEquals(Math.sqrt(14.0), vector.magnitude())
+    }
+
+    @Test
+    fun `Computing the magnitude of vector(-1, -2, -3)`() {
+        val vector = Tuple.vector(-1.0, -2.0, -3.0)
+        assertEquals(Math.sqrt(14.0), vector.magnitude())
+    }
+
+    @Test
+    fun `Normalizing vector(4, 0, 0) gives (1, 0, 0)`() {
+        val vector = Tuple.vector(4.0, 0.0, 0.0)
+        assertEquals(Tuple.vector(1.0, 0.0, 0.0), vector.normalize())
+    }
+
+    @Test
+    fun `Normalizing vector(1, 2, 3)`() {
+        val vector = Tuple.vector(1.0, 2.0, 3.0)
+        val sqrt14 = Math.sqrt(14.0)
+        assertEquals(Tuple.vector(1.0 / sqrt14, 2.0 / sqrt14, 3.0 / sqrt14), vector.normalize())
+    }
+
+    @Test
+    fun `The magnitude of a normalized vector`() {
+        val vector = Tuple.vector(1.0, 2.0, 3.0)
+        val normalizedVector = vector.normalize()
+        assertEquals(1.0, normalizedVector.magnitude())
+    }
+
+    @Test
+    fun `The dot product of two tuples`() {
+        val vector1 = Tuple.vector(1.0, 2.0, 3.0)
+        val vector2 = Tuple.vector(2.0, 3.0, 4.0)
+        assertEquals(20.0, vector1.dot(vector2))
+    }
+
+    @Test
+    fun `The cross product of two vectors`() {
+        val vector1 = Tuple.vector(1.0, 2.0, 3.0)
+        val vector2 = Tuple.vector(2.0, 3.0, 4.0)
+
+        val cross12 = vector1.cross(vector2)
+        assertEquals(Tuple.vector(-1.0, 2.0, -1.0), cross12)
+
+        val cross21 = vector2.cross(vector1)
+        assertEquals(Tuple.vector(1.0, -2.0, 1.0), cross21)
+    }
 }

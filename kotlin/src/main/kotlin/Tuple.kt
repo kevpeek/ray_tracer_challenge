@@ -24,4 +24,8 @@ class Tuple(val x: Double, val y: Double, val z: Double, val w: Double) {
     fun negate() = ZERO_VECTOR.minus(this)
     fun times(scalar: Double) = Tuple(x * scalar, y * scalar, z * scalar, w * scalar)
     fun dividedBy(scalar: Double) = times(1 / scalar)
+    fun magnitude() = Math.sqrt(x * x + y * y + z * z)
+    fun normalize() = Tuple(x / magnitude(), y / magnitude(), z / magnitude(), w)
+    fun dot(other: Tuple) = x * other.x + y * other.y + z * other.z + w * other.w
+    fun cross(b: Tuple) = Tuple.vector(y * b.z - z * b.y, z * b.x - x * b.z, x * b.y - y * b.x)
 }
