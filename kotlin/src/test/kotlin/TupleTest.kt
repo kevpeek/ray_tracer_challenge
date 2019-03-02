@@ -2,6 +2,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.fail
 
 class TupleTest {
 
@@ -86,5 +87,41 @@ class TupleTest {
 
         val newVector = vector1.add(vector2)
         assertEquals(Tuple.vector(1.0, 1.0, 6.0), newVector)
+    }
+
+    @Test
+    fun`Subtracting two points`() {
+        val point1 = Tuple.point(3.0, 2.0, 1.0)
+        val point2 = Tuple.point(5.0, 6.0, 7.0)
+
+        val newVector = point1.minus(point2)
+        assertEquals(Tuple.vector(-2.0, -4.0, -6.0), newVector)
+    }
+
+    @Test
+    fun`Subtracting a vector from a point`() {
+        val point = Tuple.point(3.0, 2.0, 1.0)
+        val vector = Tuple.vector(5.0, 6.0, 7.0)
+
+        val newPoint = point.minus(vector)
+        assertEquals(Tuple.point(-2.0, -4.0, -6.0), newPoint)
+    }
+
+    @Test
+    fun `Subtracting two vectors`() {
+        val vector1 = Tuple.vector(3.0, 2.0, 1.0)
+        val vector2 = Tuple.vector(5.0, 6.0, 7.0)
+
+        val newVector = vector1.minus(vector2)
+        assertEquals(Tuple.vector(-2.0, -4.0, -6.0), newVector)
+    }
+
+    @Test
+    fun `Subtracting a vector from the zero vector`() {
+        val vector1 = Tuple.vector(0.0, 0.0, 0.0)
+        val vector2 = Tuple.vector(1.0, -2.0, 3.0)
+
+        val newVector = vector1.minus(vector2)
+        assertEquals(Tuple.vector(-1.0, 2.0, -3.0), newVector)
     }
 }

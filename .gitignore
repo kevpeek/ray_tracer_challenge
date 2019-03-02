@@ -24,3 +24,4 @@ hs_err_pid*
 
 kotlin/build
 kotlin/.gradle
+kotlin/.idea/workspace.xml
