@@ -124,4 +124,11 @@ class TupleTest {
         val newVector = vector1.minus(vector2)
         assertEquals(Tuple.vector(-1.0, 2.0, -3.0), newVector)
     }
+
+    @Test
+    fun `Negating a tuple`() {
+        val vector = Tuple(1.0, -2.0, 3.0, -4.0)
+        val negativeVector = vector.negate()
+        assertEquals(Tuple(-1.0, 2.0, -3.0, 4.0), negativeVector)
+    }
 }

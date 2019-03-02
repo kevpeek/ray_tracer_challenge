@@ -1,11 +1,12 @@
+private const val EPSILON = .00001
+private val ZERO_VECTOR = Tuple(0.0, 0.0, 0.0, 0.0)
+
 class Tuple(val x: Double, val y: Double, val z: Double, val w: Double) {
 
     companion object Factory {
         fun point(x: Double, y: Double, z: Double) = Tuple(x, y, z, 1.0)
         fun vector(x: Double, y: Double, z: Double) = Tuple(x, y, z, 0.0)
     }
-
-    private val EPSILON = .00001
 
     fun isPoint() = w == 1.0
     fun isVector() = w == 0.0
@@ -20,4 +21,5 @@ class Tuple(val x: Double, val y: Double, val z: Double, val w: Double) {
 
     fun add(vector: Tuple) = Tuple(x + vector.x, y + vector.y, z + vector.z, w + vector.w)
     fun minus(other: Tuple) = Tuple(x - other.x, y - other.y, z - other.z, w - other.w)
+    fun negate() = ZERO_VECTOR.minus(this)
 }
