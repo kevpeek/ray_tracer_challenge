@@ -1,11 +1,8 @@
 fun main() {
     println("~~~~~Starting~~~~~")
 
-    val start = "0123456789".subSequence(0, 5)
-    println(start)
-
-    val end = "0123456789".subSequence(6, 10)
-    println(end)
+    val canvas = Canvas(100, 100)
+    writePpm(canvasToPpm(canvas))
 
     println("~~~~~Done~~~~~")
 }

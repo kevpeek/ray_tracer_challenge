@@ -1,3 +1,9 @@
+import java.io.File
+
+fun writePpm(ppm: String) {
+    val file = File("output.ppm")
+    file.writeText(ppm)
+}
 
 fun canvasToPpm(canvas: Canvas): String {
     val header = generateHeader(canvas)
