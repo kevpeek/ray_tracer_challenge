@@ -10,12 +10,11 @@ fun main() {
 
     val width = 200
     val height = 200
-    val red = Color(1.0, 0.0, 0.0)
     val canvas = Canvas(width, height)
     points.map { it.first }
         .map { point -> Pair((point.x * 10).toInt(), (point.y * 10).toInt())}
         .map { (x, y) -> Pair(x, height - y - 1) }
-        .forEach { (x, y) -> canvas.writePixel(x, y, red)}
+        .forEach { (x, y) -> canvas.writePixel(x, y, Color.RED)}
 
     writePpm(canvasToPpm(canvas))
 

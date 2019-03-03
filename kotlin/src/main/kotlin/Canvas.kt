@@ -1,6 +1,8 @@
+import java.lang.RuntimeException
+
 data class Canvas(val width: Int, val height: Int) {
 
-    private val pixels = MutableList(width * height) { Color(0.0, 0.0, 0.0) }
+    private val pixels = MutableList(width * height) { Color.BLACK }
 
     fun pixelAt(x: Int, y: Int) = pixels[indexFor(x, y)]
 
@@ -16,5 +18,13 @@ data class Canvas(val width: Int, val height: Int) {
     /**
      * Determine the list index for the specified coordinates.
      */
-    private fun indexFor(x: Int, y: Int) = y * width + x
+    private fun indexFor(x: Int, y: Int): Int {
+        if (x < 0 || x > width || y < 0 || y > height) {
+            throw CanvasException("coordinate ($x, $y) is lies outside canvas size: ${width}x$height")
+        }
+
+        return y * width + x
+    }
+
+    class CanvasException(message: String): RuntimeException(message)
 }
