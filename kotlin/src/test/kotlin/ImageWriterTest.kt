@@ -11,6 +11,7 @@ class ImageWriterTest {
         assertEquals("P3", ppmLines[0])
         assertEquals("5 3", ppmLines[1])
         assertEquals("255", ppmLines[2])
+        assertEquals("", ppmLines[3])
     }
 
     @Test
@@ -23,25 +24,25 @@ class ImageWriterTest {
         val ppm = canvasToPpm(canvas)
         val ppmLines = ppm.lines()
 
-        assertEquals("255 0 0 0 0 0 0 0 0 0 0 0 0 0 0", ppmLines[3])
-        assertEquals("0 0 0 0 0 0 0 128 0 0 0 0 0 0 0", ppmLines[4])
-        assertEquals("0 0 0 0 0 0 0 0 0 0 0 0 0 0 255", ppmLines[5])
+        assertEquals("255 0 0 0 0 0 0 0 0 0 0 0 0 0 0", ppmLines[4])
+        assertEquals("0 0 0 0 0 0 0 128 0 0 0 0 0 0 0", ppmLines[5])
+        assertEquals("0 0 0 0 0 0 0 0 0 0 0 0 0 0 255", ppmLines[6])
     }
 
     @Test
     fun `Splitting long lines in PPM files`() {
-        /*
-  Given c â† canvas(10, 2)
-  When every pixel of c is set to color(1, 0.8, 0.6)
-    And ppm â† canvas_to_ppm(c)
-  Then rows 4-7 of ppm are
-    """
-    255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204
-    153 255 204 153 255 204 153 255 204 153 255 204 153
-    255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204
-    153 255 204 153 255 204 153 255 204 153 255 204 153
-    """
-         */
+        val canvas = Canvas(10, 2)
+        val color = Color(1.0, 0.8, 0.6)
+        (0 until 10).forEach { x -> (0 until 2).forEach { y -> canvas.writePixel(x, y, color) }}
+
+        val ppm = canvasToPpm(canvas)
+        val ppmLines = ppm.lines()
+
+        assertEquals("", ppmLines[3])
+        assertEquals("255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204", ppmLines[4])
+        assertEquals("153 255 204 153 255 204 153 255 204 153 255 204 153", ppmLines[5])
+        assertEquals("255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204", ppmLines[6])
+        assertEquals("153 255 204 153 255 204 153 255 204 153 255 204 153", ppmLines[7])
     }
 
 }
