@@ -1,3 +1,7 @@
+package geometry
+
+import helper.almost
+
 private val ZERO = Vector(0.0, 0.0, 0.0)
 
 class Vector(val x: Double, val y: Double, val z: Double) {
@@ -9,11 +13,11 @@ class Vector(val x: Double, val y: Double, val z: Double) {
 
     override fun toString() = "{x: $x, y: $y, z: $z}"
 
-    fun plus(other: Vector) = Vector(x + other.x, y + other.y, z + other.z)
-    fun minus(other: Vector) = Vector(x - other.x, y - other.y, z - other.z)
-    fun negate() = ZERO.minus(this)
-    fun times(scalar: Double) = Vector(x * scalar, y * scalar, z * scalar)
-    fun dividedBy(scalar: Double) = times(1/scalar)
+    operator fun plus(other: Vector) = Vector(x + other.x, y + other.y, z + other.z)
+    operator fun minus(other: Vector) = Vector(x - other.x, y - other.y, z - other.z)
+    operator fun unaryMinus() = ZERO - this
+    operator fun times(scalar: Double) = Vector(x * scalar, y * scalar, z * scalar)
+    operator fun div(scalar: Double) = times(1/scalar)
     fun magnitude() = Math.sqrt(x * x + y * y + z * z)
     fun normalize() = Vector(x / magnitude(), y / magnitude(), z / magnitude())
     fun dot(other: Vector) = x * other.x + y * other.y + z * other.z

@@ -1,3 +1,10 @@
+import geometry.Point
+import geometry.Vector
+import display.Canvas
+import display.Color
+import display.canvasToPpm
+import display.writePpm
+
 fun main() {
     println("~~~~~Starting~~~~~")
 

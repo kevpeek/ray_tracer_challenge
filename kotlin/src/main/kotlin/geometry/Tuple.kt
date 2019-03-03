@@ -1,3 +1,7 @@
+package geometry
+
+import helper.almost
+
 private val ZERO_VECTOR = Tuple(0.0, 0.0, 0.0, 0.0)
 
 class Tuple(val x: Double, val y: Double, val z: Double, val w: Double) {
@@ -11,7 +15,10 @@ class Tuple(val x: Double, val y: Double, val z: Double, val w: Double) {
     fun isVector() = w == 0.0
 
     override fun equals(other: Any?) = when(other) {
-        is Tuple -> almost(x, other.x) && almost(y, other.y) && almost(z, other.z) && almost(w, other.w)
+        is Tuple -> almost(x, other.x) && almost(y, other.y) && almost(
+            z,
+            other.z
+        ) && almost(w, other.w)
         else -> false
     }
 
@@ -25,5 +32,6 @@ class Tuple(val x: Double, val y: Double, val z: Double, val w: Double) {
     fun magnitude() = Math.sqrt(x * x + y * y + z * z)
     fun normalize() = Tuple(x / magnitude(), y / magnitude(), z / magnitude(), w)
     fun dot(other: Tuple) = x * other.x + y * other.y + z * other.z + w * other.w
-    fun cross(b: Tuple) = Tuple.vector(y * b.z - z * b.y, z * b.x - x * b.z, x * b.y - y * b.x)
+    fun cross(b: Tuple) =
+        vector(y * b.z - z * b.y, z * b.x - x * b.z, x * b.y - y * b.x)
 }

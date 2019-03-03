@@ -1,3 +1,6 @@
+package geometry
+
+import geometry.Vector
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
@@ -47,7 +50,7 @@ class VectorTest {
         val vector1 = Vector(3.0, -2.0, 5.0)
         val vector2 = Vector(-2.0, 3.0, 1.0)
 
-        val newVector = vector1.plus(vector2)
+        val newVector = vector1 + vector2
         Assertions.assertEquals(Vector(1.0, 1.0, 6.0), newVector)
     }
 
@@ -56,7 +59,7 @@ class VectorTest {
         val vector1 = Vector(3.0, 2.0, 1.0)
         val vector2 = Vector(5.0, 6.0, 7.0)
 
-        val newVector = vector1.minus(vector2)
+        val newVector = vector1 - vector2
         Assertions.assertEquals(Vector(-2.0, -4.0, -6.0), newVector)
     }
 
@@ -65,14 +68,14 @@ class VectorTest {
         val vector1 = Vector(0.0, 0.0, 0.0)
         val vector2 = Vector(1.0, -2.0, 3.0)
 
-        val newVector = vector1.minus(vector2)
+        val newVector = vector1 - vector2
         Assertions.assertEquals(Vector(-1.0, 2.0, -3.0), newVector)
     }
 
     @Test
     fun `Negating a Vector`() {
         val vector = Vector(1.0, -2.0, 3.0)
-        val negativeVector = vector.negate()
+        val negativeVector = -vector
         Assertions.assertEquals(Vector(-1.0, 2.0, -3.0), negativeVector)
     }
 
@@ -80,7 +83,7 @@ class VectorTest {
     fun `Multiplying a Vector by a scalar`() {
         val tuple = Vector(1.0, -2.0, 3.0)
 
-        val newTuple = tuple.times(3.5)
+        val newTuple = tuple * 3.5
         Assertions.assertEquals(Vector(3.5, -7.0, 10.5), newTuple)
     }
 
@@ -88,14 +91,14 @@ class VectorTest {
     fun `Multiplying a Vector by a fraction`() {
         val tuple = Vector(1.0, -2.0, 3.0)
 
-        val newTuple = tuple.times(0.5)
+        val newTuple = tuple * 0.5
         Assertions.assertEquals(Vector(0.5, -1.0, 1.5), newTuple)
     }
 
     @Test
     fun `Dividing a Vector by a scalar`() {
         val tuple = Vector(1.0, -2.0, 3.0)
-        val newTuple = tuple.dividedBy(2.0)
+        val newTuple = tuple / 2.0
         Assertions.assertEquals(Vector(0.5, -1.0, 1.5), newTuple)
     }
 

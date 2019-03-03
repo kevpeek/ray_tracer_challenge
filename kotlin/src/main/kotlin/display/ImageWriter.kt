@@ -1,3 +1,5 @@
+package display
+
 import java.io.File
 
 fun writePpm(ppm: String) {

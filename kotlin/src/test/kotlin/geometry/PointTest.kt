@@ -1,3 +1,7 @@
+package geometry
+
+import geometry.Point
+import geometry.Vector
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
@@ -47,7 +51,7 @@ class PointTest {
         val point = Point(3.0, -2.0, 5.0)
         val vector = Vector(-2.0, 3.0, 1.0)
 
-        val newPoint = point.plus(vector)
+        val newPoint = point + vector
         Assertions.assertEquals(Point(1.0, 1.0, 6.0), newPoint)
     }
 
@@ -56,7 +60,7 @@ class PointTest {
         val point1 = Point(3.0, 2.0, 1.0)
         val point2 = Point(5.0, 6.0, 7.0)
 
-        val newVector = point1.minus(point2)
+        val newVector = point1 - point2
         Assertions.assertEquals(Vector(-2.0, -4.0, -6.0), newVector)
     }
 
@@ -65,7 +69,7 @@ class PointTest {
         val point = Point(3.0, 2.0, 1.0)
         val vector = Vector(5.0, 6.0, 7.0)
 
-        val newPoint = point.minus(vector)
+        val newPoint = point - vector
         Assertions.assertEquals(Point(-2.0, -4.0, -6.0), newPoint)
     }
 }
