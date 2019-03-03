@@ -1,3 +1,5 @@
+package exercises
+
 import geometry.Point
 import geometry.Vector
 import display.Canvas
