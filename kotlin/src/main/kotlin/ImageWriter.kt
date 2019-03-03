@@ -1,9 +1,10 @@
 
 fun canvasToPpm(canvas: Canvas): String {
     val header = generateHeader(canvas)
-    val lines = canvas.rows().joinToString("\n") { row -> convertLine(row) }
+    val body = canvas.rows().joinToString("\n") { row -> convertLine(row) }
+    val footer = generateFooter()
 
-    return header + lines
+    return header + body + footer
 }
 
 private fun generateHeader(canvas: Canvas): String {
@@ -16,6 +17,8 @@ ${canvas.width} ${canvas.height}
 """.trimIndent()
 }
 
+
+private fun generateFooter() = "\n"
 /**
  * Convert each row of the canvas into the expected output format.
  */

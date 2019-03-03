@@ -45,4 +45,10 @@ class ImageWriterTest {
         assertEquals("153 255 204 153 255 204 153 255 204 153 255 204 153", ppmLines[7])
     }
 
+    @Test
+    fun `PPM files are terminated by a newline character`() {
+        val canvas = Canvas(5, 3)
+        val ppm = canvasToPpm(canvas)
+        assertEquals('\n', ppm.last())
+    }
 }
