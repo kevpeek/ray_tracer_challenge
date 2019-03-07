@@ -11,9 +11,9 @@ class MatrixTest {
     @Test
     fun `Constructing and inspecting a 4x4 matrix`() {
         val matrix = Matrix(
-            1.0, 2.0, 3.0, 4.0,
+            1, 2, 3, 4,
             5.5, 6.5, 7.5, 8.5,
-            9.0, 10.0, 11.0, 12.0,
+            9, 10, 11, 12,
             13.5, 14.5, 15.5, 16.5
         )
 
@@ -29,8 +29,8 @@ class MatrixTest {
     @Test
     fun `A 2x2 matrix ought to be representable`() {
         val matrix = Matrix(
-            -3.0, 5.0,
-            1.0, -2.0
+            -3, 5,
+            1, -2
             )
 
         assertEquals(-3.0, matrix[0,0])
@@ -42,9 +42,9 @@ class MatrixTest {
     @Test
     fun `A 3x3 matrix ought to be representable`() {
         val matrix = Matrix(
-            -3.0, 5.0, 0.0,
-            1.0, -2.0, -7.0,
-            0.0, 1.0, 1.0
+            -3, 5, 0,
+            1, -2, -7,
+            0, 1, 1
         )
 
         assertEquals(-3.0, matrix[0,0])
@@ -55,17 +55,17 @@ class MatrixTest {
     @Test
     fun `Matrix equality with identical matrices`() {
         val matrixA = Matrix(
-            1.0, 2.0, 3.0, 4.0,
-            5.0, 6.0, 7.0, 8.0,
-            9.0, 8.0, 7.0, 6.0,
-            5.0, 4.0, 3.0, 2.0
+            1, 2, 3, 4,
+            5, 6, 7, 8,
+            9, 8, 7, 6,
+            5, 4, 3, 2
         )
 
         val matrixB = Matrix(
-            1.0, 2.0, 3.0, 4.0,
-            5.0, 6.0, 7.0, 8.0,
-            9.0, 8.0, 7.0, 6.0,
-            5.0, 4.0, 3.0, 2.0
+            1, 2, 3, 4,
+            5, 6, 7, 8,
+            9, 8, 7, 6,
+            5, 4, 3, 2
         )
 
         assertEquals(matrixA, matrixB)
@@ -74,19 +74,45 @@ class MatrixTest {
     @Test
     fun `Matrix equality with different matrices`() {
         val matrixA = Matrix(
-            1.0, 2.0, 3.0, 4.0,
-            5.0, 6.0, 7.0, 8.0,
-            9.0, 8.0, 7.0, 6.0,
-            5.0, 4.0, 3.0, 2.0
+            1, 2, 3, 4,
+            5, 6, 7, 8,
+            9, 8, 7, 6,
+            5, 4, 3, 2
         )
 
         val matrixB = Matrix(
-            2.0, 3.0, 4.0, 5.0,
-            6.0, 7.0, 8.0, 9.0,
-            8.0, 7.0, 6.0, 5.0,
-            4.0, 3.0, 2.0, 1.0
+            2, 3, 4, 5,
+            6, 7, 8, 9,
+            8, 7, 6, 5,
+            4, 3, 2, 1
         )
 
         assertNotEquals(matrixA, matrixB)
+    }
+
+    @Test
+    fun `Multiplying two matrices`() {
+        val matrixA = Matrix(
+            1, 2, 3, 4,
+            5, 6, 7, 8,
+            9, 8, 7, 6,
+            5, 4, 3, 2
+        )
+
+        val matrixB = Matrix(
+            -2, 1, 2, 3,
+            3, 2, 1, -1,
+            4, 3, 6, 5,
+            1, 2, 7, 8
+        )
+
+        val expectedResult = Matrix(
+            20, 22, 50, 48,
+            44, 54, 114, 108,
+            40, 58, 110, 102,
+            16, 26, 46, 42
+        )
+
+        assertEquals(expectedResult, matrixA * matrixB)
     }
 }
