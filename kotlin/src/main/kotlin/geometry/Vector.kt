@@ -1,13 +1,15 @@
 package geometry
 
-import helper.almost
+import helper.approximately
 
 private val ZERO = Vector(0.0, 0.0, 0.0)
 
 class Vector(val x: Double, val y: Double, val z: Double) {
 
+    constructor(x: Number, y: Number, z: Number) : this(x.toDouble(), y.toDouble(), z.toDouble())
+
     override fun equals(other: Any?) = when(other) {
-        is Vector -> almost(x, other.x) && almost(y, other.y) && almost(z, other.z)
+        is Vector -> x approximately other.x && y approximately other.y && z approximately other.z
         else -> false
     }
 

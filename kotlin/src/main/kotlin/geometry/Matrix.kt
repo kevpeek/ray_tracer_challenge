@@ -1,6 +1,6 @@
 package geometry
 
-import helper.almost
+import helper.approximately
 import kotlin.math.roundToInt
 
 class Matrix(private vararg val values: Double) {
@@ -8,19 +8,19 @@ class Matrix(private vararg val values: Double) {
     /**
      * Secondary constructor to streamline instantiation with non-decimal values.
      */
-    constructor(vararg nums: Number) : this(*nums.map { it.toDouble() }.toDoubleArray())
+    constructor(vararg nums: Number) : this(*nums.map(Number::toDouble).toDoubleArray())
 
     private val size = Math.sqrt(values.size.toDouble()).roundToInt()
 
     override fun equals(other: Any?): Boolean = when(other) {
-        is Matrix -> (values zip other.values).all { (a, b) -> almost(a, b) }
+        is Matrix -> (values zip other.values).all { (a, b) -> a approximately b }
         else -> false
     }
 
-    override fun toString(): String = values.joinToString { it.toString() }
+    override fun toString(): String = values.joinToString()
 
     operator fun get(row: Int, column: Int) = values[getIndexFor(row, column)]
-    
+
     operator fun times(other: Matrix): Matrix {
         val newValues = (0 until size).flatMap { rowIndex ->
             val row = getRow(rowIndex)

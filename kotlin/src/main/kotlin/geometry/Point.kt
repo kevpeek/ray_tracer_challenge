@@ -1,11 +1,13 @@
 package geometry
 
-import helper.almost
+import helper.approximately
 
 class Point(val x: Double, val y: Double, val z: Double) {
 
+    constructor(x: Number, y: Number, z: Number) : this(x.toDouble(), y.toDouble(), z.toDouble())
+
     override fun equals(other: Any?) = when(other) {
-        is Point -> almost(x, other.x) && almost(y, other.y) && almost(z, other.z)
+        is Point -> x approximately other.x && y approximately other.y && z approximately other.z
         else -> false
     }
 
