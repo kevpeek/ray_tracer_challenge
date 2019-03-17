@@ -8,16 +8,16 @@ class DoubleHelperTest {
 
     @Test
     fun `almost retrns true for equal doubles`() {
-        assertTrue(almost(1.0, 1.0))
+        assertTrue(1.0 approximately  1.0)
     }
 
     @Test
     fun `almost returns true for doubles within tolerance`() {
-        assertTrue(almost(1.0, 1.000009))
+        assertTrue(1.0 approximately 1.000009)
     }
 
     @Test
     fun `almost returns false for doubles outside tolerance`() {
-        assertFalse(almost(1.0, 1.00001))
+        assertFalse(1.0 approximately 1.00001)
     }
 }

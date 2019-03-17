@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.fail
 
 class MatrixTest {
 
@@ -128,5 +129,17 @@ class MatrixTest {
         val point = Point(1, 2, 3)
 
         assertEquals(Point(18, 24, 33), matrix * point)
+    }
+
+    @Test
+    fun `Multiplying a matrix by the identity matrix`() {
+        val matrix = Matrix(4, 4,
+            0, 1, 2, 4,
+            1, 2, 4, 8,
+            2, 4, 8, 16,
+            4, 8, 16, 32
+            )
+
+        assertEquals(matrix, matrix * Matrix.identity(4))
     }
 }

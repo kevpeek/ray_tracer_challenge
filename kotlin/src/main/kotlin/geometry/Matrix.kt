@@ -1,6 +1,7 @@
 package geometry
 
 import helper.approximately
+import helper.times
 
 class Matrix(private val height: Int, private val width: Int, private vararg val values: Double) {
 
@@ -8,6 +9,14 @@ class Matrix(private val height: Int, private val width: Int, private vararg val
      * Secondary constructor to streamline instantiation with non-decimal values.
      */
     constructor(rows: Int, columns: Int, vararg nums: Number) : this(rows, columns, *nums.map(Number::toDouble).toDoubleArray())
+
+    companion object Factory {
+        fun identity(size: Int): Matrix {
+            val values = ((1..size) * (1..size)).map { (row, col) -> if (row == col) 1.0 else 0.0 }.toDoubleArray()
+            return Matrix(4, 4, *values)
+        }
+    }
+
 
     override fun equals(other: Any?): Boolean = when(other) {
         is Matrix -> (values zip other.values).all { (a, b) -> a approximately b }

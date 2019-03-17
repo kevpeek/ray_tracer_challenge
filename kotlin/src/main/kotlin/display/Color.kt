@@ -1,6 +1,6 @@
 package display
 
-import helper.almost
+import helper.approximately
 import kotlin.math.roundToInt
 
 data class Color(val red: Double, val green: Double, val blue: Double) {
@@ -14,10 +14,7 @@ data class Color(val red: Double, val green: Double, val blue: Double) {
     }
 
     override fun equals(other: Any?) = when(other) {
-        is Color -> almost(red, other.red) && almost(green, other.green) && almost(
-            blue,
-            other.blue
-        )
+        is Color -> red approximately  other.red && green approximately  other.green && blue approximately other.blue
         else -> false
     }
 
