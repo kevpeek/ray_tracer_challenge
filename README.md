@@ -1,4 +1,4 @@
-# Ray Tracer Challenge
+# The Ray Tracer Challenge
 Implementing my read through of [The Ray Tracer Challenge](https://pragprog.com/book/jbtracer/the-ray-tracer-challenge).
 
 ## Implementations
@@ -8,5 +8,5 @@ have their own subdirectories.
 
 ## Running
 To run the Kotlin tests:
-`cd kotlin
-gradle run` 
+`cd kotlin`
+`gradle run`
