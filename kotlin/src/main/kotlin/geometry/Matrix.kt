@@ -3,17 +3,14 @@ package geometry
 import helper.approximately
 import helper.times
 
-class Matrix(private val height: Int, private val width: Int, private vararg val values: Double) {
-
-    /**
-     * Secondary constructor to streamline instantiation with non-decimal values.
-     */
-    constructor(rows: Int, columns: Int, vararg nums: Number) : this(rows, columns, *nums.map(Number::toDouble).toDoubleArray())
+class Matrix(private val height: Int, private val width: Int, private val values: List<Double>) {
 
     companion object Factory {
+        fun ofSize(rows: Int, columns: Int) = MatrixBuilder(rows, columns)
+
         fun identity(size: Int): Matrix {
-            val values = ((1..size) * (1..size)).map { (row, col) -> if (row == col) 1.0 else 0.0 }.toDoubleArray()
-            return Matrix(4, 4, *values)
+            val values = ((1..size) * (1..size)).map { (row, col) -> if (row == col) 1.0 else 0.0 }
+            return Matrix(4, 4, values)
         }
     }
 
@@ -34,17 +31,22 @@ class Matrix(private val height: Int, private val width: Int, private vararg val
                 val column = other.getColumn(columnIndex)
                 row.zip(column) { a, b -> a * b }.sum()
             }
-        }.toDoubleArray()
+        }
 
-        return Matrix(this.height, other.width, *newValues)
+        return Matrix(this.height, other.width, newValues)
     }
 
     operator fun times(point: Point): Point {
-        val result = this * Matrix(height, 1, point.x, point.y, point.z, 1)
+        val result = this * Matrix(height, 1, listOf(point.x, point.y, point.z, 1.0))
         return Point(result[0, 0], result[1, 0], result[2, 0])
     }
 
     private fun getRow(rowIndex: Int) = (0 until width).map { columnIndex -> get(rowIndex, columnIndex) }
     private fun getColumn(columnIndex: Int) = (0 until height).map { rowIndex -> get(rowIndex, columnIndex) }
     private fun getIndexFor(row: Int, column: Int) = row * width + column
+
+
+    class MatrixBuilder(private val rows: Int, private val columns: Int) {
+        fun of(vararg values: Number) = Matrix(rows, columns, values.map(Number::toDouble))
+    }
 }
