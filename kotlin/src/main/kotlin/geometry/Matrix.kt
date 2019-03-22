@@ -41,6 +41,15 @@ class Matrix(private val height: Int, private val width: Int, private val values
         return Point(result[0, 0], result[1, 0], result[2, 0])
     }
 
+    fun transpose() = Matrix(width, height, (0 until width).flatMap(this::getColumn))
+
+    fun determinant(): Double = when {
+        height ==2 && width == 2 -> this[0, 0] * this[1, 1] - this[0, 1] * this[1, 0]
+        else -> 0.0
+    }
+
+    fun submatrix(row: Int, column: Int) = this
+
     private fun getRow(rowIndex: Int) = (0 until width).map { columnIndex -> get(rowIndex, columnIndex) }
     private fun getColumn(columnIndex: Int) = (0 until height).map { rowIndex -> get(rowIndex, columnIndex) }
     private fun getIndexFor(row: Int, column: Int) = row * width + column

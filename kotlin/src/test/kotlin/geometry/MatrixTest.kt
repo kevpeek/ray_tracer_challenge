@@ -142,4 +142,80 @@ class MatrixTest {
 
         assertEquals(matrix, matrix * Matrix.identity(4))
     }
+
+    @Test
+    fun `Multiplying the identity matrix by a tuple`() {
+        val point = Point(1, 2, 3)
+        assertEquals(point, Matrix.identity(4) * point)
+    }
+
+
+    @Test
+    fun `Transposing a matrix`() {
+        val matrix = Matrix.ofSize(4, 4).of(
+            0, 9, 3, 0,
+            9, 8, 0, 8,
+            1, 8, 5, 3,
+            0, 0, 5, 8
+        )
+
+        val expectedTranspose = Matrix.ofSize(4, 4).of(
+            0, 9, 1, 0,
+            9, 8, 8, 0,
+            3, 0, 5, 5,
+            0, 8, 3, 8
+        )
+
+        assertEquals(expectedTranspose, matrix.transpose())
+    }
+
+    @Test
+    fun `Transposing the identity matrix`() {
+        val identity = Matrix.identity(4)
+        assertEquals(identity, identity.transpose())
+    }
+
+    @Test
+    fun `Calculating the determinant of a 2x2 matrix`() {
+        val matrix = Matrix.ofSize(2, 2).of(
+            1, 5,
+            -3, 2
+        )
+
+        assertEquals(17.0, matrix.determinant())
+    }
+
+    @Test
+    fun `A submatrix of a 3x3 matrix is a 2x2 matrix`() {
+        val matrix = Matrix.ofSize(3, 3).of(
+            1, 5, 0,
+            -3, 2, 7,
+            0, 6, -3
+        )
+
+        val expectedSub = Matrix.ofSize(2, 2).of(
+            -3, 2,
+            0, 6
+        )
+
+        assertEquals(expectedSub, matrix.submatrix(0, 2))
+    }
+
+    @Test
+    fun `A submatrix of a 4x4 matrix is a 3x3 matrix`() {
+        val matrix = Matrix.ofSize(4, 4).of(
+            -6, 1, 1, 6,
+            -8, 5, 8, 6,
+            -1, 0, 8, 2,
+            -7, 1, -1, 1
+        )
+
+        val expectedSub = Matrix.ofSize(3, 3).of(
+            -6, 1, 6,
+            -8, 8, 6,
+            -7, -1, 1
+        )
+
+        assertEquals(expectedSub, matrix.submatrix(2, 1))
+    }
 }
