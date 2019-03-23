@@ -2,6 +2,7 @@ package geometry
 
 import helper.approximately
 import helper.times
+import java.lang.RuntimeException
 
 class Matrix(private val height: Int, private val width: Int, private val values: List<Double>) {
 
@@ -44,11 +45,28 @@ class Matrix(private val height: Int, private val width: Int, private val values
     fun transpose() = Matrix(width, height, (0 until width).flatMap(this::getColumn))
 
     fun determinant(): Double = when {
-        height ==2 && width == 2 -> this[0, 0] * this[1, 1] - this[0, 1] * this[1, 0]
-        else -> 0.0
+        height == 2 && width == 2 -> this[0, 0] * this[1, 1] - this[0, 1] * this[1, 0]
+        else -> getRow(0).mapIndexed { column, value -> cofactor(0, column) * value }.sum()
     }
 
-    fun submatrix(row: Int, column: Int) = this
+    fun submatrix(row: Int, column: Int): Matrix {
+        val indexesToKeep = ((0 until height) * (0 until width)).filter { (r, c) -> r != row && c != column }
+        val valuesToKeep = indexesToKeep.map { (r, c) -> this[r, c]}
+        return Matrix(height - 1, width - 1, valuesToKeep)
+    }
+
+    fun minor(row: Int, column: Int): Double = submatrix(row, column).determinant()
+
+    fun cofactor(row: Int, column: Int): Double = minor(row, column) * cofactorSign(row, column)
+    private fun cofactorSign(row: Int, column: Int) = if ((row + column) % 2 == 0) 1 else -1
+
+    fun invertible() = determinant() != 0.0
+    fun inverse(): Matrix {
+        if (!invertible()) throw RuntimeException("Attempted to invert non-invertible matrix: $this")
+        val determinant = determinant()
+        val inverseValues: List<Double> = ((0 until width) * (0 until height)).map { (c, r) -> cofactor(r, c) / determinant }
+        return Matrix(height, width, inverseValues)
+    }
 
     private fun getRow(rowIndex: Int) = (0 until width).map { columnIndex -> get(rowIndex, columnIndex) }
     private fun getColumn(columnIndex: Int) = (0 until height).map { rowIndex -> get(rowIndex, columnIndex) }
