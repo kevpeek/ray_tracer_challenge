@@ -16,4 +16,6 @@ class Point(val x: Double, val y: Double, val z: Double) {
     operator fun plus(vector: Vector) = Point(x + vector.x, y + vector.y, z + vector.z)
     operator fun minus(vector: Vector) = Point(x - vector.x, y - vector.y, z - vector.z)
     operator fun minus(other: Point) = Vector(x - other.x, y - other.y, z - other.z)
+
+    fun asMatrix() = Matrix.ofSize(4, 1).of(x, y, z, 1)
 }

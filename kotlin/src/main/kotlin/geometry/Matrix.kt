@@ -38,8 +38,13 @@ class Matrix(private val height: Int, private val width: Int, private val values
     }
 
     operator fun times(point: Point): Point {
-        val result = this * Matrix(height, 1, listOf(point.x, point.y, point.z, 1.0))
+        val result = this * point.asMatrix()
         return Point(result[0, 0], result[1, 0], result[2, 0])
+    }
+
+    operator fun times(vector: Vector): Vector {
+        val result = this * vector.asMatrix()
+        return Vector(result[0, 0], result[1, 0], result[2, 0])
     }
 
     fun transpose() = Matrix(width, height, (0 until width).flatMap(this::getColumn))

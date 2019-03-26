@@ -6,7 +6,4 @@ Currently I am implementing this in Kotlin, but I may add more implementations l
 implementation is located in the Kotlin subdirectory. Any additional implementations will likewise
 have their own subdirectories.
 
-## Running
-To run the Kotlin tests:
-`cd kotlin`
-`gradle run`
+See subdirectories for information about each implementation.

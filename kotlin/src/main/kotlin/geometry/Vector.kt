@@ -24,4 +24,6 @@ class Vector(val x: Double, val y: Double, val z: Double) {
     fun normalize() = Vector(x / magnitude(), y / magnitude(), z / magnitude())
     fun dot(other: Vector) = x * other.x + y * other.y + z * other.z
     fun cross(b: Vector) = Vector(y * b.z - z * b.y, z * b.x - x * b.z, x * b.y - y * b.x)
+
+    fun asMatrix() = Matrix.ofSize(4, 1).of(x, y, z, 0)
 }

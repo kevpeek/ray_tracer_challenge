@@ -120,7 +120,7 @@ class MatrixTest {
     }
 
     @Test
-    fun `A matrix multiplied by a tuple`() {
+    fun `A matrix multiplied by a Point`() {
         val matrix = Matrix.ofSize(4, 4).of(
             1, 2, 3, 4,
             2, 4, 4, 2,
@@ -131,6 +131,20 @@ class MatrixTest {
         val point = Point(1, 2, 3)
 
         assertEquals(Point(18, 24, 33), matrix * point)
+    }
+
+    @Test
+    fun `A matrix multiplied by a Vector`() {
+        val matrix = Matrix.ofSize(4, 4).of(
+            1, 2, 3, 4,
+            2, 4, 4, 2,
+            8, 6, 4, 1,
+            0, 0, 0, 1
+        )
+
+        val vector = Vector(1, 2, 3)
+
+        assertEquals(Vector(14, 22, 32), matrix * vector)
     }
 
     @Test
