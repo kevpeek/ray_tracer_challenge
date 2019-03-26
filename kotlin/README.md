@@ -4,5 +4,5 @@
 
 To run the tests do
 ```
-gradle run
+gradle test
 ````
