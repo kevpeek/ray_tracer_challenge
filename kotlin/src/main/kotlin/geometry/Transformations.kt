@@ -18,3 +18,27 @@ fun scaling(x: Int, y: Int, z: Int) =
         0, 0, z, 0,
         0, 0, 0, 1
     )
+
+fun rotationX(radians: Double) =
+        Matrix.ofSize(4, 4).of(
+            1, 0, 0, 0,
+            0, Math.cos(radians), -Math.sin(radians), 0,
+            0, Math.sin(radians), Math.cos(radians), 0,
+            0, 0, 0, 1
+        )
+
+fun rotationY(radians: Double) =
+    Matrix.ofSize(4, 4).of(
+        Math.cos(radians), 0, Math.sin(radians), 0,
+        0, 1, 0, 0,
+        -Math.sin(radians), 0, Math.cos(radians), 0,
+        0, 0, 0, 1
+    )
+
+fun rotationZ(radians: Double) =
+    Matrix.ofSize(4, 4).of(
+        Math.cos(radians), -Math.sin(radians), 0, 0,
+        Math.sin(radians), Math.cos(radians), 0, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1
+    )

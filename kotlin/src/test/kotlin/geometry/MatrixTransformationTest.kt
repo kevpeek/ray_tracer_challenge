@@ -2,6 +2,7 @@ package geometry
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.fail
 
 class MatrixTransformationTest {
 
@@ -62,5 +63,48 @@ class MatrixTransformationTest {
         val point = Point(2, 3, 4)
 
         assertEquals(Point(-2, 3, 4), xReflection * point)
+    }
+
+    @Test
+    fun `Rotating a point around the x axis`() {
+        val point = Point(0, 1, 0)
+
+        val halfQuarter = rotationX(Math.PI / 4)
+        val fullQuarter = rotationX(Math.PI / 2)
+
+        assertEquals(Point(0, Math.sqrt(2.0) / 2, Math.sqrt(2.0) / 2), halfQuarter * point)
+        assertEquals(Point(0, 0, 1), fullQuarter * point)
+    }
+
+    @Test
+    fun `The inverse of an x-rotation rotates in the opposite direction`() {
+        val point = Point(0, 1, 0)
+
+        val halfQuarter = rotationX(Math.PI / 4)
+        val inverse = halfQuarter.inverse()
+
+        assertEquals(Point(0, Math.sqrt(2.0) / 2, - Math.sqrt(2.0) / 2), inverse * point)
+    }
+
+    @Test
+    fun `Rotating a point around the y axis`() {
+        val point = Point(0, 0, 1)
+
+        val halfQuarter = rotationY(Math.PI / 4)
+        val fullQuarter = rotationY(Math.PI / 2)
+
+        assertEquals(Point(Math.sqrt(2.0) / 2, 0, Math.sqrt(2.0) / 2), halfQuarter * point)
+        assertEquals(Point(1, 0, 0), fullQuarter * point)
+    }
+
+    @Test
+    fun `Rotating a point around the z axis`() {
+        val point = Point(0, 1, 0)
+
+        val halfQuarter = rotationZ(Math.PI / 4)
+        val fullQuarter = rotationZ(Math.PI / 2)
+
+        assertEquals(Point(-Math.sqrt(2.0) / 2, Math.sqrt(2.0) / 2, 0), halfQuarter * point)
+        assertEquals(Point(-1, 0, 0), fullQuarter * point)
     }
 }

@@ -2,18 +2,18 @@ import display.Canvas
 import display.canvasToPpm
 import display.writePpm
 import helper.times
+import java.io.BufferedInputStream
+import java.io.File
+import java.net.URL
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 
 fun main() {
     println("~~~~~Starting~~~~~")
 
-    val nums = Builder(5).of(1, 2, 3)
-    nums.forEach(::println)
+    println("testing testing")
+
 
     println("~~~~~Done~~~~~")
-}
-
-
-class Builder(val size: Int) {
-    fun of(vararg values: Int) = values.toList()
 }
