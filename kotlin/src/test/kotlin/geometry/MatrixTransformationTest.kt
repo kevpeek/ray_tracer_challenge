@@ -107,4 +107,58 @@ class MatrixTransformationTest {
         assertEquals(Point(-Math.sqrt(2.0) / 2, Math.sqrt(2.0) / 2, 0), halfQuarter * point)
         assertEquals(Point(-1, 0, 0), fullQuarter * point)
     }
+
+    @Test
+    fun `A shearing transformation moves x in proportion to y`() {
+        val point = Point(2, 3, 4)
+
+        val transformation = shearing(1, 0, 0, 0, 0, 0)
+
+        assertEquals(Point(5, 3, 4), transformation * point)
+    }
+
+    @Test
+    fun `A shearing transformation moves x in proportion to z`() {
+        val point = Point(2, 3, 4)
+
+        val transformation = shearing(0, 1, 0, 0, 0, 0)
+
+        assertEquals(Point(6, 3, 4), transformation * point)
+    }
+
+    @Test
+    fun `A shearing transformation moves y in proportion to x`() {
+        val point = Point(2, 3, 4)
+
+        val transformation = shearing(0, 0, 1, 0, 0, 0)
+
+        assertEquals(Point(2, 5, 4), transformation * point)
+    }
+
+    @Test
+    fun `A shearing transformation moves y in proportion to z`() {
+        val point = Point(2, 3, 4)
+
+        val transformation = shearing(0, 0, 0, 1, 0, 0)
+
+        assertEquals(Point(2, 7, 4), transformation * point)
+    }
+
+    @Test
+    fun `A shearing transformation moves z in proportion to x`() {
+        val point = Point(2, 3, 4)
+
+        val transformation = shearing(0, 0, 0, 0, 1, 0)
+
+        assertEquals(Point(2, 3, 6), transformation * point)
+    }
+
+    @Test
+    fun `A shearing transformation moves z in proportion to y`() {
+        val point = Point(2, 3, 4)
+
+        val transformation = shearing(0, 0, 0, 0, 0, 1)
+
+        assertEquals(Point(2, 3, 7), transformation * point)
+    }
 }

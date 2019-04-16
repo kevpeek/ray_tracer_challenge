@@ -42,3 +42,11 @@ fun rotationZ(radians: Double) =
         0, 0, 1, 0,
         0, 0, 0, 1
     )
+
+fun shearing(xy: Number, xz: Number, yx: Number, yz: Number, zx: Number, zy: Number) =
+    Matrix.ofSize(4, 4).of(
+        1, xy, xz, 0,
+        yx, 1, yz, 0,
+        zx, zy, 1, 0,
+        0, 0, 0, 1
+    )
