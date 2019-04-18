@@ -77,6 +77,8 @@ class Matrix(private val height: Int, private val width: Int, private val values
     private fun getColumn(columnIndex: Int) = (0 until height).map { rowIndex -> get(rowIndex, columnIndex) }
     private fun getIndexFor(row: Int, column: Int) = row * width + column
 
+    fun then(nextTransform: Matrix) = nextTransform * this
+
 
     class MatrixBuilder(private val rows: Int, private val columns: Int) {
         fun of(vararg values: Number) = Matrix(rows, columns, values.map(Number::toDouble))

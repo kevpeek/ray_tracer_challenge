@@ -161,4 +161,48 @@ class MatrixTransformationTest {
 
         assertEquals(Point(2, 3, 7), transformation * point)
     }
+
+    @Test
+    fun `Individual transformations are applied in sequence`() {
+        val point = Point(1, 0, 1)
+
+        val transformA = rotationX(Math.PI / 2)
+        val transformB = scaling(5, 5, 5)
+        val transformC = translation(10, 5, 7)
+
+        val point2 = transformA * point
+        assertEquals(Point(1, -1, 0), point2)
+
+        val point3 = transformB * point2
+        assertEquals(Point(5, -5, 0), point3)
+
+        val point4 = transformC * point3
+        assertEquals(Point(15, 0, 7), point4)
+    }
+
+    @Test
+    fun `Chained transformations must be applied in reverse order`() {
+        val point = Point(1, 0, 1)
+
+        val transformA = rotationX(Math.PI / 2)
+        val transformB = scaling(5, 5, 5)
+        val transformC = translation(10, 5, 7)
+
+        val combinedTransform = transformC * transformB * transformA
+
+        assertEquals(Point(15, 0, 7), combinedTransform * point)
+    }
+
+    @Test
+    fun `Fluently chained transformations must be applied in reverse order`() {
+        val point = Point(1, 0, 1)
+
+        val transformA = rotationX(Math.PI / 2)
+        val transformB = scaling(5, 5, 5)
+        val transformC = translation(10, 5, 7)
+
+        val combinedTransform = transformA.then(transformB).then(transformC)
+
+        assertEquals(Point(15, 0, 7), combinedTransform * point)
+    }
 }
