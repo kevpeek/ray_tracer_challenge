@@ -2,7 +2,7 @@ package tracing
 
 import geometry.Point
 
-data class Intersection(val t: Double, val thing: Sphere)
+data class Intersection(val time: Double, val thing: Sphere)
 
 fun intersections(vararg intersections: Intersection) = intersections.toList()
 
@@ -26,3 +26,8 @@ fun intersects(sphere: Sphere, ray: Ray): List<Intersection> {
 
     return listOf(Intersection(t1, sphere), Intersection(t2, sphere))
 }
+
+/**
+ * Finds the Intersection with the lowest, non-negative time value.
+ */
+fun hit(intersections: List<Intersection>) = intersections.filter { it.time >= 0 }.minBy { it.time }

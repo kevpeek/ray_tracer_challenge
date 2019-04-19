@@ -3,6 +3,7 @@ package tracing
 import geometry.Point
 import geometry.Vector
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
@@ -16,8 +17,8 @@ class IntersectionTest {
         val intersections = intersects(sphere, ray)
 
         assertEquals(2, intersections.size)
-        assertEquals(4.0, intersections[0].t)
-        assertEquals(6.0, intersections[1].t)
+        assertEquals(4.0, intersections[0].time)
+        assertEquals(6.0, intersections[1].time)
     }
 
     @Test
@@ -28,8 +29,8 @@ class IntersectionTest {
         val intersections = intersects(sphere, ray)
 
         assertEquals(2, intersections.size)
-        assertEquals(5.0, intersections[0].t)
-        assertEquals(5.0, intersections[1].t)
+        assertEquals(5.0, intersections[0].time)
+        assertEquals(5.0, intersections[1].time)
     }
 
     @Test
@@ -50,8 +51,8 @@ class IntersectionTest {
         val intersections = intersects(sphere, ray)
 
         assertEquals(2, intersections.size)
-        assertEquals(-1.0, intersections[0].t)
-        assertEquals(1.0, intersections[1].t)
+        assertEquals(-1.0, intersections[0].time)
+        assertEquals(1.0, intersections[1].time)
     }
 
     @Test
@@ -62,8 +63,8 @@ class IntersectionTest {
         val intersections = intersects(sphere, ray)
 
         assertEquals(2, intersections.size)
-        assertEquals(-6.0, intersections[0].t)
-        assertEquals(-4.0, intersections[1].t)
+        assertEquals(-6.0, intersections[0].time)
+        assertEquals(-4.0, intersections[1].time)
     }
 
     @Test
@@ -72,7 +73,7 @@ class IntersectionTest {
 
         val intersection = Intersection(3.5, sphere)
 
-        assertEquals(3.5, intersection.t)
+        assertEquals(3.5, intersection.time)
         assertEquals(sphere, intersection.thing)
     }
 
@@ -100,5 +101,54 @@ class IntersectionTest {
         assertEquals(2, intersections.size)
         assertEquals(sphere, intersections[0].thing)
         assertEquals(sphere, intersections[1].thing)
+    }
+
+    @Test
+    fun `The hit, when all intersections have positive t`() {
+        val shape = Sphere()
+        val i1 = Intersection(1.0, shape)
+        val i2 = Intersection(2.0, shape)
+        val intersections = intersections(i1, i2)
+
+        val theHit = hit(intersections)
+        assertEquals(i1, theHit)
+    }
+
+    @Test
+    fun `The hit, when some intersections have negative t`() {
+        val shape = Sphere()
+
+        val i1 = Intersection(-1.0, shape)
+        val i2 = Intersection(1.0, shape)
+        val intersections = intersections(i1, i2)
+
+        val theHit = hit(intersections)
+        assertEquals(i2, theHit)
+    }
+
+    @Test
+    fun `The hit, when all intersections have negative t`() {
+        val shape = Sphere()
+
+        val i1 = Intersection(-2.0, shape)
+        val i2 = Intersection(-1.0, shape)
+        val intersections = intersections(i1, i2)
+
+        val theHit = hit(intersections)
+        assertNull(theHit)
+    }
+
+    @Test
+    fun `The hit is always the lowest nonnegative intersection`() {
+        val shape = Sphere()
+
+        val i1 = Intersection(5.0, shape)
+        val i2 = Intersection(7.0, shape)
+        val i3 = Intersection(-3.0, shape)
+        val i4 = Intersection(2.0, shape)
+        val intersections = intersections(i1, i2, i3, i4)
+
+        val theHit = hit(intersections)
+        assertEquals(i4, theHit)
     }
 }
