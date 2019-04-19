@@ -4,6 +4,9 @@ import helper.approximately
 
 private val ZERO = Vector(0.0, 0.0, 0.0)
 
+/**
+ * Represents a vector in three dimensional space.
+ */
 class Vector(val x: Double, val y: Double, val z: Double) {
 
     constructor(x: Number, y: Number, z: Number) : this(x.toDouble(), y.toDouble(), z.toDouble())
@@ -25,5 +28,8 @@ class Vector(val x: Double, val y: Double, val z: Double) {
     fun dot(other: Vector) = x * other.x + y * other.y + z * other.z
     fun cross(b: Vector) = Vector(y * b.z - z * b.y, z * b.x - x * b.z, x * b.y - y * b.x)
 
+    /**
+     * By convention, a Vector is represented as a 4x1 matrix with a 4th value of 0.
+     */
     fun asMatrix() = Matrix.ofSize(4, 1).of(x, y, z, 0)
 }

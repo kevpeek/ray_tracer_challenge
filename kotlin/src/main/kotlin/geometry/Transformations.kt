@@ -11,6 +11,9 @@ fun translation(x: Int, y: Int, z: Int) =
         0, 0, 0, 1
     )
 
+/**
+ * A transformation that grows or shrinks an object.
+ */
 fun scaling(x: Int, y: Int, z: Int) =
     Matrix.ofSize(4, 4).of(
         x, 0, 0, 0,
@@ -19,6 +22,9 @@ fun scaling(x: Int, y: Int, z: Int) =
         0, 0, 0, 1
     )
 
+/**
+ * Rotation around the x-axis.
+ */
 fun rotationX(radians: Double) =
         Matrix.ofSize(4, 4).of(
             1, 0, 0, 0,
@@ -27,6 +33,9 @@ fun rotationX(radians: Double) =
             0, 0, 0, 1
         )
 
+/**
+ * Rotation around the y-axis.
+ */
 fun rotationY(radians: Double) =
     Matrix.ofSize(4, 4).of(
         Math.cos(radians), 0, Math.sin(radians), 0,
@@ -35,6 +44,9 @@ fun rotationY(radians: Double) =
         0, 0, 0, 1
     )
 
+/**
+ * Rotation around the z-axis.
+ */
 fun rotationZ(radians: Double) =
     Matrix.ofSize(4, 4).of(
         Math.cos(radians), -Math.sin(radians), 0, 0,
@@ -43,6 +55,9 @@ fun rotationZ(radians: Double) =
         0, 0, 0, 1
     )
 
+/**
+ * Causes an object to....slant, I guess?
+ */
 fun shearing(xy: Number, xz: Number, yx: Number, yz: Number, zx: Number, zy: Number) =
     Matrix.ofSize(4, 4).of(
         1, xy, xz, 0,

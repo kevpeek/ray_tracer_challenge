@@ -2,6 +2,9 @@ package geometry
 
 import helper.approximately
 
+/**
+ * Represents a point in three dimensional space.
+ */
 class Point(val x: Double, val y: Double, val z: Double) {
 
     constructor(x: Number, y: Number, z: Number) : this(x.toDouble(), y.toDouble(), z.toDouble())
@@ -17,5 +20,8 @@ class Point(val x: Double, val y: Double, val z: Double) {
     operator fun minus(vector: Vector) = Point(x - vector.x, y - vector.y, z - vector.z)
     operator fun minus(other: Point) = Vector(x - other.x, y - other.y, z - other.z)
 
+    /**
+     * By convention, a Point is treated as a 4x1 Matrix with a 4th element of 1.
+     */
     fun asMatrix() = Matrix.ofSize(4, 1).of(x, y, z, 1)
 }

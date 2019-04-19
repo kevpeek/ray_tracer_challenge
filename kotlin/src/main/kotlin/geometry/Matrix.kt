@@ -4,18 +4,39 @@ import helper.approximately
 import helper.times
 import java.lang.RuntimeException
 
+/**
+ * Representation of a Matrix.
+ *
+ * Some operations are only supported for square matrices.
+ */
 class Matrix(private val height: Int, private val width: Int, private val values: List<Double>) {
 
+    /**
+     * Functions for creating Matrices.
+     */
     companion object Factory {
+        /**
+         * For creating general Matrices.
+         *
+         * Matrix.ofSize(r, c).of(1, 2, 3, ....)
+         */
         fun ofSize(rows: Int, columns: Int) = MatrixBuilder(rows, columns)
 
+        /**
+         * Creates an identity matrix of the specified size.
+         *
+         * Identity matrix: all values are zero, except for the top-left to bottom-right diagonal values
+         * which are all 1.
+         */
         fun identity(size: Int): Matrix {
             val values = ((1..size) * (1..size)).map { (row, col) -> if (row == col) 1.0 else 0.0 }
             return Matrix(4, 4, values)
         }
     }
 
-
+    /**
+     * Two Matrices are equal if all corresponding values are equal.
+     */
     override fun equals(other: Any?): Boolean = when(other) {
         is Matrix -> (values zip other.values).all { (a, b) -> a approximately b }
         else -> false
@@ -24,6 +45,12 @@ class Matrix(private val height: Int, private val width: Int, private val values
     override fun toString(): String = values.joinToString()
 
     operator fun get(row: Int, column: Int) = values[getIndexFor(row, column)]
+
+    /**
+     * Returns the values from the specified row.
+     */
+    private fun getRow(rowIndex: Int) = (0 until width).map { columnIndex -> get(rowIndex, columnIndex) }
+
 
     operator fun times(other: Matrix): Matrix {
         val newValues = (0 until height).flatMap { rowIndex ->
@@ -47,6 +74,9 @@ class Matrix(private val height: Int, private val width: Int, private val values
         return Vector(result[0, 0], result[1, 0], result[2, 0])
     }
 
+    /**
+     * Returns the transpose matrix, where each row of the original is a column of the transpose.
+     */
     fun transpose() = Matrix(width, height, (0 until width).flatMap(this::getColumn))
 
     fun determinant(): Double = when {
@@ -54,6 +84,9 @@ class Matrix(private val height: Int, private val width: Int, private val values
         else -> getRow(0).mapIndexed { column, value -> cofactor(0, column) * value }.sum()
     }
 
+    /**
+     * Returns the sub matrix created by removing the specified row and column.
+     */
     fun submatrix(row: Int, column: Int): Matrix {
         val indexesToKeep = ((0 until height) * (0 until width)).filter { (r, c) -> r != row && c != column }
         val valuesToKeep = indexesToKeep.map { (r, c) -> this[r, c]}
@@ -66,6 +99,7 @@ class Matrix(private val height: Int, private val width: Int, private val values
     private fun cofactorSign(row: Int, column: Int) = if ((row + column) % 2 == 0) 1 else -1
 
     fun invertible() = determinant() != 0.0
+
     fun inverse(): Matrix {
         if (!invertible()) throw RuntimeException("Attempted to invert non-invertible matrix: $this")
         val determinant = determinant()
@@ -73,13 +107,27 @@ class Matrix(private val height: Int, private val width: Int, private val values
         return Matrix(height, width, inverseValues)
     }
 
-    private fun getRow(rowIndex: Int) = (0 until width).map { columnIndex -> get(rowIndex, columnIndex) }
+    /**
+     * Returns the values from the specified column.
+     */
     private fun getColumn(columnIndex: Int) = (0 until height).map { rowIndex -> get(rowIndex, columnIndex) }
+
+    /**
+     * This class represents an nxm matrix as a list of size nxm. This function calculates
+     * the index into that list for the value at row & column.
+     */
     private fun getIndexFor(row: Int, column: Int) = row * width + column
 
+    /**
+     * Helper for combining matrix transformations.
+     *
+     * A.then(B) will return B * A, which is the combined transformation to apply A and then B.
+     */
     fun then(nextTransform: Matrix) = nextTransform * this
 
-
+    /**
+     * Helper class used by Matrix.ofSize().
+     */
     class MatrixBuilder(private val rows: Int, private val columns: Int) {
         fun of(vararg values: Number) = Matrix(rows, columns, values.map(Number::toDouble))
     }
