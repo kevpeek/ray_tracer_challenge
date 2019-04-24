@@ -2,10 +2,13 @@ package tracing
 
 import geometry.Point
 import geometry.Vector
+import geometry.scaling
+import geometry.translation
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.fail
 
 class IntersectionTest {
 
@@ -150,5 +153,26 @@ class IntersectionTest {
 
         val theHit = hit(intersections)
         assertEquals(i4, theHit)
+    }
+
+    @Test
+    fun `Intersecting a scaled sphere with a ray`() {
+        val ray = Ray(Point(0, 0, -5), Vector(0, 0, 1))
+        val sphere = Sphere(scaling(2, 2, 2))
+
+        val intersections = intersects(sphere, ray)
+
+        assertEquals(2, intersections.size)
+        assertEquals(3.0, intersections[0].time)
+        assertEquals(7.0, intersections[1].time)
+    }
+
+    @Test
+    fun `Intersecting a translated sphere with a ray`() {
+        val ray = Ray(Point(0, 0, -5), Vector(0, 0, 1))
+        val sphere = Sphere(translation(5, 0, 0))
+
+        val intersections = intersects(sphere, ray)
+        assertTrue(intersections.isEmpty())
     }
 }

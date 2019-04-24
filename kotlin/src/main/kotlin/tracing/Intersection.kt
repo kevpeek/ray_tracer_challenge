@@ -10,9 +10,10 @@ fun intersections(vararg intersections: Intersection) = intersections.toList()
  * Returns the list of Intersections between the ray and sphere.
  */
 fun intersects(sphere: Sphere, ray: Ray): List<Intersection> {
-    val sphereToRay = ray.origin - Point(0, 0, 0)
-    val a = ray.direction.dot(ray.direction)
-    val b = 2 * ray.direction.dot(sphereToRay)
+    val transformedRay = ray.transform(sphere.transform.inverse())
+    val sphereToRay = transformedRay.origin - Point(0, 0, 0)
+    val a = transformedRay.direction.dot(transformedRay.direction)
+    val b = 2 * transformedRay.direction.dot(sphereToRay)
     val c = sphereToRay.dot(sphereToRay) - 1
 
     val discriminant = b * b - 4 * a * c
