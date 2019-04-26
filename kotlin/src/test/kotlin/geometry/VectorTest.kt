@@ -170,4 +170,16 @@ class VectorTest {
         val cross21 = vector2.cross(vector1)
         Assertions.assertEquals(Vector(1.0, -2.0, 1.0), cross21)
     }
+
+    @Test
+    fun `todo`() {
+        fail("todo")
+        /*
+        Scenario: Reflecting a vector approaching at 45Â°
+  Given v â† vector(1, -1, 0)
+    And n â† vector(0, 1, 0)
+  When r â† reflect(v, n)
+  Then r = vector(1, 1, 0)
+        */
+    }
 }

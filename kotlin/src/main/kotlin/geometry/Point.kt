@@ -2,6 +2,8 @@ package geometry
 
 import helper.approximately
 
+val WORLD_ORIGIN = Point(0, 0, 0)
+
 /**
  * Represents a point in three dimensional space.
  */

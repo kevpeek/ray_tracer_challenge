@@ -14,7 +14,7 @@ fun translation(x: Int, y: Int, z: Int) =
 /**
  * A transformation that grows or shrinks an object.
  */
-fun scaling(x: Int, y: Int, z: Int) =
+fun scaling(x: Number, y: Number, z: Number) =
     Matrix.ofSize(4, 4).of(
         x, 0, 0, 0,
         0, y, 0, 0,

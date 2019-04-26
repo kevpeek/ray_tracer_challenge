@@ -8,8 +8,8 @@ import geometry.Matrix
 import geometry.Point
 import geometry.rotationY
 
-const val width = 200
-const val height = 200
+val width = 200
+val height = 200
 
 /**
  * Creates an image showing a dot at each hour of a clock.

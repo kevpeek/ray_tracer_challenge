@@ -11,7 +11,7 @@ fun intersections(vararg intersections: Intersection) = intersections.toList()
  */
 fun intersects(sphere: Sphere, ray: Ray): List<Intersection> {
     val transformedRay = ray.transform(sphere.transform.inverse())
-    val sphereToRay = transformedRay.origin - Point(0, 0, 0)
+    val sphereToRay = transformedRay.origin - sphere.origin
     val a = transformedRay.direction.dot(transformedRay.direction)
     val b = 2 * transformedRay.direction.dot(sphereToRay)
     val c = sphereToRay.dot(sphereToRay) - 1
