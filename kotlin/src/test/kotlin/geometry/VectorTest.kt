@@ -2,7 +2,9 @@ package geometry
 
 import geometry.Vector
 import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.fail
 
 class VectorTest {
 
@@ -172,14 +174,22 @@ class VectorTest {
     }
 
     @Test
-    fun `todo`() {
-        fail("todo")
-        /*
-        Scenario: Reflecting a vector approaching at 45Â°
-  Given v â† vector(1, -1, 0)
-    And n â† vector(0, 1, 0)
-  When r â† reflect(v, n)
-  Then r = vector(1, 1, 0)
-        */
+    fun `Reflecting a vector approaching at 45Â°`() {
+        val vector = Vector(1, -1, 0)
+        val normal = Vector(0, 1, 0)
+
+        val reflection = vector.reflect(normal)
+
+        assertEquals(Vector(1, 1, 0), reflection)
+    }
+
+    @Test
+    fun `Reflecting a vector off a slanted surface`() {
+        val vector = Vector(0, -1, 0)
+        val normal = Vector(Math.sqrt(2.0) / 2, Math.sqrt(2.0) / 2, 0)
+
+        val reflection = vector.reflect(normal)
+
+        assertEquals(Vector(1, 0, 0), reflection)
     }
 }

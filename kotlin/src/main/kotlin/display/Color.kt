@@ -5,6 +5,8 @@ import kotlin.math.roundToInt
 
 data class Color(val red: Double, val green: Double, val blue: Double) {
 
+    constructor(red: Number, green: Number, blue: Number):this(red.toDouble(), green.toDouble(), blue.toDouble())
+
     companion object {
         val BLACK = Color(0.0, 0.0, 0.0)
         val RED = Color(1.0, 0.0, 0.0)

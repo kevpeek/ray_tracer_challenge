@@ -8,12 +8,11 @@ import geometry.Vector
 /**
  * Representation of a Sphere.
  */
-class Sphere(val transform: Matrix = Matrix.identity(4)) {
-
-    /**
-     * The center of the sphere.
-     */
-    val origin = WORLD_ORIGIN
+class Sphere(
+    val transform: Matrix = Matrix.identity(4),
+    val origin: Point = WORLD_ORIGIN,
+    val material: Material = Material.DEFAULT
+) {
 
     /**
      * Return the Vector normal to this sphere at the supplied point.

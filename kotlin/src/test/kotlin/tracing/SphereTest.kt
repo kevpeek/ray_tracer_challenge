@@ -79,4 +79,19 @@ class SphereTest {
         val normal = sphere.normalAt(Point(0, Math.sqrt(2.0) / 2, -Math.sqrt(2.0) / 2))
         assertEquals(Vector(0, 0.97014, -0.24254), normal)
     }
+
+    @Test
+    fun `A sphere has a default material`() {
+        val sphere = Sphere()
+
+        assertEquals(Material.DEFAULT, sphere.material)
+    }
+
+    @Test
+    fun `A sphere may be assigned a material`() {
+        val material = Material()
+        val sphere = Sphere(material = material)
+
+        assertEquals(material, sphere.material)
+    }
 }

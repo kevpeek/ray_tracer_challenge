@@ -32,4 +32,9 @@ class Vector(val x: Double, val y: Double, val z: Double) {
      * By convention, a Vector is represented as a 4x1 matrix with a 4th value of 0.
      */
     fun asMatrix() = Matrix.ofSize(4, 1).of(x, y, z, 0)
+
+    /**
+     * Return the reflection of this vector over the supplied normal.
+     */
+    fun reflect(normal: Vector) = this - normal * 2.0 * this.dot(normal)
 }
