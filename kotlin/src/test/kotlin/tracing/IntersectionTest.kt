@@ -175,4 +175,21 @@ class IntersectionTest {
         val intersections = intersects(sphere, ray)
         assertTrue(intersections.isEmpty())
     }
+
+    @Test
+    fun `todo`() {
+        fail("todo")
+        /*
+        Scenario: Precomputing the state of an intersection
+  Given r â† ray(point(0, 0, -5), vector(0, 0, 1))
+    And shape â† sphere()
+    And i â† intersection(4, shape)
+  When comps â† prepare_computations(i, r)
+  Then comps.t = i.t
+    And comps.object = i.object
+    And comps.point = point(0, 0, -1)
+    And comps.eyev = vector(0, 0, -1)
+    And comps.normalv = vector(0, 0, -1)
+        */
+    }
 }

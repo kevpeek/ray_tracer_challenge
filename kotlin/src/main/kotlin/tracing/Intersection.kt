@@ -29,6 +29,15 @@ fun intersects(sphere: Sphere, ray: Ray): List<Intersection> {
 }
 
 /**
+ * Returns all intersections of the supplied Ray with every object in the world.
+ *
+ * Resulting Intersections are sorted by time, so intersections from any given object may not adjacent in the list.
+ */
+fun intersectWorld(world: World, ray: Ray): List<Intersection> {
+    return world.objects.flatMap { intersects(it, ray) }.sortedBy { it.time }
+}
+
+/**
  * Finds the Intersection with the lowest, non-negative time value.
  */
 fun hit(intersections: List<Intersection>) = intersections.filter { it.time >= 0 }.minBy { it.time }
