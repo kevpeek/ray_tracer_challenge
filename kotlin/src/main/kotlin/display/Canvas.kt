@@ -15,7 +15,7 @@ data class Canvas(val width: Int, val height: Int) {
     /**
      * Returns a list of rows, each of which is a list of Colors.
      */
-    fun rows() = (0 until height).map { y -> (0 until width).map { x -> pixelAt(x, y) }}
+    fun rows() = (0 until height).map { y -> (0 until width).map { x -> pixelAt(x, y) } }
 
     /**
      * Determine the list index for the specified coordinates.
@@ -28,5 +28,5 @@ data class Canvas(val width: Int, val height: Int) {
         return y * width + x
     }
 
-    class CanvasException(message: String): RuntimeException(message)
+    class CanvasException(message: String) : RuntimeException(message)
 }

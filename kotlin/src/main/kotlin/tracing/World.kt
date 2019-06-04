@@ -28,5 +28,4 @@ class World(val objects: List<Sphere> = emptyList(), val lightSource: PointLight
     companion object {
         fun default() = World(DEFAULT_SPHERES, DEFAULT_LIGHT)
     }
-
 }

@@ -1,18 +1,8 @@
-import display.Canvas
-import display.canvasToPpm
-import display.writePpm
-import helper.times
-import java.awt.Toolkit
-import java.io.BufferedInputStream
-import java.io.File
-import java.net.URL
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
+import helper.times
 
 fun main() {
     println("~~~~~Starting~~~~~")
-
 
     println("~~~~~Done~~~~~")
 }

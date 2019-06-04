@@ -35,7 +35,7 @@ class ImageWriterTest {
     fun `Splitting long lines in PPM files`() {
         val canvas = Canvas(10, 2)
         val color = Color(1.0, 0.8, 0.6)
-        (0 until 10).forEach { x -> (0 until 2).forEach { y -> canvas.writePixel(x, y, color) }}
+        (0 until 10).forEach { x -> (0 until 2).forEach { y -> canvas.writePixel(x, y, color) } }
 
         val ppm = canvasToPpm(canvas)
         val ppmLines = ppm.lines()

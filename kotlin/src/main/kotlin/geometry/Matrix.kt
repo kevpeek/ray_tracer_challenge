@@ -37,7 +37,7 @@ class Matrix(private val height: Int, private val width: Int, private val values
     /**
      * Two Matrices are equal if all corresponding values are equal.
      */
-    override fun equals(other: Any?): Boolean = when(other) {
+    override fun equals(other: Any?): Boolean = when (other) {
         is Matrix -> (values zip other.values).all { (a, b) -> a approximately b }
         else -> false
     }
@@ -50,7 +50,6 @@ class Matrix(private val height: Int, private val width: Int, private val values
      * Returns the values from the specified row.
      */
     private fun getRow(rowIndex: Int) = (0 until width).map { columnIndex -> get(rowIndex, columnIndex) }
-
 
     operator fun times(other: Matrix): Matrix {
         val newValues = (0 until height).flatMap { rowIndex ->
@@ -89,7 +88,7 @@ class Matrix(private val height: Int, private val width: Int, private val values
      */
     fun submatrix(row: Int, column: Int): Matrix {
         val indexesToKeep = ((0 until height) * (0 until width)).filter { (r, c) -> r != row && c != column }
-        val valuesToKeep = indexesToKeep.map { (r, c) -> this[r, c]}
+        val valuesToKeep = indexesToKeep.map { (r, c) -> this[r, c] }
         return Matrix(height - 1, width - 1, valuesToKeep)
     }
 

@@ -1,13 +1,11 @@
 package geometry
 
-import helper.approximately
 import helper.times
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.fail
 
 class MatrixTest {
 
@@ -20,13 +18,13 @@ class MatrixTest {
             13.5, 14.5, 15.5, 16.5
         )
 
-        assertEquals(1.0, matrix[0,0])
-        assertEquals(4.0, matrix[0,3])
-        assertEquals(5.5, matrix[1,0])
-        assertEquals(7.5, matrix[1,2])
-        assertEquals(11.0, matrix[2,2])
-        assertEquals(13.5, matrix[3,0])
-        assertEquals(15.5, matrix[3,2])
+        assertEquals(1.0, matrix[0, 0])
+        assertEquals(4.0, matrix[0, 3])
+        assertEquals(5.5, matrix[1, 0])
+        assertEquals(7.5, matrix[1, 2])
+        assertEquals(11.0, matrix[2, 2])
+        assertEquals(13.5, matrix[3, 0])
+        assertEquals(15.5, matrix[3, 2])
     }
 
     @Test
@@ -36,10 +34,10 @@ class MatrixTest {
             1, -2
             )
 
-        assertEquals(-3.0, matrix[0,0])
-        assertEquals(5.0, matrix[0,1])
-        assertEquals(1.0, matrix[1,0])
-        assertEquals(-2.0, matrix[1,1])
+        assertEquals(-3.0, matrix[0, 0])
+        assertEquals(5.0, matrix[0, 1])
+        assertEquals(1.0, matrix[1, 0])
+        assertEquals(-2.0, matrix[1, 1])
     }
 
     @Test
@@ -50,9 +48,9 @@ class MatrixTest {
             0, 1, 1
         )
 
-        assertEquals(-3.0, matrix[0,0])
-        assertEquals(-2.0, matrix[1,1])
-        assertEquals(1.0, matrix[2,2])
+        assertEquals(-3.0, matrix[0, 0])
+        assertEquals(-2.0, matrix[1, 1])
+        assertEquals(1.0, matrix[2, 2])
     }
 
     @Test
@@ -164,7 +162,6 @@ class MatrixTest {
         val point = Point(1, 2, 3)
         assertEquals(point, Matrix.identity(4) * point)
     }
-
 
     @Test
     fun `Transposing a matrix`() {
@@ -333,9 +330,9 @@ class MatrixTest {
 
         assertEquals(532.0, matrix.determinant())
         assertEquals(-160.0, matrix.cofactor(2, 3))
-        assertEquals(-160.0/532.0, inverse[3, 2])
+        assertEquals(-160.0 / 532.0, inverse[3, 2])
         assertEquals(105.0, matrix.cofactor(3, 2))
-        assertEquals(105.0/532.0, inverse[2, 3])
+        assertEquals(105.0 / 532.0, inverse[2, 3])
 
         val expectedInverse = Matrix.ofSize(4, 4).of(
             0.21805, 0.45113, 0.24060, -0.04511,
@@ -376,10 +373,10 @@ class MatrixTest {
         )
 
         val expectedInverse = Matrix.ofSize(4, 4).of(
-            -0.04074, -0.07778,  0.14444, -0.22222,
-            -0.07778, 0.03333,  0.36667, -0.33333,
-            -0.02901, -0.14630, -0.10926,  0.12963,
-            0.17778,  0.06667, -0.26667,  0.33333
+            -0.04074, -0.07778, 0.14444, -0.22222,
+            -0.07778, 0.03333, 0.36667, -0.33333,
+            -0.02901, -0.14630, -0.10926, 0.12963,
+            0.17778, 0.06667, -0.26667, 0.33333
         )
 
         assertEquals(expectedInverse, matrix.inverse())

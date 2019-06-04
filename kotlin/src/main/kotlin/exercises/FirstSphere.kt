@@ -6,12 +6,6 @@ import display.canvasToPpm
 import display.writePpm
 import geometry.Matrix
 import geometry.Point
-import geometry.Vector
-import geometry.rotationX
-import geometry.rotationY
-import geometry.rotationZ
-import geometry.scaling
-import geometry.translation
 import tracing.Ray
 import tracing.Sphere
 import tracing.hit
@@ -32,7 +26,7 @@ fun main() {
 
     (0 until canvasPixels).forEach { y ->
         val worldY = half - pixelSize * y
-        (0 until canvasPixels).forEach {x ->
+        (0 until canvasPixels).forEach { x ->
             val worldX = -half + pixelSize * x
             val position = Point(worldX, worldY, wallZ)
             val rayDirection = (position - rayOrigin).normalize()

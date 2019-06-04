@@ -1,7 +1,5 @@
 package tracing
 
-import geometry.Point
-
 data class Intersection(val time: Double, val thing: Sphere)
 
 fun intersections(vararg intersections: Intersection) = intersections.toList()

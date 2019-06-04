@@ -1,13 +1,10 @@
 package tracing
 
-import display.Color
 import geometry.Point
 import geometry.Vector
-import geometry.scaling
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.fail
 
 class WorldTest {
 
@@ -39,5 +36,4 @@ class WorldTest {
         assertEquals(5.5, intersections[2].time)
         assertEquals(6.0, intersections[3].time)
     }
-
 }

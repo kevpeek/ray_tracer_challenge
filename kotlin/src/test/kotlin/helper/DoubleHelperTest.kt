@@ -8,7 +8,7 @@ class DoubleHelperTest {
 
     @Test
     fun `almost retrns true for equal doubles`() {
-        assertTrue(1.0 approximately  1.0)
+        assertTrue(1.0 approximately 1.0)
     }
 
     @Test

@@ -1,7 +1,5 @@
 package geometry
 
-import geometry.Point
-import geometry.Vector
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 

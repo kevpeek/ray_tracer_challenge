@@ -21,9 +21,9 @@ fun main() {
     val height = 200
     val canvas = Canvas(width, height)
     points.map { it.first }
-        .map { point -> Pair((point.x * 10).toInt(), (point.y * 10).toInt())}
+        .map { point -> Pair((point.x * 10).toInt(), (point.y * 10).toInt()) }
         .map { (x, y) -> Pair(x, height - y - 1) }
-        .forEach { (x, y) -> canvas.writePixel(x, y, Color.RED)}
+        .forEach { (x, y) -> canvas.writePixel(x, y, Color.RED) }
 
     writePpm(canvasToPpm(canvas))
 

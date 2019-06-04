@@ -6,13 +6,6 @@ import display.canvasToPpm
 import display.writePpm
 import geometry.Matrix
 import geometry.Point
-import geometry.Vector
-import geometry.WORLD_ORIGIN
-import geometry.rotationX
-import geometry.rotationY
-import geometry.rotationZ
-import geometry.scaling
-import geometry.translation
 import tracing.Material
 import tracing.PointLight
 import tracing.Ray
@@ -20,7 +13,6 @@ import tracing.Sphere
 import tracing.hit
 import tracing.intersects
 import tracing.lighting
-
 
 private fun getShape(): Sphere {
     val material = Material(color = Color(1, 0.2, 1))
@@ -33,7 +25,6 @@ private fun getLight(): PointLight {
     val lightColor = Color.WHITE
     return PointLight(lightPosition, lightColor)
 }
-
 
 fun main() {
     val shape = getShape()
@@ -54,7 +45,7 @@ fun main() {
         val rayDirection = (position - rayOrigin).normalize()
         val ray = Ray(rayOrigin, rayDirection)
         val intersections = intersects(shape, ray)
-        hit(intersections)?.let {hit ->
+        hit(intersections)?.let { hit ->
             val point = ray.position(hit.time)
             val normal = hit.thing.normalAt(point)
             val eye = -(ray.direction)
@@ -66,4 +57,4 @@ fun main() {
     writePpm(canvasToPpm(canvas))
 }
 
-private fun getCanvasPoints(canvasSize: Int) = (0 until canvasSize).flatMap { y -> (0 until canvasSize).map {x -> x to y}}
+private fun getCanvasPoints(canvasSize: Int) = (0 until canvasSize).flatMap { y -> (0 until canvasSize).map { x -> x to y } }

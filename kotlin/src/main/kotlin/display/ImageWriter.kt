@@ -25,7 +25,6 @@ ${canvas.width} ${canvas.height}
 """.trimIndent()
 }
 
-
 private fun generateFooter() = "\n"
 /**
  * Convert each row of the canvas into the expected output format.
@@ -39,7 +38,7 @@ private fun convertLine(row: List<Color>): String {
  * Head will be less than 70 chars, so recursively limit rest and then combine the results.
  */
 private fun limitWidth(row: String): String {
-    if(row.length < 70) return row
+    if (row.length < 70) return row
 
     val indexOfSpace = row.indexOf(" ", 65)
     val start = row.substring(0 until indexOfSpace)
