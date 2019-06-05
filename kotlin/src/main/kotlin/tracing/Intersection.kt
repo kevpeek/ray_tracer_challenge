@@ -1,5 +1,8 @@
 package tracing
 
+import geometry.Point
+import geometry.Vector
+
 data class Intersection(val time: Double, val thing: Sphere)
 
 fun intersections(vararg intersections: Intersection) = intersections.toList()
@@ -39,3 +42,28 @@ fun intersectWorld(world: World, ray: Ray): List<Intersection> {
  * Finds the Intersection with the lowest, non-negative time value.
  */
 fun hit(intersections: List<Intersection>) = intersections.filter { it.time >= 0 }.minBy { it.time }
+
+/**
+ * Class to hold precomputed details of an Intersection.
+ */
+data class PreComputedIntersection(
+    val time: Double,
+    val thing: Sphere,
+    val inside: Boolean,
+    val point: Point,
+    val eyeVector: Vector,
+    val normalVector: Vector
+) {
+    companion object {
+        fun preComputations(intersection: Intersection, ray: Ray): PreComputedIntersection {
+            val point = ray.position(intersection.time)
+            val eyeVector = -ray.direction
+            val normalVector = intersection.thing.normalAt(point).normalize()
+
+            val inside = normalVector.dot(eyeVector) < 0
+            val actualNormal = if (inside) -normalVector else normalVector
+
+            return PreComputedIntersection(intersection.time, intersection.thing, inside, point, eyeVector, actualNormal)
+        }
+    }
+}

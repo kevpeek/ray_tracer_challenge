@@ -5,10 +5,10 @@ import geometry.Vector
 import geometry.scaling
 import geometry.translation
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.fail
 
 class IntersectionTest {
 
@@ -177,19 +177,42 @@ class IntersectionTest {
     }
 
     @Test
-    fun `todo`() {
-        fail("todo")
-        /*
-        Scenario: Precomputing the state of an intersection
-  Given r â† ray(point(0, 0, -5), vector(0, 0, 1))
-    And shape â† sphere()
-    And i â† intersection(4, shape)
-  When comps â† prepare_computations(i, r)
-  Then comps.t = i.t
-    And comps.object = i.object
-    And comps.point = point(0, 0, -1)
-    And comps.eyev = vector(0, 0, -1)
-    And comps.normalv = vector(0, 0, -1)
-        */
+    fun `Precomputing the state of an intersection`() {
+        val ray = Ray(Point(0, 0, -5), Vector(0, 0, 1))
+        val shape = Sphere()
+        val intersection = intersects(shape, ray)[0]
+
+        val comps = PreComputedIntersection.preComputations(intersection, ray)
+
+        assertEquals(intersection.time, comps.time)
+        assertEquals(intersection.thing, comps.thing)
+        assertEquals(Point(0, 0, -1), comps.point)
+        assertEquals(Vector(0, 0, -1), comps.eyeVector)
+        assertEquals(Vector(0, 0, -1), comps.normalVector)
+    }
+
+    @Test
+    fun `The hit, when an intersection occurs on the outside`() {
+        val ray = Ray(Point(0, 0, -5), Vector(0, 0, 1))
+        val shape = Sphere()
+
+        val intersect = intersects(shape, ray)[0]
+
+        val comps = PreComputedIntersection.preComputations(intersect, ray)
+        assertFalse(comps.inside)
+    }
+
+    @Test
+    fun `The hit, when an intersection occurs on the inside`() {
+        val ray = Ray(Point(0, 0, 0), Vector(0, 0, 1))
+        val shape = Sphere()
+
+        val intersect = intersects(shape, ray)[1]
+
+        val comps = PreComputedIntersection.preComputations(intersect, ray)
+        assertTrue(comps.inside)
+        assertEquals(Point(0, 0, 1), comps.point)
+        assertEquals(Vector(0, 0, -1), comps.eyeVector)
+        assertEquals(Vector(0, 0, -1), comps.normalVector)
     }
 }
