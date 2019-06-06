@@ -1,11 +1,12 @@
 package tracing
 
+import display.Color
 import geometry.Point
 import geometry.Vector
+import geometry.scaling
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.fail
 
 class WorldTest {
 
@@ -40,15 +41,61 @@ class WorldTest {
 
     @Test
     fun `Shading an intersection`() {
-        fail("todo")
-        /*
-  Given w â† default_world()
-    And r â† ray(point(0, 0, -5), vector(0, 0, 1))
-    And shape â† the first object in w
-    And i â† intersection(4, shape)
-  When comps â† prepare_computations(i, r)
-    And c â† shade_hit(w, comps)
-  Then c = color(0.38066, 0.47583, 0.2855)
-        */
+        val world = World.default()
+        val ray = Ray(Point(0, 0, -5), Vector(0, 0, 1))
+        val shape = world.objects.first()
+        val intersect = intersects(shape, ray)[0]
+
+        val comps = intersect.preComputations(ray)
+
+        val color = world.shadeHit(comps)
+        assertEquals(Color(0.38066, 0.47583, 0.2855), color)
+    }
+
+    @Test
+    fun `Shading an intersection from the inside`() {
+        val lightSource = PointLight(Point(0, 0.25, 0), Color(1, 1, 1))
+        val world = World(DEFAULT_SPHERES, lightSource)
+        val ray = Ray(Point(0, 0, 0), Vector(0, 0, 1))
+        val shape = world.objects[1]
+        val intersect = intersects(shape, ray)[1]
+
+        val comps = intersect.preComputations(ray)
+
+        val color = world.shadeHit(comps)
+        assertEquals(Color(0.90498, 0.90498, 0.90498), color)
+    }
+
+    @Test
+    fun `The color when a ray misses`() {
+        val world = World.default()
+        val ray = Ray(Point(0, 0, -5), Vector(0, 1, 0))
+
+        val color = world.colorAt(ray)
+        assertEquals(Color.BLACK, color)
+    }
+
+    @Test
+    fun `The color when a ray hits`() {
+        val world = World.default()
+        val ray = Ray(Point(0, 0, -5), Vector(0, 0, 1))
+
+        val color = world.colorAt(ray)
+        assertEquals(Color(0.38066, 0.47583, 0.28550), color)
+    }
+
+    @Test
+    fun `The color with an intersection behind the ray`() {
+        val outerSphereMaterial = Material(
+            color = Color(0.8, 1.0, 0.6), ambient = 1.0, diffuse = 0.7, specular = 0.2)
+        val outerSphere = Sphere(material = outerSphereMaterial)
+        val innerSphere = Sphere(transform = scaling(0.5, 0.5, 0.5), material = Material(ambient = 1.0))
+
+        val world = World(listOf(outerSphere, innerSphere), DEFAULT_LIGHT)
+
+        val ray = Ray(Point(0, 0, 0.75), Vector(0, 0, -1))
+
+        val color = world.colorAt(ray)
+        assertEquals(innerSphere.material.color, color)
     }
 }

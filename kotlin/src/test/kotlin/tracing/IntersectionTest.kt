@@ -182,7 +182,7 @@ class IntersectionTest {
         val shape = Sphere()
         val intersection = intersects(shape, ray)[0]
 
-        val comps = PreComputedIntersection.preComputations(intersection, ray)
+        val comps = intersection.preComputations(ray)
 
         assertEquals(intersection.time, comps.time)
         assertEquals(intersection.thing, comps.thing)
@@ -198,7 +198,7 @@ class IntersectionTest {
 
         val intersect = intersects(shape, ray)[0]
 
-        val comps = PreComputedIntersection.preComputations(intersect, ray)
+        val comps = intersect.preComputations(ray)
         assertFalse(comps.inside)
     }
 
@@ -209,7 +209,7 @@ class IntersectionTest {
 
         val intersect = intersects(shape, ray)[1]
 
-        val comps = PreComputedIntersection.preComputations(intersect, ray)
+        val comps = intersect.preComputations(ray)
         assertTrue(comps.inside)
         assertEquals(Point(0, 0, 1), comps.point)
         assertEquals(Vector(0, 0, -1), comps.eyeVector)

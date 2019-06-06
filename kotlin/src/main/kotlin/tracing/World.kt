@@ -24,8 +24,29 @@ private fun defaultSpheres(): List<Sphere> {
 }
 
 class World(val objects: List<Sphere> = emptyList(), val lightSource: PointLight = BLACK_LIGHT) {
-
     companion object {
         fun default() = World(DEFAULT_SPHERES, DEFAULT_LIGHT)
+    }
+
+    /**
+     * Calculate the color produced by firing ray at this World.
+     */
+    fun colorAt(ray: Ray): Color {
+        return hit(intersectWorld(this, ray))?.preComputations(ray)
+            ?.let(this::shadeHit)
+            ?: Color.BLACK
+    }
+
+    /**
+     * Determine the Color given a PreComputedIntersection.
+     */
+    fun shadeHit(preComputations: PreComputedIntersection): Color {
+        return lighting(
+            preComputations.thing.material,
+            lightSource,
+            preComputations.point,
+            preComputations.eyeVector,
+            preComputations.normalVector
+        )
     }
 }
