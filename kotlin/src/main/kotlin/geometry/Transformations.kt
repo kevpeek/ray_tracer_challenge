@@ -3,7 +3,7 @@ package geometry
 /**
  * Produce a transformation matrix that shifts by the supplied x, y, and z values.
  */
-fun translation(x: Int, y: Int, z: Int) =
+fun translation(x: Number, y: Number, z: Number) =
     Matrix.ofSize(4, 4).of(
         1, 0, 0, x,
         0, 1, 0, y,
@@ -65,3 +65,23 @@ fun shearing(xy: Number, xz: Number, yx: Number, yz: Number, zx: Number, zy: Num
         zx, zy, 1, 0,
         0, 0, 0, 1
     )
+
+/**
+ * Produces a transform to create a point of view looking from 'from' to 'to' with 'up' defining the
+ * upward direction.
+ */
+fun viewTransform(from: Point, to: Point, up: Vector): Matrix {
+    val forward = (to - from).normalize()
+    val normalizedUp = up.normalize()
+    val left = forward.cross(normalizedUp)
+    val trueUp = left.cross(forward)
+
+    val orientation = Matrix.square(4).of(
+        left.x, left.y, left.z, 0,
+        trueUp.x, trueUp.y, trueUp.z, 0,
+        -(forward.x), -(forward.y), -(forward.z), 0,
+        0, 0, 0, 1
+    )
+
+    return orientation * translation(-(from.x), -(from.y), -(from.z))
+}

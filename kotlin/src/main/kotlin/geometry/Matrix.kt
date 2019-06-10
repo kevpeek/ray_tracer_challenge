@@ -23,6 +23,11 @@ class Matrix(private val height: Int, private val width: Int, private val values
         fun ofSize(rows: Int, columns: Int) = MatrixBuilder(rows, columns)
 
         /**
+         * For creating square matrices.
+         */
+        fun square(size: Int) = ofSize(size, size)
+
+        /**
          * Creates an identity matrix of the specified size.
          *
          * Identity matrix: all values are zero, except for the top-left to bottom-right diagonal values

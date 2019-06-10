@@ -204,4 +204,52 @@ class MatrixTransformationTest {
 
         assertEquals(Point(15, 0, 7), combinedTransform * point)
     }
+
+    @Test
+    fun `The transformation matrix for the default orientation`() {
+        val from = Point(0, 0, 0)
+        val to = Point(0, 0, -1)
+        val up = Vector(0, 1, 0)
+
+        val result = viewTransform(from, to, up)
+        assertEquals(Matrix.identity(4), result)
+    }
+
+    @Test
+    fun `A view transformation matrix looking in positive z direction`() {
+        val from = Point(0, 0, 0)
+        val to = Point(0, 0, 1)
+        val up = Vector(0, 1, 0)
+
+        val result = viewTransform(from, to, up)
+        assertEquals(scaling(-1, 1, -1), result)
+    }
+
+    @Test
+    fun `The view transformation moves the world`() {
+        val from = Point(0, 0, 8)
+        val to = Point(0, 0, 0)
+        val up = Vector(0, 1, 0)
+
+        val result = viewTransform(from, to, up)
+        assertEquals(translation(0, 0, -8), result)
+    }
+
+    @Test
+    fun `An arbitrary view transformation`() {
+        val from = Point(1, 3, 2)
+        val to = Point(4, -2, 8)
+        val up = Vector(1, 1, 0)
+
+        val result = viewTransform(from, to, up)
+
+        val expectedResult = Matrix.ofSize(4, 4).of(
+            -0.50709, 0.50709, 0.67612, -2.36643,
+            0.76772, 0.60609, 0.12122, -2.82843,
+            -0.35857, 0.59761, -0.71714, 0,
+            0, 0, 0, 1
+        )
+
+        assertEquals(expectedResult, result)
+    }
 }
