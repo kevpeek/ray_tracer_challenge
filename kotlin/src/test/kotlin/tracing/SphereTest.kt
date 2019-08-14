@@ -8,6 +8,7 @@ import geometry.scaling
 import geometry.translation
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import kotlin.math.sqrt
 
 class SphereTest {
 
@@ -51,15 +52,15 @@ class SphereTest {
     @Test
     fun `The normal on a sphere at a nonaxial point`() {
         val sphere = Sphere()
-        val normal = sphere.normalAt(Point(Math.sqrt(3.0) / 3, Math.sqrt(3.0) / 3, Math.sqrt(3.0) / 3))
+        val normal = sphere.normalAt(Point(sqrt(3.0) / 3, sqrt(3.0) / 3, sqrt(3.0) / 3))
 
-        assertEquals(Vector(Math.sqrt(3.0) / 3, Math.sqrt(3.0) / 3, Math.sqrt(3.0) / 3), normal)
+        assertEquals(Vector(sqrt(3.0) / 3, sqrt(3.0) / 3, sqrt(3.0) / 3), normal)
     }
 
     @Test
     fun `The normal is a normalized vector`() {
         val sphere = Sphere()
-        val normal = sphere.normalAt(Point(Math.sqrt(3.0) / 3, Math.sqrt(3.0) / 3, Math.sqrt(3.0) / 3))
+        val normal = sphere.normalAt(Point(sqrt(3.0) / 3, sqrt(3.0) / 3, sqrt(3.0) / 3))
         assertEquals(normal.normalize(), normal)
     }
 
@@ -75,7 +76,7 @@ class SphereTest {
     fun `Computing the normal on a transformed sphere`() {
         val sphere = Sphere(scaling(1, 0.5, 1) * rotationZ(Math.PI / 5))
 
-        val normal = sphere.normalAt(Point(0, Math.sqrt(2.0) / 2, -Math.sqrt(2.0) / 2))
+        val normal = sphere.normalAt(Point(0, sqrt(2.0) / 2, -sqrt(2.0) / 2))
         assertEquals(Vector(0, 0.97014, -0.24254), normal)
     }
 

@@ -1,6 +1,8 @@
 package display
 
 import helper.approximately
+import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.roundToInt
 
 data class Color(val red: Double, val green: Double, val blue: Double) {
@@ -21,7 +23,7 @@ data class Color(val red: Double, val green: Double, val blue: Double) {
     }
 
     fun as255() = listOf(red, green, blue).map(this::valueTo255)
-    private fun valueTo255(value: Double) = Math.min(255, Math.max(0, (value * 255).roundToInt()))
+    private fun valueTo255(value: Double) = min(255, max(0, (value * 255).roundToInt()))
 
     operator fun plus(other: Color) = Color(red + other.red, green + other.green, blue + other.blue)
     operator fun minus(other: Color) = Color(red - other.red, green - other.green, blue - other.blue)

@@ -2,6 +2,7 @@ package tracing
 
 import geometry.Point
 import geometry.Vector
+import kotlin.math.sqrt
 
 /**
  * Precompute details about the intersection.
@@ -49,8 +50,8 @@ fun intersects(sphere: Sphere, ray: Ray): List<Intersection> {
         return emptyList()
     }
 
-    val t1 = (-b - Math.sqrt(discriminant)) / (2 * a)
-    val t2 = (-b + Math.sqrt(discriminant)) / (2 * a)
+    val t1 = (-b - sqrt(discriminant)) / (2 * a)
+    val t2 = (-b + sqrt(discriminant)) / (2 * a)
 
     return listOf(Intersection(t1, sphere), Intersection(t2, sphere))
 }

@@ -5,6 +5,7 @@ import geometry.Point
 import geometry.Vector
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import kotlin.math.sqrt
 
 class MaterialTest {
 
@@ -32,7 +33,7 @@ class MaterialTest {
 
     @Test
     fun `Lighting with the eye between light and surface, eye offset 45°`() {
-        val eyeVector = Vector(0, Math.sqrt(2.0) / 2, - Math.sqrt(2.0) / 2)
+        val eyeVector = Vector(0, sqrt(2.0) / 2, - sqrt(2.0) / 2)
         val normal = Vector(0, 0, -1)
         val light = PointLight(Point(0, 0, -10), Color(1, 1, 1))
 
@@ -52,7 +53,7 @@ class MaterialTest {
 
     @Test
     fun `Lighting with eye in the path of the reflection vector`() {
-        val eyeVector = Vector(0, -Math.sqrt(2.0) / 2, -Math.sqrt(2.0) / 2)
+        val eyeVector = Vector(0, -sqrt(2.0) / 2, -sqrt(2.0) / 2)
         val normal = Vector(0, 0, -1)
         val light = PointLight(Point(0, 10, -10), Color(1, 1, 1))
 

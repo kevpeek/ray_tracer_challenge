@@ -4,6 +4,7 @@ import display.Canvas
 import geometry.Matrix
 import geometry.Point
 import geometry.WORLD_ORIGIN
+import kotlin.math.tan
 
 class Camera(val hsize: Int, val vsize: Int, val fieldOfView: Double, val transform: Matrix = Matrix.identity(4)) {
     private val halfWidth = calculateHalfWidth()
@@ -49,14 +50,14 @@ class Camera(val hsize: Int, val vsize: Int, val fieldOfView: Double, val transf
     }
 
     private fun calculateHalfHeight(): Double {
-        val halfView = Math.tan(fieldOfView / 2)
+        val halfView = tan(fieldOfView / 2)
         val aspect = hsize.toDouble() / vsize
 
         return if (aspect >= 1) halfView / aspect else halfView
     }
 
     private fun calculateHalfWidth(): Double {
-        val halfView = Math.tan(fieldOfView / 2)
+        val halfView = tan(fieldOfView / 2)
         val aspect = hsize.toDouble() / vsize
 
         return if (aspect >= 1) halfView else halfView * aspect

@@ -3,6 +3,7 @@ package tracing
 import display.Color
 import geometry.Point
 import geometry.Vector
+import kotlin.math.pow
 
 fun lighting(material: Material, light: PointLight, position: Point, eyeVector: Vector, normal: Vector): Color {
     val ambient = ambientContribution(material, light)
@@ -42,7 +43,7 @@ private fun specularContribution(material: Material, light: PointLight, position
         if (reflectDotEye < 0) {
             Color.BLACK
         } else {
-            val factor = Math.pow(reflectDotEye, material.shininess)
+            val factor = reflectDotEye.pow(material.shininess)
             light.intensity * material.specular * factor
         }
     }

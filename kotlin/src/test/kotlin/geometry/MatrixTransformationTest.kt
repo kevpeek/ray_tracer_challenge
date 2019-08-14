@@ -2,6 +2,7 @@ package geometry
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import kotlin.math.sqrt
 
 class MatrixTransformationTest {
 
@@ -71,7 +72,7 @@ class MatrixTransformationTest {
         val halfQuarter = rotationX(Math.PI / 4)
         val fullQuarter = rotationX(Math.PI / 2)
 
-        assertEquals(Point(0, Math.sqrt(2.0) / 2, Math.sqrt(2.0) / 2), halfQuarter * point)
+        assertEquals(Point(0, sqrt(2.0) / 2, sqrt(2.0) / 2), halfQuarter * point)
         assertEquals(Point(0, 0, 1), fullQuarter * point)
     }
 
@@ -82,7 +83,7 @@ class MatrixTransformationTest {
         val halfQuarter = rotationX(Math.PI / 4)
         val inverse = halfQuarter.inverse()
 
-        assertEquals(Point(0, Math.sqrt(2.0) / 2, - Math.sqrt(2.0) / 2), inverse * point)
+        assertEquals(Point(0, sqrt(2.0) / 2, - sqrt(2.0) / 2), inverse * point)
     }
 
     @Test
@@ -92,7 +93,7 @@ class MatrixTransformationTest {
         val halfQuarter = rotationY(Math.PI / 4)
         val fullQuarter = rotationY(Math.PI / 2)
 
-        assertEquals(Point(Math.sqrt(2.0) / 2, 0, Math.sqrt(2.0) / 2), halfQuarter * point)
+        assertEquals(Point(sqrt(2.0) / 2, 0, sqrt(2.0) / 2), halfQuarter * point)
         assertEquals(Point(1, 0, 0), fullQuarter * point)
     }
 
@@ -103,7 +104,7 @@ class MatrixTransformationTest {
         val halfQuarter = rotationZ(Math.PI / 4)
         val fullQuarter = rotationZ(Math.PI / 2)
 
-        assertEquals(Point(-Math.sqrt(2.0) / 2, Math.sqrt(2.0) / 2, 0), halfQuarter * point)
+        assertEquals(Point(-sqrt(2.0) / 2, sqrt(2.0) / 2, 0), halfQuarter * point)
         assertEquals(Point(-1, 0, 0), fullQuarter * point)
     }
 

@@ -1,5 +1,8 @@
 package geometry
 
+import kotlin.math.cos
+import kotlin.math.sin
+
 /**
  * Produce a transformation matrix that shifts by the supplied x, y, and z values.
  */
@@ -28,8 +31,8 @@ fun scaling(x: Number, y: Number, z: Number) =
 fun rotationX(radians: Double) =
         Matrix.ofSize(4, 4).of(
             1, 0, 0, 0,
-            0, Math.cos(radians), -Math.sin(radians), 0,
-            0, Math.sin(radians), Math.cos(radians), 0,
+            0, cos(radians), -sin(radians), 0,
+            0, sin(radians), cos(radians), 0,
             0, 0, 0, 1
         )
 
@@ -38,9 +41,9 @@ fun rotationX(radians: Double) =
  */
 fun rotationY(radians: Double) =
     Matrix.ofSize(4, 4).of(
-        Math.cos(radians), 0, Math.sin(radians), 0,
+        cos(radians), 0, sin(radians), 0,
         0, 1, 0, 0,
-        -Math.sin(radians), 0, Math.cos(radians), 0,
+        -sin(radians), 0, cos(radians), 0,
         0, 0, 0, 1
     )
 
@@ -49,8 +52,8 @@ fun rotationY(radians: Double) =
  */
 fun rotationZ(radians: Double) =
     Matrix.ofSize(4, 4).of(
-        Math.cos(radians), -Math.sin(radians), 0, 0,
-        Math.sin(radians), Math.cos(radians), 0, 0,
+        cos(radians), -sin(radians), 0, 0,
+        sin(radians), cos(radians), 0, 0,
         0, 0, 1, 0,
         0, 0, 0, 1
     )

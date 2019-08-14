@@ -11,6 +11,7 @@ import geometry.viewTransform
 import helper.EPSILON
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import kotlin.math.sqrt
 
 class CameraTest {
 
@@ -68,7 +69,7 @@ class CameraTest {
         val ray = camera.rayForPixel(100, 50)
 
         assertEquals(Point(0, 2, -5), ray.origin)
-        assertEquals(Vector(Math.sqrt(2.0) / 2, 0, -Math.sqrt(2.0) / 2), ray.direction)
+        assertEquals(Vector(sqrt(2.0) / 2, 0, -sqrt(2.0) / 2), ray.direction)
     }
 
     @Test

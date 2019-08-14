@@ -3,6 +3,7 @@ package geometry
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
+import kotlin.math.sqrt
 
 class VectorTest {
 
@@ -123,13 +124,13 @@ class VectorTest {
     @Test
     fun `Computing the magnitude of Vector(1, 2, 3)`() {
         val vector = Vector(1.0, 2.0, 3.0)
-        Assertions.assertEquals(Math.sqrt(14.0), vector.magnitude())
+        Assertions.assertEquals(sqrt(14.0), vector.magnitude())
     }
 
     @Test
     fun `Computing the magnitude of Vector(-1, -2, -3)`() {
         val vector = Vector(-1.0, -2.0, -3.0)
-        Assertions.assertEquals(Math.sqrt(14.0), vector.magnitude())
+        Assertions.assertEquals(sqrt(14.0), vector.magnitude())
     }
 
     @Test
@@ -141,7 +142,7 @@ class VectorTest {
     @Test
     fun `Normalizing Vector(1, 2, 3)`() {
         val vector = Vector(1.0, 2.0, 3.0)
-        val sqrt14 = Math.sqrt(14.0)
+        val sqrt14 = sqrt(14.0)
         Assertions.assertEquals(Vector(1.0 / sqrt14, 2.0 / sqrt14, 3.0 / sqrt14), vector.normalize())
     }
 
@@ -184,7 +185,7 @@ class VectorTest {
     @Test
     fun `Reflecting a vector off a slanted surface`() {
         val vector = Vector(0, -1, 0)
-        val normal = Vector(Math.sqrt(2.0) / 2, Math.sqrt(2.0) / 2, 0)
+        val normal = Vector(sqrt(2.0) / 2, sqrt(2.0) / 2, 0)
 
         val reflection = vector.reflect(normal)
 

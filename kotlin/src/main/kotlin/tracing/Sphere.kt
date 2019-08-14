@@ -13,7 +13,6 @@ class Sphere(
     val origin: Point = WORLD_ORIGIN,
     val material: Material = Material.DEFAULT
 ) {
-
     /**
      * Return the Vector normal to this sphere at the supplied point.
      */
