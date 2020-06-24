@@ -1,5 +1,6 @@
 package tracing
 
+import display.Color
 import geometry.Matrix
 import geometry.Point
 import geometry.Vector
@@ -93,5 +94,26 @@ class SphereTest {
         val sphere = Sphere(material = material)
 
         assertEquals(material, sphere.material)
+    }
+
+    @Test
+    fun `withTransform returns new sphere with supplied transform`() {
+        val expectedTransform = translation(1, 2, 3)
+        val sphere = Sphere().withTransform { expectedTransform }
+        assertEquals(expectedTransform, sphere.transform)
+    }
+
+    @Test
+    fun `withOrigin returns new sphere with supplied transform`() {
+        val expectedOrigin = Point(9, 8, 7)
+        val sphere = Sphere().withOrigin(expectedOrigin)
+        assertEquals(expectedOrigin, sphere.origin)
+    }
+
+    @Test
+    fun `withMaterial returns new sphere with supplied transform`() {
+        val expectedMaterial = Material(Color.BLACK, 0.2, 0.5, 0.6, 400.0)
+        val sphere = Sphere().withMaterial(expectedMaterial)
+        assertEquals(expectedMaterial, sphere.material)
     }
 }

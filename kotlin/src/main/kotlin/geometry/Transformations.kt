@@ -29,12 +29,12 @@ fun scaling(x: Number, y: Number, z: Number) =
  * Rotation around the x-axis.
  */
 fun rotationX(radians: Double) =
-        Matrix.ofSize(4, 4).of(
-            1, 0, 0, 0,
-            0, cos(radians), -sin(radians), 0,
-            0, sin(radians), cos(radians), 0,
-            0, 0, 0, 1
-        )
+    Matrix.ofSize(4, 4).of(
+        1, 0, 0, 0,
+        0, cos(radians), -sin(radians), 0,
+        0, sin(radians), cos(radians), 0,
+        0, 0, 0, 1
+    )
 
 /**
  * Rotation around the y-axis.

@@ -1,9 +1,9 @@
 package tracing
 
 import geometry.Matrix
-import geometry.WORLD_ORIGIN
 import geometry.Point
 import geometry.Vector
+import geometry.WORLD_ORIGIN
 
 /**
  * Representation of a Sphere.
@@ -23,4 +23,8 @@ class Sphere(
         val transformToWorldSpace = transform.submatrix(3, 3).inverse().transpose()
         return (transformToWorldSpace * normalInObjectSpace).normalize()
     }
+
+    fun withTransform(otherTransform: () -> Matrix) = Sphere(otherTransform(), origin, material)
+    fun withOrigin(otherOrigin: Point) = Sphere(transform, otherOrigin, material)
+    fun withMaterial(otherMaterial: Material) = Sphere(transform, origin, otherMaterial)
 }

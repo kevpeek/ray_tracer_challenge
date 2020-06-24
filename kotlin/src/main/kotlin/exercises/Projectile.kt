@@ -1,11 +1,11 @@
 package exercises
 
-import geometry.Point
-import geometry.Vector
 import display.Canvas
 import display.Color
 import display.canvasToPpm
 import display.writePpm
+import geometry.Point
+import geometry.Vector
 
 fun main() {
     println("~~~~~Starting~~~~~")

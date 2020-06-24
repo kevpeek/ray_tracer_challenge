@@ -87,7 +87,8 @@ class WorldTest {
     @Test
     fun `The color with an intersection behind the ray`() {
         val outerSphereMaterial = Material(
-            color = Color(0.8, 1.0, 0.6), ambient = 1.0, diffuse = 0.7, specular = 0.2)
+            color = Color(0.8, 1.0, 0.6), ambient = 1.0, diffuse = 0.7, specular = 0.2
+        )
         val outerSphere = Sphere(material = outerSphereMaterial)
         val innerSphere = Sphere(transform = scaling(0.5, 0.5, 0.5), material = Material(ambient = 1.0))
 

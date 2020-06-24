@@ -32,7 +32,7 @@ class MatrixTest {
         val matrix = Matrix.ofSize(2, 2).of(
             -3, 5,
             1, -2
-            )
+        )
 
         assertEquals(-3.0, matrix[0, 0])
         assertEquals(5.0, matrix[0, 1])
@@ -152,7 +152,7 @@ class MatrixTest {
             1, 2, 4, 8,
             2, 4, 8, 16,
             4, 8, 16, 32
-            )
+        )
 
         assertEquals(matrix, matrix * Matrix.identity(4))
     }

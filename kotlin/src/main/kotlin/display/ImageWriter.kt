@@ -22,7 +22,7 @@ ${canvas.width} ${canvas.height}
 255
 
 
-""".trimIndent()
+    """.trimIndent()
 }
 
 private fun generateFooter() = "\n"

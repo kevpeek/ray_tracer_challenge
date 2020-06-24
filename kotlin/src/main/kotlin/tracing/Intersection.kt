@@ -18,8 +18,8 @@ data class PreComputedIntersection(
 
 data class Intersection(val time: Double, val thing: Sphere) {
     /**
-    * Calculate the PreComputed details.
-    */
+     * Calculate the PreComputed details.
+     */
     fun preComputations(ray: Ray): PreComputedIntersection {
         val point = ray.position(time)
         val eyeVector = -ray.direction

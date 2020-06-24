@@ -17,7 +17,8 @@ val DEFAULT_SPHERES = defaultSpheres()
  */
 private fun defaultSpheres(): List<Sphere> {
     val outerSphereMaterial = Material(
-        color = Color(0.8, 1.0, 0.6), diffuse = 0.7, specular = 0.2)
+        color = Color(0.8, 1.0, 0.6), diffuse = 0.7, specular = 0.2
+    )
     val outerSphere = Sphere(material = outerSphereMaterial)
     val innerSphere = Sphere(scaling(0.5, 0.5, 0.5))
     return listOf(outerSphere, innerSphere)
