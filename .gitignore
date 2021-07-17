@@ -1,3 +1,5 @@
+.DS_Store
+
 # Compiled class file
 *.class
 
@@ -25,3 +27,6 @@ hs_err_pid*
 kotlin/build
 kotlin/.gradle
 kotlin/.idea/workspace.xml
+
+rust/target
+rust/target/*
