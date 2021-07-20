@@ -1,8 +1,8 @@
-use crate::helper::almost;
-use std::ops::{Add, Sub};
-use crate::geometry::vector::Vector;
 use crate::geometry::matrix::Matrix;
+use crate::geometry::vector::Vector;
+use crate::helper::almost;
 use num::NumCast;
+use std::ops::{Add, Sub};
 
 #[derive(Debug, Copy, Clone)]
 pub struct Point {
@@ -17,7 +17,11 @@ impl Point {
     }
 
     pub fn at<T: NumCast>(x: T, y: T, z: T) -> Self {
-        Point {x: x.to_f64().unwrap(),y: y.to_f64().unwrap(),z: z.to_f64().unwrap()}
+        Point {
+            x: x.to_f64().unwrap(),
+            y: y.to_f64().unwrap(),
+            z: z.to_f64().unwrap(),
+        }
     }
 
     // By convention, a Point is treated as a 4x1 Matrix with a 4th element of 1.
@@ -59,21 +63,37 @@ impl Eq for Point {}
 
 #[cfg(test)]
 mod tests {
+    use crate::geometry::matrix::Matrix;
     use crate::geometry::point::Point;
     use crate::geometry::vector::Vector;
-    use crate::geometry::matrix::Matrix;
 
     #[test]
     fn test_equals_almost() {
-        let one = Point {x: 1.0, y: 2.0, z: 3.0};
-        let two = Point {x: 1.000009, y: 2.000009, z: 3.000009};
+        let one = Point {
+            x: 1.0,
+            y: 2.0,
+            z: 3.0,
+        };
+        let two = Point {
+            x: 1.000009,
+            y: 2.000009,
+            z: 3.000009,
+        };
         assert_eq!(one, two);
     }
 
     #[test]
     fn test_equals_different() {
-        let one = Point {x: 1.0, y: 2.0, z: 3.0};
-        let two = Point {x: 1.00001, y: 2.00001, z: 3.00001};
+        let one = Point {
+            x: 1.0,
+            y: 2.0,
+            z: 3.0,
+        };
+        let two = Point {
+            x: 1.00001,
+            y: 2.00001,
+            z: 3.00001,
+        };
         assert_ne!(one, two);
     }
 
@@ -100,6 +120,9 @@ mod tests {
     #[test]
     fn test_to_matrix() {
         let point = Point::at(9.0, 8.0, 7.0);
-        assert_eq!(Matrix::of_size(4, 1).of(vec![9, 8, 7, 1]), point.as_matrix());
+        assert_eq!(
+            Matrix::of_size(4, 1).of(vec![9, 8, 7, 1]),
+            point.as_matrix()
+        );
     }
 }

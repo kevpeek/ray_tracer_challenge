@@ -1,7 +1,7 @@
-use crate::helper::almost;
-use std::ops::{Add, Sub, Neg, Mul, Div};
 use crate::geometry::matrix::Matrix;
+use crate::helper::almost;
 use num::NumCast;
+use std::ops::{Add, Div, Mul, Neg, Sub};
 
 #[derive(Debug, Copy, Clone)]
 pub struct Vector {
@@ -10,11 +10,19 @@ pub struct Vector {
     pub z: f64,
 }
 
-const ZERO: Vector = Vector {x: 0., y: 0., z: 0.};
+const ZERO: Vector = Vector {
+    x: 0.,
+    y: 0.,
+    z: 0.,
+};
 
 impl Vector {
     pub fn new<T: NumCast>(x: T, y: T, z: T) -> Vector {
-        Vector {x: x.to_f64().unwrap(), y: y.to_f64().unwrap(), z: z.to_f64().unwrap()}
+        Vector {
+            x: x.to_f64().unwrap(),
+            y: y.to_f64().unwrap(),
+            z: z.to_f64().unwrap(),
+        }
     }
 
     fn magnitude(self) -> f64 {
@@ -33,7 +41,7 @@ impl Vector {
         Vector::new(
             self.y * other.z - self.z * other.y,
             self.z * other.x - self.x * other.z,
-            self.x * other.y - self.y * other.x
+            self.x * other.y - self.y * other.x,
         )
     }
 
@@ -50,7 +58,11 @@ impl Add for Vector {
     type Output = Self;
 
     fn add(self, other: Self) -> Self {
-        Self {x: self.x + other.x, y: self.y + other.y, z: self.z + other.z}
+        Self {
+            x: self.x + other.x,
+            y: self.y + other.y,
+            z: self.z + other.z,
+        }
     }
 }
 
@@ -58,7 +70,11 @@ impl Sub for Vector {
     type Output = Self;
 
     fn sub(self, other: Self) -> Self {
-        Self {x: self.x - other.x, y: self.y - other.y, z: self.z - other.z}
+        Self {
+            x: self.x - other.x,
+            y: self.y - other.y,
+            z: self.z - other.z,
+        }
     }
 }
 
@@ -74,7 +90,11 @@ impl Mul<f64> for Vector {
     type Output = Self;
 
     fn mul(self, rhs: f64) -> Self::Output {
-        Self {x: self.x * rhs, y: self.y * rhs, z: self.z * rhs }
+        Self {
+            x: self.x * rhs,
+            y: self.y * rhs,
+            z: self.z * rhs,
+        }
     }
 }
 
@@ -82,7 +102,7 @@ impl Div<f64> for Vector {
     type Output = Self;
 
     fn div(self, rhs: f64) -> Self::Output {
-        self * (1.0/rhs)
+        self * (1.0 / rhs)
     }
 }
 
@@ -99,72 +119,159 @@ mod tests {
 
     #[test]
     fn test_equals_almost() {
-        let one = Vector {x: 1.0, y: 2.0, z: 3.0};
-        let two = Vector {x: 1.000009, y: 2.000009, z: 3.000009};
+        let one = Vector {
+            x: 1.0,
+            y: 2.0,
+            z: 3.0,
+        };
+        let two = Vector {
+            x: 1.000009,
+            y: 2.000009,
+            z: 3.000009,
+        };
         assert_eq!(one, two);
     }
 
     #[test]
     fn test_equals_different() {
-        let one = Vector {x: 1.0, y: 2.0, z: 3.0};
-        let two = Vector {x: 1.00001, y: 2.00001, z: 3.00001};
+        let one = Vector {
+            x: 1.0,
+            y: 2.0,
+            z: 3.0,
+        };
+        let two = Vector {
+            x: 1.00001,
+            y: 2.00001,
+            z: 3.00001,
+        };
         assert_ne!(one, two);
     }
 
     #[test]
     fn test_add() {
-        let one = Vector {x: 1.0, y: 2.0, z: 3.0};
-        let two = Vector {x: 4.0, y: 5.0, z: 6.0};
-        let expected = Vector {x: 5.0, y: 7.0, z: 9.0};
+        let one = Vector {
+            x: 1.0,
+            y: 2.0,
+            z: 3.0,
+        };
+        let two = Vector {
+            x: 4.0,
+            y: 5.0,
+            z: 6.0,
+        };
+        let expected = Vector {
+            x: 5.0,
+            y: 7.0,
+            z: 9.0,
+        };
         assert_eq!(one + two, expected);
     }
 
     #[test]
     fn test_sub() {
-        let one = Vector {x: 5.0, y: 7.0, z: 9.0};
-        let two = Vector {x: 4.0, y: 5.0, z: 6.0};
-        let expected = Vector {x: 1.0, y: 2.0, z: 3.0};
+        let one = Vector {
+            x: 5.0,
+            y: 7.0,
+            z: 9.0,
+        };
+        let two = Vector {
+            x: 4.0,
+            y: 5.0,
+            z: 6.0,
+        };
+        let expected = Vector {
+            x: 1.0,
+            y: 2.0,
+            z: 3.0,
+        };
         assert_eq!(one - two, expected);
     }
 
     #[test]
     fn test_neg() {
-        let one = Vector {x: 1.0, y: 2.0, z: 3.0};
-        let expected = Vector {x: -1.0, y: -2.0, z: -3.0};
+        let one = Vector {
+            x: 1.0,
+            y: 2.0,
+            z: 3.0,
+        };
+        let expected = Vector {
+            x: -1.0,
+            y: -2.0,
+            z: -3.0,
+        };
         assert_eq!(-one, expected);
     }
 
     #[test]
     fn test_mul() {
-        let one = Vector {x: 1.0, y: 2.0, z: 3.0};
-        let expected = Vector {x: 2.0, y: 4.0, z: 6.0};
+        let one = Vector {
+            x: 1.0,
+            y: 2.0,
+            z: 3.0,
+        };
+        let expected = Vector {
+            x: 2.0,
+            y: 4.0,
+            z: 6.0,
+        };
         assert_eq!(one * 2.0, expected);
     }
 
     #[test]
     fn test_div() {
-        let one = Vector {x: 2.0, y: 4.0, z: 6.0};
-        let expected = Vector {x: 1.0, y: 2.0, z: 3.0};
+        let one = Vector {
+            x: 2.0,
+            y: 4.0,
+            z: 6.0,
+        };
+        let expected = Vector {
+            x: 1.0,
+            y: 2.0,
+            z: 3.0,
+        };
         assert_eq!(one / 2.0, expected);
     }
 
     #[test]
     fn test_magnitude() {
-        let one = Vector {x: 4.0, y: 4.0, z: 2.0};
+        let one = Vector {
+            x: 4.0,
+            y: 4.0,
+            z: 2.0,
+        };
         assert_eq!(one.magnitude(), 6.0);
     }
 
     #[test]
     fn test_normalize() {
-        let vector = Vector {x: 1.0, y: 2.0, z: 3.0 };
+        let vector = Vector {
+            x: 1.0,
+            y: 2.0,
+            z: 3.0,
+        };
         let sqrt14 = 14.0_f32.sqrt() as f64;
-        assert_eq!(Vector { x: 1.0 / sqrt14, y: 2.0 / sqrt14, z: 3.0 / sqrt14 }, vector.normalize());
+        assert_eq!(
+            Vector {
+                x: 1.0 / sqrt14,
+                y: 2.0 / sqrt14,
+                z: 3.0 / sqrt14
+            },
+            vector.normalize()
+        );
     }
 
     #[test]
     fn test_dot() {
-        let vector1 = Vector {x: 1.0, y: 2.0, z: 3.0};
-        let vector2 = Vector {x: 2.0, y: 3.0, z: 4.0};
+        let vector1 = Vector {
+            x: 1.0,
+            y: 2.0,
+            z: 3.0,
+        };
+        let vector2 = Vector {
+            x: 2.0,
+            y: 3.0,
+            z: 4.0,
+        };
         assert_eq!(20.0, vector1.dot(vector2));
     }
 

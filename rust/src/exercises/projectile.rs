@@ -1,21 +1,25 @@
-use crate::geometry::vector::Vector;
-use crate::geometry::point::Point;
 use crate::display::canvas::Canvas;
-use crate::display::writer::write_canvas;
 use crate::display::color::Color;
+use crate::display::writer::write_canvas;
+use crate::geometry::point::Point;
+use crate::geometry::vector::Vector;
 
 pub fn run() {
     let gravity = Vector::new(0.0, -0.1, 0.0);
     let wind = Vector::new(-0.01, 0.0, 0.0);
     let environment = (gravity, wind);
-    let projectile = (Point::at(0.0, 0.0, 0.0), Vector::new(1.0, 1.0, 0.0).normalize());
+    let projectile = (
+        Point::at(0.0, 0.0, 0.0),
+        Vector::new(1.0, 1.0, 0.0).normalize(),
+    );
 
     let points = iterate(vec![projectile], environment);
 
     let width = 200;
     let height = 200;
     let mut canvas = Canvas::new(width, height);
-    points.iter()
+    points
+        .iter()
         .map(|(point, _)| *point)
         .map(|point| ((point.x * 10.0) as usize, (point.y * 10.0) as usize))
         .map(|(x, y)| (x, height - y - 1))
@@ -30,7 +34,7 @@ fn iterate(mut path: Vec<(Point, Vector)>, environment: (Vector, Vector)) -> Vec
 
     let new_location = *location + *velocity;
     if (new_location.y < 0.0) {
-        return path
+        return path;
     }
 
     let new_velocity = *velocity + gravity + wind;

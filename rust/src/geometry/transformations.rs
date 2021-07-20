@@ -1,19 +1,29 @@
-use num::NumCast;
 use crate::geometry::matrix::Matrix;
 use crate::geometry::point::Point;
 use crate::geometry::vector::Vector;
-
-
+use num::NumCast;
 
 /**
  * Produce a transformation matrix that shifts by the supplied x, y, and z letues.
  */
 pub fn translation<T: NumCast>(x: T, y: T, z: T) -> Matrix {
     Matrix::of_size(4, 4).of(vec![
-        1.0, 0.0, 0.0, x.to_f64().unwrap(),
-        0.0, 1.0, 0.0, y.to_f64().unwrap(),
-        0.0, 0.0, 1.0, z.to_f64().unwrap(),
-        0.0, 0.0, 0.0, 1.0
+        1.0,
+        0.0,
+        0.0,
+        x.to_f64().unwrap(),
+        0.0,
+        1.0,
+        0.0,
+        y.to_f64().unwrap(),
+        0.0,
+        0.0,
+        1.0,
+        z.to_f64().unwrap(),
+        0.0,
+        0.0,
+        0.0,
+        1.0,
     ])
 }
 
@@ -22,10 +32,23 @@ pub fn translation<T: NumCast>(x: T, y: T, z: T) -> Matrix {
  */
 fn scaling<T: NumCast>(x: T, y: T, z: T) -> Matrix {
     Matrix::of_size(4, 4).of(vec![
-        x.to_f64().unwrap(), 0.0, 0.0, 0.0,
-        0.0, y.to_f64().unwrap(), 0.0, 0.0,
-        0.0, 0.0, z.to_f64().unwrap(), 0.0,
-        0.0, 0.0, 0.0, 1.0])
+        x.to_f64().unwrap(),
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        y.to_f64().unwrap(),
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        z.to_f64().unwrap(),
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+    ])
 }
 
 /**
@@ -33,10 +56,22 @@ fn scaling<T: NumCast>(x: T, y: T, z: T) -> Matrix {
  */
 fn rotation_x(radians: f64) -> Matrix {
     Matrix::of_size(4, 4).of(vec![
-        1.0, 0.0, 0.0, 0.0,
-        0.0, radians.cos(), - radians.sin(), 0.0,
-        0.0, radians.sin(), radians.cos(), 0.0,
-        0.0, 0.0, 0.0, 1.0
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        radians.cos(),
+        -radians.sin(),
+        0.0,
+        0.0,
+        radians.sin(),
+        radians.cos(),
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
     ])
 }
 
@@ -45,10 +80,22 @@ fn rotation_x(radians: f64) -> Matrix {
  */
 fn rotation_y(radians: f64) -> Matrix {
     Matrix::of_size(4, 4).of(vec![
-        radians.cos(), 0.0, radians.sin(), 0.0,
-        0.0, 1.0, 0.0, 0.0,
-        - radians.sin(), 0.0, radians.cos(), 0.0,
-        0.0, 0.0, 0.0, 1.0
+        radians.cos(),
+        0.0,
+        radians.sin(),
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        -radians.sin(),
+        0.0,
+        radians.cos(),
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
     ])
 }
 
@@ -57,10 +104,22 @@ fn rotation_y(radians: f64) -> Matrix {
  */
 fn rotation_z(radians: f64) -> Matrix {
     Matrix::of_size(4, 4).of(vec![
-        radians.cos(), - radians.sin(), 0.0, 0.0,
-        radians.sin(), radians.cos(), 0.0, 0.0,
-        0.0, 0.0, 1.0, 0.0,
-        0.0, 0.0, 0.0, 1.0
+        radians.cos(),
+        -radians.sin(),
+        0.0,
+        0.0,
+        radians.sin(),
+        radians.cos(),
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
     ])
 }
 
@@ -69,10 +128,22 @@ fn rotation_z(radians: f64) -> Matrix {
  */
 fn shearing<T: NumCast>(xy: T, xz: T, yx: T, yz: T, zx: T, zy: T) -> Matrix {
     Matrix::of_size(4, 4).of(vec![
-        1.0, xy.to_f64().unwrap(), xz.to_f64().unwrap(), 0.0,
-        yx.to_f64().unwrap(), 1.0, yz.to_f64().unwrap(), 0.0,
-        zx.to_f64().unwrap(), zy.to_f64().unwrap(), 1.0, 0.0,
-        0.0, 0.0, 0.0, 1.0
+        1.0,
+        xy.to_f64().unwrap(),
+        xz.to_f64().unwrap(),
+        0.0,
+        yx.to_f64().unwrap(),
+        1.0,
+        yz.to_f64().unwrap(),
+        0.0,
+        zx.to_f64().unwrap(),
+        zy.to_f64().unwrap(),
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
     ])
 }
 
@@ -87,10 +158,22 @@ fn view_transform(from: Point, to: Point, up: Vector) -> Matrix {
     let trueUp = left.cross(forward);
 
     let orientation = Matrix::square(4).of(vec![
-        left.x, left.y, left.z, 0.0,
-        trueUp.x, trueUp.y, trueUp.z, 0.0,
-        -(forward.x), -(forward.y), -(forward.z), 0.0,
-        0.0, 0.0, 0.0, 1.0
+        left.x,
+        left.y,
+        left.z,
+        0.0,
+        trueUp.x,
+        trueUp.y,
+        trueUp.z,
+        0.0,
+        -(forward.x),
+        -(forward.y),
+        -(forward.z),
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
     ]);
 
     &orientation * &translation(-(from.x), -(from.y), -(from.z))
@@ -98,11 +181,13 @@ fn view_transform(from: Point, to: Point, up: Vector) -> Matrix {
 
 #[cfg(test)]
 mod tests {
-    use crate::geometry::point::Point;
-    use crate::geometry::vector::Vector;
     use crate::geometry::matrix::Matrix;
+    use crate::geometry::point::Point;
+    use crate::geometry::transformations::{
+        rotation_x, rotation_y, rotation_z, scaling, shearing, translation, view_transform,
+    };
+    use crate::geometry::vector::Vector;
     use std::f64::consts::PI;
-    use crate::geometry::transformations::{translation, scaling, rotation_x, rotation_y, rotation_z, shearing, view_transform};
 
     #[test]
     fn multiplying_a_translation_matrix() {
@@ -170,7 +255,10 @@ mod tests {
         let half_quarter = rotation_x(PI / 4.0);
         let full_quarter = rotation_x(PI / 2.0);
 
-        assert_eq!(Point::at(0.0, 2.0_f64.sqrt() / 2.0, 2.0_f64.sqrt() / 2.0), &half_quarter * point);
+        assert_eq!(
+            Point::at(0.0, 2.0_f64.sqrt() / 2.0, 2.0_f64.sqrt() / 2.0),
+            &half_quarter * point
+        );
         assert_eq!(Point::at(0.0, 0.0, 1.0), &full_quarter * point);
     }
 
@@ -181,7 +269,10 @@ mod tests {
         let half_quarter = rotation_x(PI / 4.0);
         let inverse = half_quarter.inverse();
 
-        assert_eq!(Point::at(0.0, 2.0_f64.sqrt() / 2.0, - 2.0_f64.sqrt() / 2.0), &inverse * point);
+        assert_eq!(
+            Point::at(0.0, 2.0_f64.sqrt() / 2.0, -2.0_f64.sqrt() / 2.0),
+            &inverse * point
+        );
     }
 
     #[test]
@@ -191,7 +282,10 @@ mod tests {
         let half_quarter = rotation_y(PI / 4.0);
         let full_quarter = rotation_y(PI / 2.0);
 
-        assert_eq!(Point::at(2.0_f64.sqrt() / 2.0, 0.0, 2.0_f64.sqrt() / 2.0), &half_quarter * point);
+        assert_eq!(
+            Point::at(2.0_f64.sqrt() / 2.0, 0.0, 2.0_f64.sqrt() / 2.0),
+            &half_quarter * point
+        );
         assert_eq!(Point::at(1, 0, 0), &full_quarter * point);
     }
 
@@ -202,7 +296,10 @@ mod tests {
         let half_quarter = rotation_z(PI / 4.0);
         let full_quarter = rotation_z(PI / 2.0);
 
-        assert_eq!(Point::at(-(2.0_f64.sqrt()) / 2.0, 2.0_f64.sqrt() / 2.0, 0.0), &half_quarter * point);
+        assert_eq!(
+            Point::at(-(2.0_f64.sqrt()) / 2.0, 2.0_f64.sqrt() / 2.0, 0.0),
+            &half_quarter * point
+        );
         assert_eq!(Point::at(-1, 0, 0), &full_quarter * point);
     }
 
@@ -343,10 +440,8 @@ mod tests {
         let result = view_transform(from, to, up);
 
         let expected_result = Matrix::of_size(4, 4).of(vec![
-            -0.50709, 0.50709, 0.67612, -2.36643,
-            0.76772, 0.60609, 0.12122, -2.82843,
-            -0.35857, 0.59761, -0.71714, 0.0,
-            0.0, 0.0, 0.0, 1.0
+            -0.50709, 0.50709, 0.67612, -2.36643, 0.76772, 0.60609, 0.12122, -2.82843, -0.35857,
+            0.59761, -0.71714, 0.0, 0.0, 0.0, 0.0, 1.0,
         ]);
 
         assert_eq!(expected_result, result);

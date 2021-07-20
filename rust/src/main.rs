@@ -1,7 +1,7 @@
-mod geometry;
 mod display;
-mod helper;
 mod exercises;
+mod geometry;
+mod helper;
 mod tracing;
 
 fn main() {
