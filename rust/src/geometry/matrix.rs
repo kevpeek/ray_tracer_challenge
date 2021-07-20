@@ -90,7 +90,7 @@ impl Matrix {
         self.determinant() != 0.0
     }
 
-    fn inverse(&self) -> Matrix {
+    pub fn inverse(&self) -> Matrix {
         if !self.invertible() {
             panic!("Attempt to invert a non-invertible matrix{:?}", self);
         }
@@ -98,6 +98,15 @@ impl Matrix {
         let inverse_values: Vec<f64> = enumerate_coordinates(0..self.width, 0..self.height).iter()
             .map(|(c, r)| self.cofactor(*r, *c) / determinant).collect();
         Matrix::of_size(self.height, self.width).of(inverse_values)
+    }
+
+    /**
+     * Helper for combining matrix transformations.
+     *
+     * A.then(B) will return B * A, which is the combined transformation to apply A and then B.
+     */
+    pub fn then(&self, next_transform: &Matrix) -> Matrix {
+        next_transform * self
     }
 }
 
@@ -149,8 +158,8 @@ impl PartialEq for Matrix {
 impl Eq for Matrix {}
 
 pub struct MatrixBuilder {
-    width: usize,
     height: usize,
+    width: usize,
 }
 
 impl MatrixBuilder {

@@ -1,6 +1,7 @@
 use crate::helper::almost;
 use std::ops::{Add, Sub, Neg, Mul, Div};
 use crate::geometry::matrix::Matrix;
+use num::NumCast;
 
 #[derive(Debug, Copy, Clone)]
 pub struct Vector {
@@ -12,15 +13,15 @@ pub struct Vector {
 const ZERO: Vector = Vector {x: 0., y: 0., z: 0.};
 
 impl Vector {
-    pub fn new(x: f64, y: f64, z: f64) -> Vector {
-        Vector {x,y,z}
+    pub fn new<T: NumCast>(x: T, y: T, z: T) -> Vector {
+        Vector {x: x.to_f64().unwrap(), y: y.to_f64().unwrap(), z: z.to_f64().unwrap()}
     }
 
     fn magnitude(self) -> f64 {
         (self.x * self.x + self.y * self.y + self.z * self.z).sqrt()
     }
 
-    fn normalize(self) -> Self {
+    pub fn normalize(self) -> Self {
         self / self.magnitude()
     }
 
@@ -28,7 +29,7 @@ impl Vector {
         self.x * other.x + self.y * other.y + self.z * other.z
     }
 
-    fn cross(self, other: Self) -> Self {
+    pub fn cross(self, other: Self) -> Self {
         Vector::new(
             self.y * other.z - self.z * other.y,
             self.z * other.x - self.x * other.z,

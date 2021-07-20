@@ -2,6 +2,7 @@ use crate::helper::almost;
 use std::ops::{Add, Sub};
 use crate::geometry::vector::Vector;
 use crate::geometry::matrix::Matrix;
+use num::NumCast;
 
 #[derive(Debug, Copy, Clone)]
 pub struct Point {
@@ -15,8 +16,8 @@ impl Point {
         Point::at(0.0, 0.0, 0.0)
     }
 
-    pub fn at(x: f64, y: f64, z: f64) -> Self {
-        Point {x,y,z}
+    pub fn at<T: NumCast>(x: T, y: T, z: T) -> Self {
+        Point {x: x.to_f64().unwrap(),y: y.to_f64().unwrap(),z: z.to_f64().unwrap()}
     }
 
     // By convention, a Point is treated as a 4x1 Matrix with a 4th element of 1.
