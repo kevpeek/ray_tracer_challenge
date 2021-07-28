@@ -33,7 +33,7 @@ fn iterate(mut path: Vec<(Point, Vector)>, environment: (Vector, Vector)) -> Vec
     let (gravity, wind) = environment;
 
     let new_location = *location + *velocity;
-    if (new_location.y < 0.0) {
+    if new_location.y < 0.0 {
         return path;
     }
 

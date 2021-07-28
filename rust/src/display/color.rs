@@ -1,4 +1,5 @@
 use crate::helper::almost;
+use num::NumCast;
 use std::cmp::{max, min};
 use std::ops::{Add, Mul, Sub};
 
@@ -36,8 +37,12 @@ impl Color {
         blue: 1.,
     };
 
-    pub fn new(red: f64, green: f64, blue: f64) -> Self {
-        Color { red, green, blue }
+    pub fn new<T: NumCast>(red: T, green: T, blue: T) -> Self {
+        Color {
+            red: red.to_f64().unwrap(),
+            green: green.to_f64().unwrap(),
+            blue: blue.to_f64().unwrap(),
+        }
     }
 
     pub fn to255(self) -> (u64, u64, u64) {

@@ -1,5 +1,4 @@
 use crate::display::color::Color;
-use crate::helper::enumerate_coordinates;
 
 pub struct Canvas {
     pub width: usize,
@@ -14,19 +13,6 @@ impl Canvas {
             height,
             pixels: vec![Color::BLACK; width * height],
         }
-    }
-
-    pub fn checker_square(size: usize) -> Canvas {
-        let mut canvas = Canvas::new(size, size);
-        enumerate_coordinates(0..size, 0..size)
-            .into_iter()
-            .map(|(x, y)| match x % 2 == y % 2 {
-                false => (x, y, Color::GREEN),
-                true => (x, y, Color::BLUE),
-            })
-            .for_each(|(x, y, color)| canvas.write_pixel(x, y, color));
-
-        canvas
     }
 
     pub fn rows(&self) -> Vec<Vec<Color>> {

@@ -33,7 +33,7 @@ impl Vector {
         self / self.magnitude()
     }
 
-    fn dot(self, other: Self) -> f64 {
+    pub fn dot(self, other: Self) -> f64 {
         self.x * other.x + self.y * other.y + self.z * other.z
     }
 
@@ -45,7 +45,7 @@ impl Vector {
         )
     }
 
-    fn reflect(self, normal: Self) -> Self {
+    pub fn reflect(self, normal: Self) -> Self {
         self - normal * 2.0 * self.dot(normal)
     }
 

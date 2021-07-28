@@ -30,7 +30,7 @@ pub fn translation<T: NumCast>(x: T, y: T, z: T) -> Matrix {
 /**
  * A transformation that grows or shrinks an object.
  */
-fn scaling<T: NumCast>(x: T, y: T, z: T) -> Matrix {
+pub fn scaling<T: NumCast>(x: T, y: T, z: T) -> Matrix {
     Matrix::of_size(4, 4).of(vec![
         x.to_f64().unwrap(),
         0.0,
@@ -54,7 +54,7 @@ fn scaling<T: NumCast>(x: T, y: T, z: T) -> Matrix {
 /**
  * Rotation around the x-axis.
  */
-fn rotation_x(radians: f64) -> Matrix {
+pub fn rotation_x(radians: f64) -> Matrix {
     Matrix::of_size(4, 4).of(vec![
         1.0,
         0.0,
@@ -78,7 +78,7 @@ fn rotation_x(radians: f64) -> Matrix {
 /**
  * Rotation around the y-axis.
  */
-fn rotation_y(radians: f64) -> Matrix {
+pub fn rotation_y(radians: f64) -> Matrix {
     Matrix::of_size(4, 4).of(vec![
         radians.cos(),
         0.0,
@@ -102,7 +102,7 @@ fn rotation_y(radians: f64) -> Matrix {
 /**
  * Rotation around the z-axis.
  */
-fn rotation_z(radians: f64) -> Matrix {
+pub fn rotation_z(radians: f64) -> Matrix {
     Matrix::of_size(4, 4).of(vec![
         radians.cos(),
         -radians.sin(),
@@ -126,7 +126,7 @@ fn rotation_z(radians: f64) -> Matrix {
 /**
  * Causes an object to....slant, I guess?
  */
-fn shearing<T: NumCast>(xy: T, xz: T, yx: T, yz: T, zx: T, zy: T) -> Matrix {
+pub fn shearing<T: NumCast>(xy: T, xz: T, yx: T, yz: T, zx: T, zy: T) -> Matrix {
     Matrix::of_size(4, 4).of(vec![
         1.0,
         xy.to_f64().unwrap(),
@@ -151,20 +151,20 @@ fn shearing<T: NumCast>(xy: T, xz: T, yx: T, yz: T, zx: T, zy: T) -> Matrix {
  * Produces a transform to create a point of view looking from 'from' to 'to' with 'up' defining the
  * upward direction.
  */
-fn view_transform(from: Point, to: Point, up: Vector) -> Matrix {
+pub fn view_transform(from: Point, to: Point, up: Vector) -> Matrix {
     let forward = (to - from).normalize();
-    let normalizedUp = up.normalize();
-    let left = forward.cross(normalizedUp);
-    let trueUp = left.cross(forward);
+    let normalized_up = up.normalize();
+    let left = forward.cross(normalized_up);
+    let true_up = left.cross(forward);
 
     let orientation = Matrix::square(4).of(vec![
         left.x,
         left.y,
         left.z,
         0.0,
-        trueUp.x,
-        trueUp.y,
-        trueUp.z,
+        true_up.x,
+        true_up.y,
+        true_up.z,
         0.0,
         -(forward.x),
         -(forward.y),

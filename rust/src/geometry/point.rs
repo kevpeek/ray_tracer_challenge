@@ -69,11 +69,7 @@ mod tests {
 
     #[test]
     fn test_equals_almost() {
-        let one = Point {
-            x: 1.0,
-            y: 2.0,
-            z: 3.0,
-        };
+        let one = Point::at(1, 2, 3);
         let two = Point {
             x: 1.000009,
             y: 2.000009,
