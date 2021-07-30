@@ -45,6 +45,10 @@ impl Sphere {
     pub fn origin(&self) -> Point {
         self.origin
     }
+
+    pub fn material(&self) -> &Material {
+        &self.material
+    }
 }
 
 #[cfg(test)]

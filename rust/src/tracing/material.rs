@@ -150,6 +150,10 @@ impl Material {
             shininess,
         )
     }
+
+    pub fn color(&self) -> &Color {
+        &self.color
+    }
 }
 
 impl PartialEq for Material {

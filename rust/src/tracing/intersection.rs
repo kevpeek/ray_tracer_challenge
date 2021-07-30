@@ -8,12 +8,12 @@ use crate::tracing::world::World;
  * Precompute details about the intersection.
  */
 pub struct PreComputedIntersection {
-    time: f64,
-    thing: Sphere,
-    inside: bool,
-    point: Point,
-    eye_vector: Vector,
-    normal_vector: Vector,
+    pub time: f64,
+    pub thing: Sphere,
+    pub inside: bool,
+    pub point: Point,
+    pub eye_vector: Vector,
+    pub normal_vector: Vector,
 }
 
 #[derive(Debug, PartialEq, Clone)]
@@ -34,7 +34,7 @@ impl Intersection {
     /**
      * Calculate the PreComputed details.
      */
-    fn preComputations(&self, ray: Ray) -> PreComputedIntersection {
+    pub fn preComputations(&self, ray: &Ray) -> PreComputedIntersection {
         let point = ray.position(self.time);
         let eye_vector = -ray.direction();
         let normal_vector = self.thing.normalAt(point).normalize();
@@ -269,7 +269,7 @@ mod tests {
         let shape = Sphere::default();
         let intersection = &intersects(shape, &ray)[0];
 
-        let comps = intersection.preComputations(ray);
+        let comps = intersection.preComputations(&ray);
 
         assert_eq!(intersection.time, comps.time);
         assert_eq!(intersection.thing, comps.thing);
@@ -285,7 +285,7 @@ mod tests {
 
         let intersect = &intersects(shape, &ray)[0];
 
-        let comps = intersect.preComputations(ray);
+        let comps = intersect.preComputations(&ray);
         assert!(!comps.inside);
     }
 
@@ -296,7 +296,7 @@ mod tests {
 
         let intersect = &intersects(shape, &ray)[1];
 
-        let comps = intersect.preComputations(ray);
+        let comps = intersect.preComputations(&ray);
         assert!(comps.inside);
         assert_eq!(Point::at(0, 0, 1), comps.point);
         assert_eq!(Vector::new(0, 0, -1), comps.eye_vector);
