@@ -2,8 +2,10 @@ use crate::display::color::Color;
 use crate::geometry::matrix::Matrix;
 use crate::geometry::point::Point;
 use crate::geometry::transformations::scaling;
-use crate::tracing::intersection::{intersects, Intersection, PreComputedIntersection, hit, intersectWorld};
-use crate::tracing::material::{Material, lighting};
+use crate::tracing::intersection::{
+    hit, intersectWorld, intersects, Intersection, PreComputedIntersection,
+};
+use crate::tracing::material::{lighting, Material};
 use crate::tracing::point_light::PointLight;
 use crate::tracing::ray::Ray;
 use crate::tracing::sphere::Sphere;
@@ -43,7 +45,7 @@ impl World {
             &self.light_source,
             preComputations.point,
             preComputations.eye_vector,
-            preComputations.normal_vector
+            preComputations.normal_vector,
         )
     }
 
@@ -84,12 +86,12 @@ mod tests {
     use crate::geometry::point::Point;
     use crate::geometry::transformations::scaling;
     use crate::geometry::vector::Vector;
+    use crate::tracing::intersection::{intersectWorld, intersects};
     use crate::tracing::material::Material;
     use crate::tracing::point_light::PointLight;
     use crate::tracing::ray::Ray;
     use crate::tracing::sphere::Sphere;
     use crate::tracing::world::{defaultSpheres, World};
-    use crate::tracing::intersection::{intersectWorld, intersects};
 
     #[test]
     fn creating_a_world() {
@@ -172,7 +174,10 @@ mod tests {
         let material = Material::default().with_ambient(1.0);
         let inner_sphere = Sphere::new(Point::origin(), material, scaling(0.5, 0.5, 0.5));
 
-        let world = World::new(vec![outerSphere.clone(), inner_sphere.clone()], PointLight::default());
+        let world = World::new(
+            vec![outerSphere.clone(), inner_sphere.clone()],
+            PointLight::default(),
+        );
 
         let ray = Ray::new(Point::at(0.0, 0.0, 0.75), Vector::new(0, 0, -1));
 
