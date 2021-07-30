@@ -1,6 +1,9 @@
 use crate::geometry::matrix::Matrix;
 use crate::geometry::point::Point;
 use crate::tracing::ray::Ray;
+use crate::tracing::world::World;
+use crate::display::canvas::Canvas;
+use crate::helper::enumerate_coordinates;
 
 pub struct Camera {
     hsize: usize,
@@ -19,7 +22,20 @@ impl Camera {
         }
     }
 
-    fn ray_for_pixel(&self, x: usize, y: usize) -> Ray {
+    /**
+     * Produce the image of the world as seen from this camera.
+     */
+    pub(crate) fn render(&self, world: World) -> Canvas {
+        let mut canvas = Canvas::new(self.hsize, self.vsize);
+        enumerate_coordinates(0..self.hsize, 0..self.vsize).iter()
+            .map(|(x, y)| (*x, *y, self.ray_for_pixel(*x, *y)))
+            .map(|(x, y, ray)| (x, y, world.color_at(&ray)))
+            .for_each(|(x, y, color)| canvas.write_pixel(x, y, color));
+
+         canvas
+    }
+
+fn ray_for_pixel(&self, x: usize, y: usize) -> Ray {
         // the offset from the edge of the canas to the pixel's center
         let x_offset = (x as f64 + 0.5) * self.pixel_size();
         let y_offset = (y as f64 + 0.5) * self.pixel_size();

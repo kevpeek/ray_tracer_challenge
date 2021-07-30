@@ -52,7 +52,7 @@ impl World {
     /**
      * Calculate the color produced by firing ray at this World.
      */
-    fn color_at(&self, ray: &Ray) -> Color {
+    pub fn color_at(&self, ray: &Ray) -> Color {
         let intersections = &self.intersected_by(ray);
         let hit = hit(intersections);
         match hit {

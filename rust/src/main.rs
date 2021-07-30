@@ -5,5 +5,5 @@ mod helper;
 mod tracing;
 
 fn main() {
-    exercises::projectile::run()
+    exercises::first_world::run()
 }

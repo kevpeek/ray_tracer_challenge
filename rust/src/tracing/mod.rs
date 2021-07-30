@@ -1,7 +1,8 @@
-mod camera;
-mod intersection;
-mod material;
-mod point_light;
-mod ray;
-mod sphere;
-mod world;
+pub mod camera;
+pub mod intersection;
+pub mod material;
+pub mod point_light;
+pub mod ray;
+pub mod sphere;
+pub mod world;
+
