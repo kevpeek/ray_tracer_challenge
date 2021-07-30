@@ -20,7 +20,11 @@ impl Sphere {
     }
 
     pub fn new(origin: Point, material: Material, transform: Matrix) -> Sphere {
-        Sphere {transform, origin, material }
+        Sphere {
+            transform,
+            origin,
+            material,
+        }
     }
 
     /**
@@ -34,7 +38,7 @@ impl Sphere {
         (&transformToWorldSpace * normalInObjectSpace).normalize()
     }
 
-    pub fn transform(&self) ->&Matrix {
+    pub fn transform(&self) -> &Matrix {
         &self.transform
     }
 

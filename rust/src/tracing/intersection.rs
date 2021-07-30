@@ -1,19 +1,19 @@
-use crate::tracing::sphere::Sphere;
 use crate::geometry::point::Point;
 use crate::geometry::vector::Vector;
 use crate::tracing::ray::Ray;
+use crate::tracing::sphere::Sphere;
 use crate::tracing::world::World;
 
 /**
  * Precompute details about the intersection.
  */
-pub struct  PreComputedIntersection {
+pub struct PreComputedIntersection {
     time: f64,
     thing: Sphere,
     inside: bool,
     point: Point,
     eye_vector: Vector,
-    normal_vector: Vector
+    normal_vector: Vector,
 }
 
 #[derive(Debug, PartialEq, Clone)]
@@ -40,7 +40,11 @@ impl Intersection {
         let normal_vector = self.thing.normalAt(point).normalize();
 
         let inside = normal_vector.dot(eye_vector) < 0.0;
-        let actual_normal = if inside {-normal_vector } else { normal_vector };
+        let actual_normal = if inside {
+            -normal_vector
+        } else {
+            normal_vector
+        };
 
         PreComputedIntersection {
             time: self.time,
@@ -48,7 +52,7 @@ impl Intersection {
             inside,
             point,
             eye_vector,
-            normal_vector: actual_normal
+            normal_vector: actual_normal,
         }
     }
 }
@@ -66,13 +70,16 @@ pub fn intersects(sphere: Sphere, ray: &Ray) -> Vec<Intersection> {
     let discriminant = b * b - 4.0 * a * c;
 
     if discriminant < 0.0 {
-        return Vec::new()
+        return Vec::new();
     }
 
     let t1 = (-b - discriminant.sqrt()) / (2.0 * a);
     let t2 = (-b + discriminant.sqrt()) / (2.0 * a);
 
-    vec![Intersection::new(t1, sphere.clone()), Intersection::new(t2, sphere)]
+    vec![
+        Intersection::new(t1, sphere.clone()),
+        Intersection::new(t2, sphere),
+    ]
 }
 
 /**
@@ -88,28 +95,29 @@ pub fn intersectWorld(world: World, ray: &Ray) -> Vec<Intersection> {
  * Finds the Intersection with the lowest, non-negative time letue.
  */
 pub fn hit(intersections: &Vec<Intersection>) -> Option<&Intersection> {
-    intersections.iter()
+    intersections
+        .iter()
         .filter(|it| it.time >= 0.0)
         .min_by(|a, b| a.time.partial_cmp(&b.time).unwrap())
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::geometry::vector::Vector;
     use crate::geometry::point::Point;
-    use crate::tracing::intersection::{intersects, Intersection, hit};
-    use crate::tracing::sphere::Sphere;
-    use crate::tracing::ray::Ray;
     use crate::geometry::transformations::{scaling, translation};
+    use crate::geometry::vector::Vector;
+    use crate::tracing::intersection::{hit, intersects, Intersection};
     use crate::tracing::material::Material;
+    use crate::tracing::ray::Ray;
+    use crate::tracing::sphere::Sphere;
 
     #[test]
     fn a_ray_intersects_sphere_at_two_points() {
         let ray = Ray::new(Point::at(0, 0, -5), Vector::new(0, 0, 1));
         let sphere = Sphere::default();
-        
+
         let intersections = intersects(sphere, &ray);
-        
+
         assert_eq!(2, intersections.len());
         assert_eq!(4.0, intersections[0].time);
         assert_eq!(6.0, intersections[1].time);
@@ -238,9 +246,9 @@ mod tests {
     fn intersecting_scaled_sphere_with_ray() {
         let ray = Ray::new(Point::at(0, 0, -5), Vector::new(0, 0, 1));
         let sphere = Sphere::new(Point::origin(), Material::default(), scaling(2, 2, 2));
-        
+
         let intersections = intersects(sphere, &ray);
-        
+
         assert_eq!(2, intersections.len());
         assert_eq!(3.0, intersections[0].time);
         assert_eq!(7.0, intersections[1].time);
@@ -250,7 +258,7 @@ mod tests {
     fn intersecting_translated_sphere_with_ray() {
         let ray = Ray::new(Point::at(0, 0, -5), Vector::new(0, 0, 1));
         let sphere = Sphere::new(Point::origin(), Material::default(), translation(5, 0, 0));
-        
+
         let intersections = intersects(sphere, &ray);
         assert!(intersections.is_empty());
     }
@@ -260,9 +268,9 @@ mod tests {
         let ray = Ray::new(Point::at(0, 0, -5), Vector::new(0, 0, 1));
         let shape = Sphere::default();
         let intersection = &intersects(shape, &ray)[0];
-        
+
         let comps = intersection.preComputations(ray);
-        
+
         assert_eq!(intersection.time, comps.time);
         assert_eq!(intersection.thing, comps.thing);
         assert_eq!(Point::at(0, 0, -1), comps.point);
@@ -274,9 +282,9 @@ mod tests {
     fn hit_when_intersection_occurs_on_the_outside() {
         let ray = Ray::new(Point::at(0, 0, -5), Vector::new(0, 0, 1));
         let shape = Sphere::default();
-        
+
         let intersect = &intersects(shape, &ray)[0];
-        
+
         let comps = intersect.preComputations(ray);
         assert!(!comps.inside);
     }
@@ -285,9 +293,9 @@ mod tests {
     fn the_hit_when_an_intersection_occurs_on_the_inside() {
         let ray = Ray::new(Point::at(0, 0, 0), Vector::new(0, 0, 1));
         let shape = Sphere::default();
-        
+
         let intersect = &intersects(shape, &ray)[1];
-        
+
         let comps = intersect.preComputations(ray);
         assert!(comps.inside);
         assert_eq!(Point::at(0, 0, 1), comps.point);

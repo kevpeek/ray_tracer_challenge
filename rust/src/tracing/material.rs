@@ -85,28 +85,70 @@ impl Material {
         }
     }
 
-    pub fn new(color: Color, ambient: f64, diffuse: f64, specular: f64, shininess: f64) -> Material {
-        Material { color, ambient, diffuse, specular, shininess }
+    pub fn new(
+        color: Color,
+        ambient: f64,
+        diffuse: f64,
+        specular: f64,
+        shininess: f64,
+    ) -> Material {
+        Material {
+            color,
+            ambient,
+            diffuse,
+            specular,
+            shininess,
+        }
     }
 
     pub fn with_color(&self, color: Color) -> Material {
-        Material::new(color, self.ambient, self.diffuse, self.specular, self.shininess)
+        Material::new(
+            color,
+            self.ambient,
+            self.diffuse,
+            self.specular,
+            self.shininess,
+        )
     }
 
     pub fn with_ambient(&self, ambient: f64) -> Material {
-        Material::new(self.color, ambient, self.diffuse, self.specular, self.shininess)
+        Material::new(
+            self.color,
+            ambient,
+            self.diffuse,
+            self.specular,
+            self.shininess,
+        )
     }
 
     pub fn with_diffuse(&self, diffuse: f64) -> Material {
-        Material::new(self.color, self.ambient, diffuse, self.specular, self.shininess)
+        Material::new(
+            self.color,
+            self.ambient,
+            diffuse,
+            self.specular,
+            self.shininess,
+        )
     }
 
     pub fn with_specular(&self, specular: f64) -> Material {
-        Material::new(self.color, self.ambient, self.diffuse, specular, self.shininess)
+        Material::new(
+            self.color,
+            self.ambient,
+            self.diffuse,
+            specular,
+            self.shininess,
+        )
     }
 
     pub fn with_shininess(&self, shininess: f64) -> Material {
-        Material::new(self.color, self.ambient, self.diffuse, self.specular, shininess)
+        Material::new(
+            self.color,
+            self.ambient,
+            self.diffuse,
+            self.specular,
+            shininess,
+        )
     }
 }
 

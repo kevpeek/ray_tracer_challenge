@@ -1,12 +1,12 @@
-use crate::tracing::sphere::Sphere;
-use crate::tracing::point_light::PointLight;
-use crate::tracing::material::Material;
 use crate::display::color::Color;
-use crate::geometry::point::Point;
 use crate::geometry::matrix::Matrix;
+use crate::geometry::point::Point;
 use crate::geometry::transformations::scaling;
+use crate::tracing::intersection::{intersects, Intersection};
+use crate::tracing::material::Material;
+use crate::tracing::point_light::PointLight;
 use crate::tracing::ray::Ray;
-use crate::tracing::intersection::{Intersection, intersects};
+use crate::tracing::sphere::Sphere;
 
 pub struct World {
     objects: Vec<Sphere>,
@@ -17,22 +17,29 @@ impl World {
     pub fn empty() -> World {
         World {
             objects: vec![],
-            light_source: PointLight::black_light()
+            light_source: PointLight::black_light(),
         }
     }
     pub fn default() -> World {
         World {
             objects: defaultSpheres(),
-            light_source: PointLight::default()
+            light_source: PointLight::default(),
         }
     }
 
     pub fn new(objects: Vec<Sphere>, light_source: PointLight) -> World {
-        World { objects, light_source }
+        World {
+            objects,
+            light_source,
+        }
     }
 
     pub fn intersected_by(&self, ray: &Ray) -> Vec<Intersection> {
-        let mut intersections = self.objects.iter().flat_map(|it| intersects(it.clone(), ray)).collect();
+        let mut intersections = self
+            .objects
+            .iter()
+            .flat_map(|it| intersects(it.clone(), ray))
+            .collect();
         // intersections.sort_by(|a, b| a.time.partial_cmp(*b.time));
 
         panic!("fix that sort");
@@ -41,31 +48,24 @@ impl World {
 }
 
 fn defaultSpheres() -> Vec<Sphere> {
-        let outerSphereMaterial = Material::new(
-            Color::new(0.8, 1.0, 0.6),
-            0.1,
-            0.7,
-            0.2,
-            200.0
-        );
-        let outerSphere = Sphere::new(Point::origin(), outerSphereMaterial, Matrix::identity(4));
-        let innerSphere = Sphere::new(Point::origin(), Material::default(), scaling(0.5, 0.5, 0.5));
-        vec![outerSphere, innerSphere]
-    }
-
+    let outerSphereMaterial = Material::new(Color::new(0.8, 1.0, 0.6), 0.1, 0.7, 0.2, 200.0);
+    let outerSphere = Sphere::new(Point::origin(), outerSphereMaterial, Matrix::identity(4));
+    let innerSphere = Sphere::new(Point::origin(), Material::default(), scaling(0.5, 0.5, 0.5));
+    vec![outerSphere, innerSphere]
+}
 
 #[cfg(test)]
 mod tests {
-    use crate::tracing::world::{World, defaultSpheres};
-    use crate::tracing::ray::Ray;
-    use crate::geometry::point::Point;
-    use crate::geometry::vector::Vector;
     use crate::display::color::Color;
-    use crate::tracing::point_light::PointLight;
-    use crate::tracing::material::Material;
-    use crate::tracing::sphere::Sphere;
-    use crate::geometry::transformations::scaling;
     use crate::geometry::matrix::Matrix;
+    use crate::geometry::point::Point;
+    use crate::geometry::transformations::scaling;
+    use crate::geometry::vector::Vector;
+    use crate::tracing::material::Material;
+    use crate::tracing::point_light::PointLight;
+    use crate::tracing::ray::Ray;
+    use crate::tracing::sphere::Sphere;
+    use crate::tracing::world::{defaultSpheres, World};
 
     #[test]
     fn creating_a_world() {
@@ -77,7 +77,7 @@ mod tests {
     #[test]
     fn default_world() {
         let defaultWorld = World::default();
-        
+
         assert_eq!(PointLight::default(), defaultWorld.light_source);
         assert_eq!(defaultSpheres(), defaultWorld.objects);
     }
@@ -131,7 +131,7 @@ mod tests {
     //     let color = world.colorAt(ray);
     //     assert_eq!(Color::BLACK, color);
     // }
-        
+
     // #[test]
     // fn the_color_when_a_ray_hits() {
     //     let world = World::default();
