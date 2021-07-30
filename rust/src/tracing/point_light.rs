@@ -1,6 +1,7 @@
 use crate::display::color::Color;
 use crate::geometry::point::Point;
 
+#[derive(Eq, PartialEq, Debug)]
 pub struct PointLight {
     position: Point,
     intensity: Color,
@@ -12,6 +13,14 @@ impl PointLight {
             position,
             intensity,
         }
+    }
+
+    pub fn default() -> PointLight {
+        PointLight::new(Point::at(-10, -10, -10), Color::WHITE)
+    }
+
+    pub fn black_light() -> PointLight {
+        PointLight::new(Point::origin(), Color::BLACK)
     }
 
     pub fn position(&self) -> Point {

@@ -3,6 +3,7 @@ use crate::geometry::point::Point;
 use crate::geometry::vector::Vector;
 use crate::tracing::material::Material;
 
+#[derive(Eq, PartialEq, Debug, Clone)]
 pub struct Sphere {
     transform: Matrix,
     origin: Point,
@@ -18,15 +19,27 @@ impl Sphere {
         }
     }
 
+    pub fn new(origin: Point, material: Material, transform: Matrix) -> Sphere {
+        Sphere {transform, origin, material }
+    }
+
     /**
      * Return the Vector normal to this sphere at the supplied point.
      */
-    fn normalAt(&self, point: Point) -> Vector {
+    pub fn normalAt(&self, point: Point) -> Vector {
         let transformToObjectSpace = self.transform.inverse();
         let pointInObjectSpace = &transformToObjectSpace * point;
         let normalInObjectSpace = (pointInObjectSpace - self.origin);
         let transformToWorldSpace = self.transform.submatrix(3, 3).inverse().transpose();
         (&transformToWorldSpace * normalInObjectSpace).normalize()
+    }
+
+    pub fn transform(&self) ->&Matrix {
+        &self.transform
+    }
+
+    pub fn origin(&self) -> Point {
+        self.origin
     }
 }
 

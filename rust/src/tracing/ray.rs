@@ -23,7 +23,7 @@ impl Ray {
     /**
      * Return the Ray obtained by applying the supplied transformation to this Ray.
      */
-    fn transform(&self, transformation: Matrix) -> Ray {
+    pub fn transform(&self, transformation: Matrix) -> Ray {
         Ray::new(
             &transformation * self.origin,
             &transformation * self.direction,
@@ -32,6 +32,9 @@ impl Ray {
 
     pub fn direction(&self) -> Vector {
         self.direction
+    }
+    pub fn origin(&self) -> Point {
+        self.origin
     }
 }
 
