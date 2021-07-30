@@ -2,9 +2,7 @@ use crate::display::color::Color;
 use crate::geometry::matrix::Matrix;
 use crate::geometry::point::Point;
 use crate::geometry::transformations::scaling;
-use crate::tracing::intersection::{
-    hit, intersects, Intersection, PreComputedIntersection,
-};
+use crate::tracing::intersection::{hit, intersects, Intersection, PreComputedIntersection};
 use crate::tracing::material::{lighting, Material};
 use crate::tracing::point_light::PointLight;
 use crate::tracing::ray::Ray;
