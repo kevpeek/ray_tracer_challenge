@@ -3,7 +3,7 @@ use crate::geometry::matrix::Matrix;
 use crate::geometry::point::Point;
 use crate::geometry::transformations::scaling;
 use crate::tracing::intersection::{
-    hit, intersectWorld, intersects, Intersection, PreComputedIntersection,
+    hit, intersects, Intersection, PreComputedIntersection,
 };
 use crate::tracing::material::{lighting, Material};
 use crate::tracing::point_light::PointLight;
@@ -24,7 +24,7 @@ impl World {
     }
     pub fn default() -> World {
         World {
-            objects: defaultSpheres(),
+            objects: default_spheres(),
             light_source: PointLight::default(),
         }
     }
@@ -39,24 +39,24 @@ impl World {
     /**
      * Determine the Color given a PreComputedIntersection.
      */
-    fn shadeHit(&self, preComputations: PreComputedIntersection) -> Color {
+    fn shade_hit(&self, pre_computations: PreComputedIntersection) -> Color {
         lighting(
-            preComputations.thing.material(),
+            pre_computations.thing.material(),
             &self.light_source,
-            preComputations.point,
-            preComputations.eye_vector,
-            preComputations.normal_vector,
+            pre_computations.point,
+            pre_computations.eye_vector,
+            pre_computations.normal_vector,
         )
     }
 
     /**
      * Calculate the color produced by firing ray at this World.
      */
-    fn colorAt(&self, ray: &Ray) -> Color {
+    fn color_at(&self, ray: &Ray) -> Color {
         let intersections = &self.intersected_by(ray);
         let hit = hit(intersections);
         match hit {
-            Some(hit) => self.shadeHit(hit.preComputations(ray)),
+            Some(hit) => self.shade_hit(hit.pre_computations(ray)),
             None => Color::BLACK,
         }
     }
@@ -72,11 +72,11 @@ impl World {
     }
 }
 
-fn defaultSpheres() -> Vec<Sphere> {
-    let outerSphereMaterial = Material::new(Color::new(0.8, 1.0, 0.6), 0.1, 0.7, 0.2, 200.0);
-    let outerSphere = Sphere::new(Point::origin(), outerSphereMaterial, Matrix::identity(4));
-    let innerSphere = Sphere::new(Point::origin(), Material::default(), scaling(0.5, 0.5, 0.5));
-    vec![outerSphere, innerSphere]
+fn default_spheres() -> Vec<Sphere> {
+    let outer_sphere_material = Material::new(Color::new(0.8, 1.0, 0.6), 0.1, 0.7, 0.2, 200.0);
+    let outer_sphere = Sphere::new(Point::origin(), outer_sphere_material, Matrix::identity(4));
+    let inner_sphere = Sphere::new(Point::origin(), Material::default(), scaling(0.5, 0.5, 0.5));
+    vec![outer_sphere, inner_sphere]
 }
 
 #[cfg(test)]
@@ -86,12 +86,12 @@ mod tests {
     use crate::geometry::point::Point;
     use crate::geometry::transformations::scaling;
     use crate::geometry::vector::Vector;
-    use crate::tracing::intersection::{intersectWorld, intersects};
+    use crate::tracing::intersection::{intersect_world, intersects};
     use crate::tracing::material::Material;
     use crate::tracing::point_light::PointLight;
     use crate::tracing::ray::Ray;
     use crate::tracing::sphere::Sphere;
-    use crate::tracing::world::{defaultSpheres, World};
+    use crate::tracing::world::{default_spheres, World};
 
     #[test]
     fn creating_a_world() {
@@ -102,10 +102,10 @@ mod tests {
 
     #[test]
     fn default_world() {
-        let defaultWorld = World::default();
+        let default_world = World::default();
 
-        assert_eq!(PointLight::default(), defaultWorld.light_source);
-        assert_eq!(defaultSpheres(), defaultWorld.objects);
+        assert_eq!(PointLight::default(), default_world.light_source);
+        assert_eq!(default_spheres(), default_world.objects);
     }
 
     #[test]
@@ -113,7 +113,7 @@ mod tests {
         let world = World::default();
         let ray = Ray::new(Point::at(0, 0, -5), Vector::new(0, 0, 1));
 
-        let intersections = intersectWorld(world, &ray);
+        let intersections = intersect_world(world, &ray);
 
         assert_eq!(4, intersections.len());
         assert_eq!(4.0, intersections[0].time());
@@ -129,23 +129,23 @@ mod tests {
         let shape = world.objects.first().unwrap().clone();
         let intersect = &intersects(shape, &ray)[0];
 
-        let comps = intersect.preComputations(&ray);
+        let comps = intersect.pre_computations(&ray);
 
-        let color = world.shadeHit(comps);
+        let color = world.shade_hit(comps);
         assert_eq!(Color::new(0.38066, 0.47583, 0.2855), color);
     }
 
     #[test]
     fn shading_an_intersection_from_the_inside() {
-        let lightSource = PointLight::new(Point::at(0.0, 0.25, 0.0), Color::new(1, 1, 1));
-        let world = World::new(defaultSpheres(), lightSource);
+        let light_source = PointLight::new(Point::at(0.0, 0.25, 0.0), Color::new(1, 1, 1));
+        let world = World::new(default_spheres(), light_source);
         let ray = Ray::new(Point::at(0, 0, 0), Vector::new(0, 0, 1));
         let shape = world.objects[1].clone();
         let intersect = &intersects(shape, &ray)[1];
 
-        let comps = intersect.preComputations(&ray);
+        let comps = intersect.pre_computations(&ray);
 
-        let color = world.shadeHit(comps);
+        let color = world.shade_hit(comps);
         assert_eq!(Color::new(0.90498, 0.90498, 0.90498), color);
     }
 
@@ -154,7 +154,7 @@ mod tests {
         let world = World::default();
         let ray = Ray::new(Point::at(0, 0, -5), Vector::new(0, 1, 0));
 
-        let color = world.colorAt(&ray);
+        let color = world.color_at(&ray);
         assert_eq!(Color::BLACK, color);
     }
 
@@ -163,25 +163,25 @@ mod tests {
         let world = World::default();
         let ray = Ray::new(Point::at(0, 0, -5), Vector::new(0, 0, 1));
 
-        let color = world.colorAt(&ray);
+        let color = world.color_at(&ray);
         assert_eq!(Color::new(0.38066, 0.47583, 0.28550), color);
     }
 
     #[test]
     fn the_color_with_an_intersection_behind_the_ray() {
-        let outerSphereMaterial = Material::new(Color::new(0.8, 1.0, 0.6), 1.0, 0.7, 0.2, 200.0);
-        let outerSphere = Sphere::new(Point::origin(), outerSphereMaterial, Matrix::identity(4));
+        let outer_sphere_material = Material::new(Color::new(0.8, 1.0, 0.6), 1.0, 0.7, 0.2, 200.0);
+        let outer_sphere = Sphere::new(Point::origin(), outer_sphere_material, Matrix::identity(4));
         let material = Material::default().with_ambient(1.0);
         let inner_sphere = Sphere::new(Point::origin(), material, scaling(0.5, 0.5, 0.5));
 
         let world = World::new(
-            vec![outerSphere.clone(), inner_sphere.clone()],
+            vec![outer_sphere.clone(), inner_sphere.clone()],
             PointLight::default(),
         );
 
         let ray = Ray::new(Point::at(0.0, 0.0, 0.75), Vector::new(0, 0, -1));
 
-        let color = world.colorAt(&ray);
+        let color = world.color_at(&ray);
         assert_eq!(*inner_sphere.material().color(), color);
     }
 }

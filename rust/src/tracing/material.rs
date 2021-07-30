@@ -8,58 +8,58 @@ pub fn lighting(
     material: &Material,
     light: &PointLight,
     position: Point,
-    eyeVector: Vector,
+    eye_vector: Vector,
     normal: Vector,
 ) -> Color {
-    let ambient = ambientContribution(material, light);
-    let diffuse = diffuseContribution(material, light, position, normal);
-    let specular = specularContribution(material, light, position, eyeVector, normal);
+    let ambient = ambient_contribution(material, light);
+    let diffuse = diffuse_contribution(material, light, position, normal);
+    let specular = specular_contribution(material, light, position, eye_vector, normal);
     ambient + diffuse + specular
 }
 
-fn ambientContribution(material: &Material, light: &PointLight) -> Color {
-    let effectiveColor = effectiveColor(material, light);
-    effectiveColor * material.ambient
+fn ambient_contribution(material: &Material, light: &PointLight) -> Color {
+    let effective_color = effective_color(material, light);
+    effective_color * material.ambient
 }
 
-fn diffuseContribution(
+fn diffuse_contribution(
     material: &Material,
     light: &PointLight,
     position: Point,
     normal: Vector,
 ) -> Color {
-    let lightDirection = (light.position() - position).normalize();
-    let lightDotNormal = lightDirection.dot(normal);
-    if lightDotNormal < 0.0 {
+    let light_direction = (light.position() - position).normalize();
+    let light_dot_normal = light_direction.dot(normal);
+    if light_dot_normal < 0.0 {
         Color::BLACK
     } else {
-        effectiveColor(material, light) * material.diffuse * lightDotNormal
+        effective_color(material, light) * material.diffuse * light_dot_normal
     }
 }
 
-fn effectiveColor(material: &Material, light: &PointLight) -> Color {
+fn effective_color(material: &Material, light: &PointLight) -> Color {
     material.color * light.intensity()
 }
 
-fn specularContribution(
+fn specular_contribution(
     material: &Material,
     light: &PointLight,
     position: Point,
-    eyeVector: Vector,
+    eye_vector: Vector,
     normal: Vector,
 ) -> Color {
-    let lightDirection = (light.position() - position).normalize();
-    let lightDotNormal = lightDirection.dot(normal);
-    return if lightDotNormal < 0.0 {
+    let light_direction = (light.position() - position).normalize();
+    let light_dot_normal = light_direction.dot(normal);
+    return if light_dot_normal < 0.0 {
         Color::BLACK
     } else {
-        let reflectVector = -lightDirection.reflect(normal);
-        let reflectDotEye = reflectVector.dot(eyeVector);
+        let reflect_vector = -light_direction.reflect(normal);
+        let reflect_dot_eye = reflect_vector.dot(eye_vector);
 
-        if reflectDotEye < 0.0 {
+        if reflect_dot_eye < 0.0 {
             Color::BLACK
         } else {
-            let factor = reflectDotEye.powf(material.shininess);
+            let factor = reflect_dot_eye.powf(material.shininess);
             light.intensity() * material.specular * factor
         }
     };
@@ -186,7 +186,7 @@ mod test {
 
     #[test]
     fn lighting_with_eye_between_light_and_surface() {
-        let eyeVector = Vector::new(0, 0, -1);
+        let eye_vector = Vector::new(0, 0, -1);
         let normal = Vector::new(0, 0, -1);
         let light = PointLight::new(Point::at(0, 0, -10), Color::new(1, 1, 1));
 
@@ -194,7 +194,7 @@ mod test {
             &Material::default(),
             &light,
             Point::origin(),
-            eyeVector,
+            eye_vector,
             normal,
         );
         assert_eq!(Color::new(1.9, 1.9, 1.9), result);
@@ -202,7 +202,7 @@ mod test {
 
     #[test]
     fn lighting_with_eye_between_light_and_surface_eye_offset_45() {
-        let eyeVector = Vector::new(0.0, 2.0_f64.sqrt() / 2.0, -2.0_f64.sqrt() / 2.0);
+        let eye_vector = Vector::new(0.0, 2.0_f64.sqrt() / 2.0, -2.0_f64.sqrt() / 2.0);
         let normal = Vector::new(0, 0, -1);
         let light = PointLight::new(Point::at(0, 0, -10), Color::new(1, 1, 1));
 
@@ -210,7 +210,7 @@ mod test {
             &Material::default(),
             &light,
             Point::origin(),
-            eyeVector,
+            eye_vector,
             normal,
         );
         assert_eq!(Color::new(1, 1, 1), result);
@@ -218,7 +218,7 @@ mod test {
 
     #[test]
     fn lighting_with_eye_opposite_surface_light_offset_45() {
-        let eyeVector = Vector::new(0, 0, -1);
+        let eye_vector = Vector::new(0, 0, -1);
         let normal = Vector::new(0, 0, -1);
         let light = PointLight::new(Point::at(0, 10, -10), Color::new(1, 1, 1));
 
@@ -226,7 +226,7 @@ mod test {
             &Material::default(),
             &light,
             Point::origin(),
-            eyeVector,
+            eye_vector,
             normal,
         );
         assert_eq!(Color::new(0.7364, 0.7364, 0.7364), result);
@@ -234,7 +234,7 @@ mod test {
 
     #[test]
     fn lighting_with_eye_in_path_of_reflection_vector() {
-        let eyeVector = Vector::new(0.0, -2.0_f64.sqrt() / 2.0, -2.0_f64.sqrt() / 2.0);
+        let eye_vector = Vector::new(0.0, -2.0_f64.sqrt() / 2.0, -2.0_f64.sqrt() / 2.0);
         let normal = Vector::new(0, 0, -1);
         let light = PointLight::new(Point::at(0, 10, -10), Color::new(1, 1, 1));
 
@@ -242,7 +242,7 @@ mod test {
             &Material::default(),
             &light,
             Point::origin(),
-            eyeVector,
+            eye_vector,
             normal,
         );
         assert_eq!(Color::new(1.6364, 1.6364, 1.6364), result);
@@ -250,7 +250,7 @@ mod test {
 
     #[test]
     fn lighting_with_light_behind_surface() {
-        let eyeVector = Vector::new(0, 0, -1);
+        let eye_vector = Vector::new(0, 0, -1);
         let normal = Vector::new(0, 0, -1);
         let light = PointLight::new(Point::at(0, 0, 10), Color::new(1, 1, 1));
 
@@ -258,7 +258,7 @@ mod test {
             &Material::default(),
             &light,
             Point::origin(),
-            eyeVector,
+            eye_vector,
             normal,
         );
         assert_eq!(Color::new(0.1, 0.1, 0.1), result);

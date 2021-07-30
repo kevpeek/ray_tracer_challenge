@@ -34,10 +34,10 @@ impl Intersection {
     /**
      * Calculate the PreComputed details.
      */
-    pub fn preComputations(&self, ray: &Ray) -> PreComputedIntersection {
+    pub fn pre_computations(&self, ray: &Ray) -> PreComputedIntersection {
         let point = ray.position(self.time);
         let eye_vector = -ray.direction();
-        let normal_vector = self.thing.normalAt(point).normalize();
+        let normal_vector = self.thing.normal_at(point).normalize();
 
         let inside = normal_vector.dot(eye_vector) < 0.0;
         let actual_normal = if inside {
@@ -61,11 +61,11 @@ impl Intersection {
  * Returns the list of Intersections between the ray and sphere.
  */
 pub fn intersects(sphere: Sphere, ray: &Ray) -> Vec<Intersection> {
-    let transformedRay = ray.transform(sphere.transform().inverse());
-    let sphereToRay = transformedRay.origin() - sphere.origin();
-    let a = transformedRay.direction().dot(transformedRay.direction());
-    let b = 2.0 * transformedRay.direction().dot(sphereToRay);
-    let c = sphereToRay.dot(sphereToRay) - 1.0;
+    let transformed_ray = ray.transform(sphere.transform().inverse());
+    let sphere_to_ray = transformed_ray.origin() - sphere.origin();
+    let a = transformed_ray.direction().dot(transformed_ray.direction());
+    let b = 2.0 * transformed_ray.direction().dot(sphere_to_ray);
+    let c = sphere_to_ray.dot(sphere_to_ray) - 1.0;
 
     let discriminant = b * b - 4.0 * a * c;
 
@@ -87,7 +87,7 @@ pub fn intersects(sphere: Sphere, ray: &Ray) -> Vec<Intersection> {
  *
  * Resulting Intersections are sorted by time, so intersections from any given object may not adjacent in the list.
  */
-pub fn intersectWorld(world: World, ray: &Ray) -> Vec<Intersection> {
+pub fn intersect_world(world: World, ray: &Ray) -> Vec<Intersection> {
     world.intersected_by(ray)
 }
 
@@ -206,8 +206,8 @@ mod tests {
         let i2 = Intersection::new(2.0, Sphere::default());
         let intersections = vec![i1.clone(), i2.clone()];
 
-        let theHit = hit(&intersections);
-        assert_eq!(i1, *theHit.unwrap());
+        let the_hit = hit(&intersections);
+        assert_eq!(i1, *the_hit.unwrap());
     }
 
     #[test]
@@ -216,8 +216,8 @@ mod tests {
         let i2 = Intersection::new(1.0, Sphere::default());
         let intersections = vec![i1.clone(), i2.clone()];
 
-        let theHit = hit(&intersections);
-        assert_eq!(i2, *theHit.unwrap());
+        let the_hit = hit(&intersections);
+        assert_eq!(i2, *the_hit.unwrap());
     }
 
     #[test]
@@ -226,8 +226,8 @@ mod tests {
         let i2 = Intersection::new(-1.0, Sphere::default());
         let intersections = vec![i1, i2];
 
-        let theHit = hit(&intersections);
-        assert!(theHit.is_none())
+        let the_hit = hit(&intersections);
+        assert!(the_hit.is_none())
     }
 
     #[test]
@@ -238,8 +238,8 @@ mod tests {
         let i4 = Intersection::new(2.0, Sphere::default());
         let intersections = vec![i1.clone(), i2.clone(), i3.clone(), i4.clone()];
 
-        let theHit = hit(&intersections);
-        assert_eq!(i4, *theHit.unwrap());
+        let the_hit = hit(&intersections);
+        assert_eq!(i4, *the_hit.unwrap());
     }
 
     #[test]
@@ -269,7 +269,7 @@ mod tests {
         let shape = Sphere::default();
         let intersection = &intersects(shape, &ray)[0];
 
-        let comps = intersection.preComputations(&ray);
+        let comps = intersection.pre_computations(&ray);
 
         assert_eq!(intersection.time, comps.time);
         assert_eq!(intersection.thing, comps.thing);
@@ -285,7 +285,7 @@ mod tests {
 
         let intersect = &intersects(shape, &ray)[0];
 
-        let comps = intersect.preComputations(&ray);
+        let comps = intersect.pre_computations(&ray);
         assert!(!comps.inside);
     }
 
@@ -296,7 +296,7 @@ mod tests {
 
         let intersect = &intersects(shape, &ray)[1];
 
-        let comps = intersect.preComputations(&ray);
+        let comps = intersect.pre_computations(&ray);
         assert!(comps.inside);
         assert_eq!(Point::at(0, 0, 1), comps.point);
         assert_eq!(Vector::new(0, 0, -1), comps.eye_vector);

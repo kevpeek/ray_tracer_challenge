@@ -30,12 +30,12 @@ impl Sphere {
     /**
      * Return the Vector normal to this sphere at the supplied point.
      */
-    pub fn normalAt(&self, point: Point) -> Vector {
-        let transformToObjectSpace = self.transform.inverse();
-        let pointInObjectSpace = &transformToObjectSpace * point;
-        let normalInObjectSpace = (pointInObjectSpace - self.origin);
-        let transformToWorldSpace = self.transform.submatrix(3, 3).inverse().transpose();
-        (&transformToWorldSpace * normalInObjectSpace).normalize()
+    pub fn normal_at(&self, point: Point) -> Vector {
+        let transform_to_object_space = self.transform.inverse();
+        let point_in_object_space = &transform_to_object_space * point;
+        let normal_in_object_space = point_in_object_space - self.origin;
+        let transform_to_world_space = self.transform.submatrix(3, 3).inverse().transpose();
+        (&transform_to_world_space * normal_in_object_space).normalize()
     }
 
     pub fn transform(&self) -> &Matrix {
@@ -78,7 +78,7 @@ mod tests {
     #[test]
     fn normal_on_sphere_at_point_on_x_axis() {
         let sphere = Sphere::default();
-        let normal = sphere.normalAt(Point::at(1, 0, 0));
+        let normal = sphere.normal_at(Point::at(1, 0, 0));
 
         assert_eq!(Vector::new(1, 0, 0), normal);
     }
@@ -86,7 +86,7 @@ mod tests {
     #[test]
     fn normal_on_sphere_at_point_on_y_axis() {
         let sphere = Sphere::default();
-        let normal = sphere.normalAt(Point::at(0, 1, 0));
+        let normal = sphere.normal_at(Point::at(0, 1, 0));
 
         assert_eq!(Vector::new(0, 1, 0), normal);
     }
@@ -94,7 +94,7 @@ mod tests {
     #[test]
     fn normal_on_sphere_at_point_on_z_axis() {
         let sphere = Sphere::default();
-        let normal = sphere.normalAt(Point::at(0, 0, 1));
+        let normal = sphere.normal_at(Point::at(0, 0, 1));
 
         assert_eq!(Vector::new(0, 0, 1), normal);
     }
@@ -102,7 +102,7 @@ mod tests {
     #[test]
     fn normal_on_sphere_at_nonaxial_point() {
         let sphere = Sphere::default();
-        let normal = sphere.normalAt(Point::at(
+        let normal = sphere.normal_at(Point::at(
             3.0_f64.sqrt() / 3.0,
             3.0_f64.sqrt() / 3.0,
             3.0_f64.sqrt() / 3.0,
@@ -121,7 +121,7 @@ mod tests {
     #[test]
     fn normal_is_normalized_vector() {
         let sphere = Sphere::default();
-        let normal = sphere.normalAt(Point::at(
+        let normal = sphere.normal_at(Point::at(
             3.0_f64.sqrt() / 3.0,
             3.0_f64.sqrt() / 3.0,
             3.0_f64.sqrt() / 3.0,
@@ -134,7 +134,7 @@ mod tests {
         let mut sphere = Sphere::default();
         sphere.transform = translation(0, 1, 0);
 
-        let normal = sphere.normalAt(Point::at(0.0, 1.70711, -0.70711));
+        let normal = sphere.normal_at(Point::at(0.0, 1.70711, -0.70711));
         assert_eq!(Vector::new(0.0, 0.70711, -0.70711), normal);
     }
 
@@ -143,7 +143,7 @@ mod tests {
         let mut sphere = Sphere::default();
         sphere.transform = &scaling(1.0, 0.5, 1.0) * &rotation_z(PI / 5.0);
 
-        let normal = sphere.normalAt(Point::at(0.0, 2.0_f64.sqrt() / 2.0, -2.0_f64.sqrt() / 2.0));
+        let normal = sphere.normal_at(Point::at(0.0, 2.0_f64.sqrt() / 2.0, -2.0_f64.sqrt() / 2.0));
         assert_eq!(Vector::new(0.0, 0.97014, -0.24254), normal);
     }
 
