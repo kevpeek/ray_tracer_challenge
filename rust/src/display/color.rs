@@ -11,6 +11,11 @@ pub struct Color {
 }
 
 impl Color {
+    pub const WHITE: Color = Color {
+        red: 1.,
+        green: 1.,
+        blue: 1.,
+    };
     pub const BLACK: Color = Color {
         red: 0.0,
         green: 0.0,
@@ -21,20 +26,20 @@ impl Color {
         green: 0.0,
         blue: 0.0,
     };
-    pub const GREEN: Color = Color {
-        red: 0.0,
+    pub const LIGHT_GREEN: Color = Color {
+        red: 0.1,
         green: 1.0,
-        blue: 0.0,
+        blue: 0.5
+    };
+    pub const MUSTARD_YELLOW: Color = Color {
+        red: 1.0,
+        green: 0.8,
+        blue: 0.1
     };
     pub const BLUE: Color = Color {
         red: 0.0,
         green: 0.0,
         blue: 1.0,
-    };
-    pub const WHITE: Color = Color {
-        red: 1.,
-        green: 1.,
-        blue: 1.,
     };
 
     pub fn new<T: NumCast>(red: T, green: T, blue: T) -> Self {

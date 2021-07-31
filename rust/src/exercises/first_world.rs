@@ -13,48 +13,7 @@ use crate::tracing::world::World;
 use std::f64::consts::PI;
 
 pub fn run() {
-    let wall_material = Material::default()
-        .with_color(Color::new(1.0, 0.9, 0.9))
-        .with_specular(0.0);
-
-    let floor = Sphere::new(
-        Point::origin(),
-        wall_material.clone(),
-        scaling(10.0, 0.01, 10.0),
-    );
-
-    let transform = scaling(10.0, 0.01, 10.0)
-        .then(&rotation_x(PI / 2.0))
-        .then(&rotation_y(-PI / 4.0))
-        .then(&translation(0, 0, 5));
-
-    let left_wall = Sphere::new(Point::origin(), wall_material.clone(), transform.clone());
-
-    let right_wall = Sphere::new(Point::origin(), wall_material.clone(), transform.clone());
-
-    let middle_transform = translation(-0.5, 1.0, 0.5);
-    let middle_material = Material::default()
-        .with_color(Color::new(0.1, 1.0, 0.5))
-        .with_diffuse(0.7)
-        .with_specular(0.3);
-
-    let middle = Sphere::new(Point::origin(), middle_material.clone(), middle_transform);
-
-    let right_transform = scaling(0.5, 0.5, 0.5).then(&translation(1.5, 0.5, -0.5));
-
-    let right = Sphere::new(Point::origin(), middle_material, right_transform);
-
-    let left_transform = scaling(0.33, 0.33, 0.33).then(&translation(-1.5, 0.33, -0.75));
-
-    let left_material = Material::default()
-        .with_color(Color::new(1.0, 0.8, 0.1))
-        .with_diffuse(0.7)
-        .with_specular(0.3);
-
-    let left = Sphere::new(Point::origin(), left_material, left_transform);
-
-    let light_source = PointLight::new(Point::at(-10, 10, -10), Color::new(1, 1, 1));
-    let world = World::new(vec![floor, left_wall, right_wall, middle, right, left], light_source,);
+    let world = worldOne();
 
     let camera_transform = view_transform(
         Point::at(0.0, 1.5, -5.0),
@@ -65,4 +24,57 @@ pub fn run() {
 
     let canvas = camera.render(world);
     write_canvas(&canvas);
+}
+
+fn worldOne() -> World {
+    let light_source = PointLight::new(Point::at(-10, 10, -10), Color::new(1, 1, 1));
+
+    // ===== Walls =====
+
+    let wall_material = Material::default()
+        .with_color(Color::new(1.0, 0.9, 0.9))
+        .with_specular(0.0);
+
+    let floor = Sphere::default()
+        .with_material(wall_material.clone())
+        .with_transform(scaling(10.0, 0.01, 10.0));
+
+    let wall_transform = scaling(10.0, 0.01, 10.0)
+        .then(&rotation_x(PI / 2.0))
+        .then(&translation(0, 0, 5));
+
+    let left_wall = Sphere::default()
+        .with_material(wall_material.clone())
+        .with_transform(wall_transform.clone().then(&rotation_y(-PI / 4.0)));
+
+    let right_wall = Sphere::default()
+        .with_material(wall_material)
+        .with_transform(wall_transform.then(&rotation_y(PI / 4.0)));
+
+    // ===== Spheres =====
+
+    let middle_material = Material::default()
+        .with_color(Color::LIGHT_GREEN)
+        .with_diffuse(0.7)
+        .with_specular(0.3);
+
+    let middle = Sphere::default()
+        .with_material(middle_material.clone())
+        .with_transform(translation(-0.5, 1.0, 0.5));
+
+    let right = Sphere::default()
+        .with_material(middle_material.with_color(Color::BLUE))
+        .with_transform(scaling(0.5, 0.5, 0.5).then(&translation(1.5, 0.5, -0.5)));
+
+    let left_material = Material::default()
+        .with_color(Color::MUSTARD_YELLOW)
+        .with_diffuse(0.7)
+        .with_specular(0.3);
+
+    let left = Sphere::default()
+        .with_material(left_material)
+        .with_transform(scaling(0.33, 0.33, 0.33).then(&translation(-1.5, 0.33, -0.75)));
+
+
+    World::new(vec![floor, left_wall, right_wall, middle, right, left], light_source)
 }

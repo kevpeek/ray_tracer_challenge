@@ -27,6 +27,18 @@ impl Sphere {
         }
     }
 
+    pub fn with_origin(self, new_origin: Point) -> Sphere {
+        Sphere::new(new_origin, self.material, self.transform)
+    }
+
+    pub fn with_material(self, new_material: Material) -> Sphere {
+        Sphere::new(self.origin, new_material, self.transform)
+    }
+
+    pub fn with_transform(self, new_transform: Matrix) -> Sphere {
+        Sphere::new(self.origin, self.material, new_transform)
+    }
+
     /**
      * Return the Vector normal to this sphere at the supplied point.
      */
