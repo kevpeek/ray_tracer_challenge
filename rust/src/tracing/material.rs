@@ -10,10 +10,17 @@ pub fn lighting(
     position: Point,
     eye_vector: Vector,
     normal: Vector,
+    in_shadow: bool,
 ) -> Color {
     let ambient = ambient_contribution(material, light);
-    let diffuse = diffuse_contribution(material, light, position, normal);
-    let specular = specular_contribution(material, light, position, eye_vector, normal);
+    let diffuse = match in_shadow {
+        true => Color::BLACK,
+        false => diffuse_contribution(material, light, position, normal)
+    };
+    let specular = match in_shadow {
+        true => Color::BLACK,
+        false => specular_contribution(material, light, position, eye_vector, normal)
+    };
     ambient + diffuse + specular
 }
 
@@ -196,6 +203,7 @@ mod test {
             Point::origin(),
             eye_vector,
             normal,
+            false,
         );
         assert_eq!(Color::new(1.9, 1.9, 1.9), result);
     }
@@ -212,6 +220,7 @@ mod test {
             Point::origin(),
             eye_vector,
             normal,
+            false,
         );
         assert_eq!(Color::new(1, 1, 1), result);
     }
@@ -228,6 +237,7 @@ mod test {
             Point::origin(),
             eye_vector,
             normal,
+            false,
         );
         assert_eq!(Color::new(0.7364, 0.7364, 0.7364), result);
     }
@@ -244,6 +254,7 @@ mod test {
             Point::origin(),
             eye_vector,
             normal,
+            false,
         );
         assert_eq!(Color::new(1.6364, 1.6364, 1.6364), result);
     }
@@ -260,6 +271,25 @@ mod test {
             Point::origin(),
             eye_vector,
             normal,
+            false,
+        );
+        assert_eq!(Color::new(0.1, 0.1, 0.1), result);
+    }
+
+    #[test]
+    fn lighting_with_surface_in_shadow() {
+        let eye_vector = Vector::new(0, 0, -1);
+        let normal = Vector::new(0, 0, -1);
+        let light = PointLight::new(Point::at(0, 0, -10), Color::new(1, 1, 1));
+        let in_shadow = true;
+
+        let result = lighting(
+            &Material::default(),
+            &light,
+            Point::origin(),
+            eye_vector,
+            normal,
+            in_shadow
         );
         assert_eq!(Color::new(0.1, 0.1, 0.1), result);
     }

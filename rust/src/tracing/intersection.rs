@@ -3,6 +3,7 @@ use crate::geometry::vector::Vector;
 use crate::tracing::ray::Ray;
 use crate::tracing::sphere::Sphere;
 use crate::tracing::world::World;
+use crate::helper::EPSILON;
 
 /**
  * Precompute details about the intersection.
@@ -12,6 +13,7 @@ pub struct PreComputedIntersection {
     pub thing: Sphere,
     pub inside: bool,
     pub point: Point,
+    pub over_point: Point,
     pub eye_vector: Vector,
     pub normal_vector: Vector,
 }
@@ -46,11 +48,14 @@ impl<'a> Intersection<'a> {
             normal_vector
         };
 
+        let over_point = point + normal_vector * EPSILON;
+
         PreComputedIntersection {
             time: self.time,
             thing: self.thing.clone(),
             inside,
             point,
+            over_point,
             eye_vector,
             normal_vector: actual_normal,
         }

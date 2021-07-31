@@ -38,12 +38,14 @@ impl World {
      * Determine the Color given a PreComputedIntersection.
      */
     fn shade_hit(&self, pre_computations: PreComputedIntersection) -> Color {
+        let in_shadow = self.is_shadowed(pre_computations.over_point);
         lighting(
             pre_computations.thing.material(),
             &self.light_source,
             pre_computations.point,
             pre_computations.eye_vector,
             pre_computations.normal_vector,
+            in_shadow,
         )
     }
 
@@ -68,6 +70,21 @@ impl World {
         intersections.sort_by(|a, b| a.time().partial_cmp(&b.time()).unwrap());
         intersections
     }
+
+    pub fn is_shadowed(&self, point: Point) -> bool {
+        let point_to_light = self.light_source.position() - point;
+        let distance = point_to_light.magnitude();
+        let direction = point_to_light.normalize();
+
+        let ray = Ray::new(point, direction);
+        let intersections = self.intersected_by(&ray);
+
+        let hit = hit(&intersections);
+        match hit {
+            Some(hit) if hit.time() < distance => true,
+            _ => false,
+        }
+    }
 }
 
 fn default_spheres() -> Vec<Sphere> {
@@ -82,14 +99,16 @@ mod tests {
     use crate::display::color::Color;
     use crate::geometry::matrix::Matrix;
     use crate::geometry::point::Point;
-    use crate::geometry::transformations::scaling;
+    use crate::geometry::transformations::{scaling, translation};
     use crate::geometry::vector::Vector;
-    use crate::tracing::intersection::{intersects};
+    use crate::tracing::intersection::{intersects, Intersection};
     use crate::tracing::material::Material;
     use crate::tracing::point_light::PointLight;
     use crate::tracing::ray::Ray;
     use crate::tracing::sphere::Sphere;
     use crate::tracing::world::{default_spheres, World};
+    use crate::geometry::transformations;
+    use crate::helper::EPSILON;
 
     #[test]
     fn creating_a_world() {
@@ -136,16 +155,16 @@ mod tests {
 
     #[test]
     fn shading_an_intersection_from_the_inside() {
-        let light_source = PointLight::new(Point::at(0.0, 0.25, 0.0), Color::new(1, 1, 1));
+        let light_source = PointLight::new(Point::at(0.0, 0.25, 0.0), Color::WHITE);
         let world = World::new(default_spheres(), light_source);
-        let ray = Ray::new(Point::at(0, 0, 0), Vector::new(0, 0, 1));
+        let ray = Ray::new(Point::origin(), Vector::new(0, 0, 1));
         let shape = world.objects[1].clone();
         let intersect = &intersects(&shape, &ray)[1];
 
         let comps = intersect.pre_computations(&ray);
 
         let color = world.shade_hit(comps);
-        assert_eq!(Color::new(0.90498, 0.90498, 0.90498), color);
+        assert_eq!(Color::new(0.1, 0.1, 0.1), color);
     }
 
     #[test]
@@ -182,5 +201,62 @@ mod tests {
 
         let color = world.color_at(&ray);
         assert_eq!(*inner_sphere.material().color(), color);
+    }
+
+    #[test]
+    fn no_shadow_when_nothing_colinear_with_point_and_light() {
+        let world = World::default();
+        let point = Point::at(0, 10, 0);
+        assert!(!world.is_shadowed(point));
+    }
+
+    #[test]
+    fn shadow_when_object_point_and_light() {
+        let world = World::default();
+        let point = Point::at(10, -10, 10);
+        assert!(world.is_shadowed(point));
+    }
+
+    #[test]
+    fn no_shadow_when_object_behind_light() {
+        let world = World::default();
+        let point = Point::at(-20, 20, -20);
+        assert!(!world.is_shadowed(point));
+    }
+
+    #[test]
+    fn no_shadow_when_object_behind_poing() {
+        let world = World::default();
+        let point = Point::at(-2, 2, -2);
+        assert!(!world.is_shadowed(point));
+    }
+
+    #[test]
+    fn shade_hit_is_given_an_intersection_in_shadow() {
+        let light = PointLight::new(Point::at(0, 0, -10), Color::WHITE);
+
+        let sphere_one = Sphere::default();
+        let sphere_two = Sphere::default()
+            .with_transform(translation(0, 0, 10));
+
+        let world = World::new(vec![sphere_one, sphere_two.clone()], light);
+
+        let ray = Ray::new(Point::at(0, 0, 5), Vector::new(0, 0, 1));
+        let intersection = Intersection::new(4.0, &sphere_two);
+
+        let pre_computations = intersection.pre_computations(&ray);
+        let color = world.shade_hit(pre_computations);
+        assert_eq!(Color::new(0.1, 0.1, 0.1), color);
+    }
+
+    #[test]
+    fn the_hit_should_offset_the_point() {
+        let ray = Ray::new(Point::at(0, 0, -5), Vector::new(0, 0, 1));
+        let sphere = Sphere::default()
+            .with_transform(transformations::translation(0, 0, 1));
+        let intersection = Intersection::new(5.0, &sphere);
+        let pre_computations = intersection.pre_computations(&ray);
+        assert!(pre_computations.over_point.z < -EPSILON/2.0);
+        assert!(pre_computations.point.z > pre_computations.over_point.z);
     }
 }
