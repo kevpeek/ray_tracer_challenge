@@ -4,6 +4,8 @@ use crate::geometry::point::Point;
 use crate::helper::enumerate_coordinates;
 use crate::tracing::ray::Ray;
 use crate::tracing::world::World;
+use rayon::prelude::*;
+use crate::display::color::Color;
 
 pub struct Camera {
     hsize: usize,
@@ -27,11 +29,13 @@ impl Camera {
      */
     pub(crate) fn render(&self, world: World) -> Canvas {
         let mut canvas = Canvas::new(self.hsize, self.vsize);
-        enumerate_coordinates(0..self.hsize, 0..self.vsize)
-            .iter()
+        let pixels: Vec<(usize, usize, Color)> = enumerate_coordinates(0..self.hsize, 0..self.vsize)
+            .par_iter()
             .map(|(x, y)| (*x, *y, self.ray_for_pixel(*x, *y)))
             .map(|(x, y, ray)| (x, y, world.color_at(&ray)))
-            .for_each(|(x, y, color)| canvas.write_pixel(x, y, color));
+            .collect();
+            pixels.into_iter()
+                .for_each(|(x, y, color)| canvas.write_pixel(x, y, color));
 
         canvas
     }

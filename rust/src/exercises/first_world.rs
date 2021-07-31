@@ -28,43 +28,40 @@ pub fn run() {
         .then(&rotation_y(-PI / 4.0))
         .then(&translation(0, 0, 5));
 
-    let leftWall = Sphere::new(Point::origin(), wall_material.clone(), transform.clone());
+    let left_wall = Sphere::new(Point::origin(), wall_material.clone(), transform.clone());
 
-    let rightWall = Sphere::new(Point::origin(), wall_material.clone(), transform.clone());
+    let right_wall = Sphere::new(Point::origin(), wall_material.clone(), transform.clone());
 
-    let middleTransform = translation(-0.5, 1.0, 0.5);
-    let middleMaterial = Material::default()
+    let middle_transform = translation(-0.5, 1.0, 0.5);
+    let middle_material = Material::default()
         .with_color(Color::new(0.1, 1.0, 0.5))
         .with_diffuse(0.7)
         .with_specular(0.3);
 
-    let middle = Sphere::new(Point::origin(), middleMaterial.clone(), middleTransform);
+    let middle = Sphere::new(Point::origin(), middle_material.clone(), middle_transform);
 
-    let rightTransform = scaling(0.5, 0.5, 0.5).then(&translation(1.5, 0.5, -0.5));
+    let right_transform = scaling(0.5, 0.5, 0.5).then(&translation(1.5, 0.5, -0.5));
 
-    let right = Sphere::new(Point::origin(), middleMaterial, rightTransform);
+    let right = Sphere::new(Point::origin(), middle_material, right_transform);
 
-    let leftTransform = scaling(0.33, 0.33, 0.33).then(&translation(-1.5, 0.33, -0.75));
+    let left_transform = scaling(0.33, 0.33, 0.33).then(&translation(-1.5, 0.33, -0.75));
 
-    let leftMaterial = Material::default()
+    let left_material = Material::default()
         .with_color(Color::new(1.0, 0.8, 0.1))
         .with_diffuse(0.7)
         .with_specular(0.3);
 
-    let left = Sphere::new(Point::origin(), leftMaterial, leftTransform);
+    let left = Sphere::new(Point::origin(), left_material, left_transform);
 
-    let lightSource = PointLight::new(Point::at(-10, 10, -10), Color::new(1, 1, 1));
-    let world = World::new(
-        vec![floor, leftWall, rightWall, middle, right, left],
-        lightSource,
-    );
+    let light_source = PointLight::new(Point::at(-10, 10, -10), Color::new(1, 1, 1));
+    let world = World::new(vec![floor, left_wall, right_wall, middle, right, left], light_source,);
 
-    let cameraTransform = view_transform(
+    let camera_transform = view_transform(
         Point::at(0.0, 1.5, -5.0),
         Point::at(0, 1, 0),
         Vector::new(0, 1, 0),
     );
-    let camera = Camera::new(400, 200, PI / 3.0, cameraTransform);
+    let camera = Camera::new(400, 200, PI / 3.0, camera_transform);
 
     let canvas = camera.render(world);
     write_canvas(&canvas);
