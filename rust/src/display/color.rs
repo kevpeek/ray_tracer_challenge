@@ -36,9 +36,9 @@ impl Color {
         green: 0.8,
         blue: 0.1
     };
-    pub const BLUE: Color = Color {
-        red: 0.0,
-        green: 0.0,
+    pub const LIGHT_BLUE: Color = Color {
+        red: 0.60,
+        green: 0.80,
         blue: 1.0,
     };
 

@@ -68,22 +68,22 @@ impl Camera {
         let half_view = (self.field_of_view / 2.0).tan();
         let aspect = self.hsize as f64 / self.vsize as f64;
 
-        return if aspect >= 1.0 {
+        if aspect >= 1.0 {
             half_view / aspect
         } else {
             half_view
-        };
+        }
     }
 
     fn calculate_half_width(&self) -> f64 {
         let half_view = (self.field_of_view / 2.0).tan();
         let aspect = self.hsize as f64 / self.vsize as f64;
 
-        return if aspect >= 1.0 {
+        if aspect >= 1.0 {
             half_view
         } else {
             half_view * aspect
-        };
+        }
     }
 }
 
@@ -91,11 +91,13 @@ impl Camera {
 mod tests {
     use crate::geometry::matrix::Matrix;
     use crate::geometry::point::Point;
-    use crate::geometry::transformations::{rotation_y, translation};
+    use crate::geometry::transformations::{rotation_y, translation, view_transform};
     use crate::geometry::vector::Vector;
     use crate::helper::almost;
     use crate::tracing::camera::Camera;
     use std::f64::consts::PI;
+    use crate::tracing::world::World;
+    use crate::display::color::Color;
 
     #[test]
     fn constructing_a_camera() {
@@ -159,15 +161,14 @@ mod tests {
 
     #[test]
     fn rendering_world_with_camera() {
-        assert!(false)
-        // let world = World.default();
-        //
-        // let from = Point::at(0, 0, -5);
-        // let to = WORLD_ORIGIN;
-        // let up = Vector::new(0, 1, 0);
-        // let camera = Camera(11, 11, Math.PI / 2, viewTransform(from, to, up));
-        //
-        // let image = camera.render(world);
-        // assert_eq!(Color::new(0.38066, 0.47583, 0.2855), image.pixelAt(5, 5));
+        let world = World::default();
+
+        let from = Point::at(0, 0, -5);
+        let to = Point::origin();
+        let up = Vector::new(0, 1, 0);
+        let camera = Camera::new(11, 11, PI / 2.0, view_transform(from, to, up));
+
+        let image = camera.render(world);
+        assert_eq!(Color::new(0.38066, 0.47583, 0.2855), image.pixel_at(5, 5));
     }
 }

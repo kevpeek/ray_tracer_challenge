@@ -26,7 +26,7 @@ impl Canvas {
         self.pixels[index] = color;
     }
 
-    fn pixel_at(&self, x: usize, y: usize) -> Color {
+    pub fn pixel_at(&self, x: usize, y: usize) -> Color {
         self.pixels[self.index_for(x, y)]
     }
 

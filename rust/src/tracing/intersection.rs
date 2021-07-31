@@ -94,7 +94,7 @@ pub fn intersect_world(world: World, ray: &Ray) -> Vec<Intersection> {
 /**
  * Finds the Intersection with the lowest, non-negative time letue.
  */
-pub fn hit(intersections: &Vec<Intersection>) -> Option<&Intersection> {
+pub fn hit(intersections: &[Intersection]) -> Option<&Intersection> {
     intersections
         .iter()
         .filter(|it| it.time >= 0.0)

@@ -16,7 +16,7 @@ impl PointLight {
     }
 
     pub fn default() -> PointLight {
-        PointLight::new(Point::at(-10, -10, -10), Color::WHITE)
+        PointLight::new(Point::at(-10, 10, -10), Color::WHITE)
     }
 
     pub fn black_light() -> PointLight {

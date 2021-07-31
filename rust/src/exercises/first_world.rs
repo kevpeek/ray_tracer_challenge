@@ -13,7 +13,7 @@ use crate::tracing::world::World;
 use std::f64::consts::PI;
 
 pub fn run() {
-    let world = worldOne();
+    let world = world_one();
 
     let camera_transform = view_transform(
         Point::at(0.0, 1.5, -5.0),
@@ -23,11 +23,11 @@ pub fn run() {
     let camera = Camera::new(400, 200, PI / 3.0, camera_transform);
 
     let canvas = camera.render(world);
-    write_canvas(&canvas);
+    write_canvas(&canvas).unwrap();
 }
 
-fn worldOne() -> World {
-    let light_source = PointLight::new(Point::at(-10, 10, -10), Color::new(1, 1, 1));
+fn world_one() -> World {
+    let light_source = PointLight::default();
 
     // ===== Walls =====
 
@@ -45,7 +45,7 @@ fn worldOne() -> World {
 
     let left_wall = Sphere::default()
         .with_material(wall_material.clone())
-        .with_transform(wall_transform.clone().then(&rotation_y(-PI / 4.0)));
+        .with_transform(wall_transform.then(&rotation_y(-PI / 4.0)));
 
     let right_wall = Sphere::default()
         .with_material(wall_material)
@@ -63,7 +63,7 @@ fn worldOne() -> World {
         .with_transform(translation(-0.5, 1.0, 0.5));
 
     let right = Sphere::default()
-        .with_material(middle_material.with_color(Color::BLUE))
+        .with_material(middle_material.with_color(Color::LIGHT_BLUE))
         .with_transform(scaling(0.5, 0.5, 0.5).then(&translation(1.5, 0.5, -0.5)));
 
     let left_material = Material::default()

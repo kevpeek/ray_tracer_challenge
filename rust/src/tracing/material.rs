@@ -50,7 +50,7 @@ fn specular_contribution(
 ) -> Color {
     let light_direction = (light.position() - position).normalize();
     let light_dot_normal = light_direction.dot(normal);
-    return if light_dot_normal < 0.0 {
+    if light_dot_normal < 0.0 {
         Color::BLACK
     } else {
         let reflect_vector = -light_direction.reflect(normal);
@@ -62,7 +62,7 @@ fn specular_contribution(
             let factor = reflect_dot_eye.powf(material.shininess);
             light.intensity() * material.specular * factor
         }
-    };
+    }
 }
 
 #[derive(Debug, Clone)]
