@@ -1,11 +1,11 @@
 use crate::display::canvas::Canvas;
+use crate::display::color::Color;
 use crate::geometry::matrix::Matrix;
 use crate::geometry::point::Point;
 use crate::helper::enumerate_coordinates;
 use crate::tracing::ray::Ray;
 use crate::tracing::world::World;
 use rayon::prelude::*;
-use crate::display::color::Color;
 
 pub struct Camera {
     hsize: usize,
@@ -29,13 +29,15 @@ impl Camera {
      */
     pub(crate) fn render(&self, world: World) -> Canvas {
         let mut canvas = Canvas::new(self.hsize, self.vsize);
-        let pixels: Vec<(usize, usize, Color)> = enumerate_coordinates(0..self.hsize, 0..self.vsize)
-            .par_iter()
-            .map(|(x, y)| (*x, *y, self.ray_for_pixel(*x, *y)))
-            .map(|(x, y, ray)| (x, y, world.color_at(&ray)))
-            .collect();
-            pixels.into_iter()
-                .for_each(|(x, y, color)| canvas.write_pixel(x, y, color));
+        let pixels: Vec<(usize, usize, Color)> =
+            enumerate_coordinates(0..self.hsize, 0..self.vsize)
+                .par_iter()
+                .map(|(x, y)| (*x, *y, self.ray_for_pixel(*x, *y)))
+                .map(|(x, y, ray)| (x, y, world.color_at(&ray)))
+                .collect();
+        pixels
+            .into_iter()
+            .for_each(|(x, y, color)| canvas.write_pixel(x, y, color));
 
         canvas
     }
@@ -89,15 +91,15 @@ impl Camera {
 
 #[cfg(test)]
 mod tests {
+    use crate::display::color::Color;
     use crate::geometry::matrix::Matrix;
     use crate::geometry::point::Point;
     use crate::geometry::transformations::{rotation_y, translation, view_transform};
     use crate::geometry::vector::Vector;
     use crate::helper::almost;
     use crate::tracing::camera::Camera;
-    use std::f64::consts::PI;
     use crate::tracing::world::World;
-    use crate::display::color::Color;
+    use std::f64::consts::PI;
 
     #[test]
     fn constructing_a_camera() {

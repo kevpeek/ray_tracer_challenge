@@ -75,6 +75,8 @@ fn world_one() -> World {
         .with_material(left_material)
         .with_transform(scaling(0.33, 0.33, 0.33).then(&translation(-1.5, 0.33, -0.75)));
 
-
-    World::new(vec![floor, left_wall, right_wall, middle, right, left], light_source)
+    World::new(
+        vec![floor, left_wall, right_wall, middle, right, left],
+        light_source,
+    )
 }

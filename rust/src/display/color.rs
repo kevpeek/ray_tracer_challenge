@@ -29,12 +29,12 @@ impl Color {
     pub const LIGHT_GREEN: Color = Color {
         red: 0.1,
         green: 1.0,
-        blue: 0.5
+        blue: 0.5,
     };
     pub const MUSTARD_YELLOW: Color = Color {
         red: 1.0,
         green: 0.8,
-        blue: 0.1
+        blue: 0.1,
     };
     pub const LIGHT_BLUE: Color = Color {
         red: 0.60,
