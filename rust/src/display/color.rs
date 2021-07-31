@@ -21,11 +21,6 @@ impl Color {
         green: 0.0,
         blue: 0.0,
     };
-    pub const RED: Color = Color {
-        red: 1.0,
-        green: 0.0,
-        blue: 0.0,
-    };
     pub const LIGHT_GREEN: Color = Color {
         red: 0.1,
         green: 1.0,

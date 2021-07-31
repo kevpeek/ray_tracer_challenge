@@ -1,4 +1,5 @@
 use crate::display::color::Color;
+use crate::display::resolution::Resolution;
 
 pub struct Canvas {
     pub width: usize,
@@ -7,7 +8,9 @@ pub struct Canvas {
 }
 
 impl Canvas {
-    pub fn new(width: usize, height: usize) -> Canvas {
+    pub fn new(resolution: Resolution) -> Canvas {
+        let width = resolution.hsize();
+        let height = resolution.vsize();
         Canvas {
             width,
             height,

@@ -6,38 +6,11 @@ use crate::helper::enumerate_coordinates;
 use crate::tracing::ray::Ray;
 use crate::tracing::world::World;
 use rayon::prelude::*;
+use crate::display::resolution::Resolution;
 
-#[derive(Copy, Clone, Debug, Eq, PartialEq)]
-pub struct Resolution {
-    hsize: usize,
-    vsize: usize,
-}
-
-impl Resolution {
-    pub const LOW: Resolution = Resolution {
-        hsize: 400,
-        vsize: 200,
-    };
-    pub const FHD: Resolution = Resolution {
-        hsize: 1920,
-        vsize: 1080,
-    };
-    pub fn new(hsize: usize, vsize: usize) -> Resolution {
-        Resolution { hsize, vsize }
-    }
-
-    fn aspect(&self) -> f64 {
-        self.hsize as f64 / self.vsize as f64
-    }
-
-    fn coordinates(&self) -> Vec<(usize, usize)> {
-        enumerate_coordinates(0..self.hsize, 0..self.vsize)
-    }
-}
 
 pub struct Camera {
     resolution: Resolution,
-    field_of_view: f64,
     transform: Matrix,
     half_height: f64,
     half_width: f64,
@@ -47,7 +20,6 @@ impl Camera {
     pub fn new(resolution: Resolution, field_of_view: f64, transform: Matrix) -> Camera {
         Camera {
             resolution,
-            field_of_view,
             transform,
             half_height: Camera::calculate_half_height(resolution, field_of_view),
             half_width: Camera::calculate_half_width(resolution, field_of_view),
@@ -58,7 +30,7 @@ impl Camera {
      * Produce the image of the world as seen from this camera.
      */
     pub(crate) fn render(&self, world: World) -> Canvas {
-        let mut canvas = Canvas::new(self.resolution.hsize, self.resolution.vsize);
+        let mut canvas = Canvas::new(self.resolution);
         let pixels: Vec<(usize, usize, Color)> = self
             .resolution
             .coordinates()
@@ -94,7 +66,7 @@ impl Camera {
     }
 
     fn pixel_size(&self) -> f64 {
-        self.half_width * 2.0 / self.resolution.hsize as f64
+        self.half_width * 2.0 / self.resolution.hsize() as f64
     }
 
     fn calculate_half_height(resolution: Resolution, field_of_view: f64) -> f64 {
@@ -126,9 +98,10 @@ mod tests {
     use crate::geometry::transformations::{rotation_y, translation, view_transform};
     use crate::geometry::vector::Vector;
     use crate::helper::almost;
-    use crate::tracing::camera::{Camera, Resolution};
+    use crate::tracing::camera::{Camera};
     use crate::tracing::world::World;
     use std::f64::consts::PI;
+    use crate::display::resolution::Resolution;
 
     #[test]
     fn constructing_a_camera() {
@@ -138,7 +111,6 @@ mod tests {
         let camera = Camera::new(resolution, field_of_view, Matrix::identity(4));
 
         assert_eq!(resolution, camera.resolution);
-        assert_eq!(PI / 2.0, camera.field_of_view);
         assert_eq!(Matrix::identity(4), camera.transform);
     }
 

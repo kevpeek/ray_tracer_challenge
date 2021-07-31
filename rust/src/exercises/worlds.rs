@@ -5,12 +5,13 @@ use crate::geometry::transformations::{
     rotation_x, rotation_y, scaling, translation, view_transform,
 };
 use crate::geometry::vector::Vector;
-use crate::tracing::camera::{Camera, Resolution};
+use crate::tracing::camera::{Camera};
 use crate::tracing::material::Material;
 use crate::tracing::point_light::PointLight;
 use crate::tracing::sphere::Sphere;
 use crate::tracing::world::World;
 use std::f64::consts::PI;
+use crate::display::resolution::Resolution;
 
 pub fn run_world() {
     let world = world_one();
