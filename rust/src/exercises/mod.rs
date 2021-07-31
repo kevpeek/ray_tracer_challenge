@@ -1,2 +1,2 @@
-pub(crate) mod first_world;
+pub(crate) mod worlds;
 pub mod projectile;

@@ -60,10 +60,8 @@ impl World {
     }
 
     pub fn intersected_by(&self, ray: &Ray) -> Vec<Intersection> {
-        let mut intersections: Vec<Intersection> = self
-            .objects
-            .iter()
-            .flat_map(|it| intersects(it.clone(), ray))
+        let mut intersections: Vec<Intersection> = self.objects.iter()
+            .flat_map(|it| intersects(it, ray))
             .collect();
         intersections.sort_by(|a, b| a.time().partial_cmp(&b.time()).unwrap());
         intersections
@@ -125,7 +123,7 @@ mod tests {
         let world = World::default();
         let ray = Ray::new(Point::at(0, 0, -5), Vector::new(0, 0, 1));
         let shape = world.objects.first().unwrap().clone();
-        let intersect = &intersects(shape, &ray)[0];
+        let intersect = &intersects(&shape, &ray)[0];
 
         let comps = intersect.pre_computations(&ray);
 
@@ -139,7 +137,7 @@ mod tests {
         let world = World::new(default_spheres(), light_source);
         let ray = Ray::new(Point::at(0, 0, 0), Vector::new(0, 0, 1));
         let shape = world.objects[1].clone();
-        let intersect = &intersects(shape, &ray)[1];
+        let intersect = &intersects(&shape, &ray)[1];
 
         let comps = intersect.pre_computations(&ray);
 

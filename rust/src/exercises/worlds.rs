@@ -5,25 +5,29 @@ use crate::geometry::transformations::{
     rotation_x, rotation_y, scaling, translation, view_transform,
 };
 use crate::geometry::vector::Vector;
-use crate::tracing::camera::Camera;
+use crate::tracing::camera::{Camera, Resolution};
 use crate::tracing::material::Material;
 use crate::tracing::point_light::PointLight;
 use crate::tracing::sphere::Sphere;
 use crate::tracing::world::World;
 use std::f64::consts::PI;
 
-pub fn run() {
+pub fn run_world() {
     let world = world_one();
+    let camera = make_camera();
 
+    let canvas = camera.render(world);
+    write_canvas(&canvas).unwrap();
+}
+
+fn make_camera() -> Camera {
     let camera_transform = view_transform(
         Point::at(0.0, 1.5, -5.0),
         Point::at(0, 1, 0),
         Vector::new(0, 1, 0),
     );
-    let camera = Camera::new(400, 200, PI / 3.0, camera_transform);
-
-    let canvas = camera.render(world);
-    write_canvas(&canvas).unwrap();
+    let camera = Camera::new(Resolution::LOW, PI / 3.0, camera_transform);
+    camera
 }
 
 fn world_one() -> World {
