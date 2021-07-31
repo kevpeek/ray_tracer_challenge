@@ -60,7 +60,9 @@ impl World {
     }
 
     pub fn intersected_by(&self, ray: &Ray) -> Vec<Intersection> {
-        let mut intersections: Vec<Intersection> = self.objects.iter()
+        let mut intersections: Vec<Intersection> = self
+            .objects
+            .iter()
             .flat_map(|it| intersects(it, ray))
             .collect();
         intersections.sort_by(|a, b| a.time().partial_cmp(&b.time()).unwrap());

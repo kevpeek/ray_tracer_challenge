@@ -10,14 +10,20 @@ use rayon::prelude::*;
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub struct Resolution {
     hsize: usize,
-    vsize: usize
+    vsize: usize,
 }
 
 impl Resolution {
-    pub const LOW: Resolution = Resolution { hsize: 400, vsize: 200 };
-    pub const FHD: Resolution = Resolution { hsize: 1920, vsize: 1080 };
+    pub const LOW: Resolution = Resolution {
+        hsize: 400,
+        vsize: 200,
+    };
+    pub const FHD: Resolution = Resolution {
+        hsize: 1920,
+        vsize: 1080,
+    };
     pub fn new(hsize: usize, vsize: usize) -> Resolution {
-        Resolution {hsize, vsize}
+        Resolution { hsize, vsize }
     }
 
     fn aspect(&self) -> f64 {
@@ -27,7 +33,6 @@ impl Resolution {
     fn coordinates(&self) -> Vec<(usize, usize)> {
         enumerate_coordinates(0..self.hsize, 0..self.vsize)
     }
-
 }
 
 pub struct Camera {
@@ -45,7 +50,7 @@ impl Camera {
             field_of_view,
             transform,
             half_height: Camera::calculate_half_height(resolution, field_of_view),
-            half_width: Camera::calculate_half_width(resolution, field_of_view)
+            half_width: Camera::calculate_half_width(resolution, field_of_view),
         }
     }
 
@@ -54,12 +59,13 @@ impl Camera {
      */
     pub(crate) fn render(&self, world: World) -> Canvas {
         let mut canvas = Canvas::new(self.resolution.hsize, self.resolution.vsize);
-        let pixels: Vec<(usize, usize, Color)> =
-            self.resolution.coordinates()
-                .par_iter()
-                .map(|(x, y)| (*x, *y, self.ray_for_pixel(*x, *y)))
-                .map(|(x, y, ray)| (x, y, world.color_at(&ray)))
-                .collect();
+        let pixels: Vec<(usize, usize, Color)> = self
+            .resolution
+            .coordinates()
+            .par_iter()
+            .map(|(x, y)| (*x, *y, self.ray_for_pixel(*x, *y)))
+            .map(|(x, y, ray)| (x, y, world.color_at(&ray)))
+            .collect();
         pixels
             .into_iter()
             .for_each(|(x, y, color)| canvas.write_pixel(x, y, color));
@@ -189,7 +195,11 @@ mod tests {
         let from = Point::at(0, 0, -5);
         let to = Point::origin();
         let up = Vector::new(0, 1, 0);
-        let camera = Camera::new(Resolution::new(11, 11), PI / 2.0, view_transform(from, to, up));
+        let camera = Camera::new(
+            Resolution::new(11, 11),
+            PI / 2.0,
+            view_transform(from, to, up),
+        );
 
         let image = camera.render(world);
         assert_eq!(Color::new(0.38066, 0.47583, 0.2855), image.pixel_at(5, 5));
