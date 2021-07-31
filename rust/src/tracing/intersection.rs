@@ -17,13 +17,13 @@ pub struct PreComputedIntersection {
 }
 
 #[derive(Debug, PartialEq, Clone)]
-pub struct Intersection {
+pub struct Intersection<'a> {
     time: f64,
-    thing: Sphere,
+    thing: &'a Sphere,
 }
 
-impl Intersection {
-    pub fn new(time: f64, thing: Sphere) -> Intersection {
+impl<'a> Intersection<'a> {
+    pub fn new(time: f64, thing: &Sphere) -> Intersection {
         Intersection { time, thing }
     }
 
@@ -60,7 +60,7 @@ impl Intersection {
 /**
  * Returns the list of Intersections between the ray and sphere.
  */
-pub fn intersects(sphere: &Sphere, ray: &Ray) -> Vec<Intersection> {
+pub fn intersects<'a>(sphere: &'a Sphere, ray: &Ray) -> Vec<Intersection<'a>> {
     let transformed_ray = ray.transform(sphere.transform().inverse());
     let sphere_to_ray = transformed_ray.origin() - sphere.origin();
     let a = transformed_ray.direction().dot(transformed_ray.direction());
@@ -77,24 +77,15 @@ pub fn intersects(sphere: &Sphere, ray: &Ray) -> Vec<Intersection> {
     let t2 = (-b + discriminant.sqrt()) / (2.0 * a);
 
     vec![
-        Intersection::new(t1, sphere.clone()),
-        Intersection::new(t2, sphere.clone()),
+        Intersection::new(t1, sphere),
+        Intersection::new(t2, sphere),
     ]
-}
-
-/**
- * Returns all intersections of the supplied Ray with every object in the world.
- *
- * Resulting Intersections are sorted by time, so intersections from any given object may not adjacent in the list.
- */
-pub fn intersect_world(world: World, ray: &Ray) -> Vec<Intersection> {
-    world.intersected_by(ray)
 }
 
 /**
  * Finds the Intersection with the lowest, non-negative time letue.
  */
-pub fn hit(intersections: &[Intersection]) -> Option<&Intersection> {
+pub fn hit<'a>(intersections: &'a [Intersection<>]) -> Option<&'a Intersection<'a>> {
     intersections
         .iter()
         .filter(|it| it.time.is_sign_positive())
@@ -171,16 +162,18 @@ mod tests {
 
     #[test]
     fn intersection_encapsulates_t_and_object() {
-        let intersection = Intersection::new(3.5, Sphere::default());
+        let sphere = Sphere::default();
+        let intersection = Intersection::new(3.5, &sphere);
 
         assert_eq!(3.5, intersection.time);
-        assert_eq!(Sphere::default(), intersection.thing);
+        assert_eq!(Sphere::default(), *intersection.thing);
     }
 
     #[test]
     fn aggregating_intersections() {
-        let i1 = Intersection::new(1.0, Sphere::default());
-        let i2 = Intersection::new(2.0, Sphere::default());
+        let sphere = Sphere::default();
+        let i1 = Intersection::new(1.0, &sphere);
+        let i2 = Intersection::new(2.0, &sphere);
 
         let intersections = vec![i1.clone(), i2.clone()];
 
@@ -193,17 +186,19 @@ mod tests {
     fn intersect_sets_the_object_on_the_intersection() {
         let ray = Ray::new(Point::at(0, 0, -5), Vector::new(0, 0, 1));
 
-        let intersections = intersects(&Sphere::default(), &ray);
+        let sphere = Sphere::default();
+        let intersections = intersects(&sphere, &ray);
 
         assert_eq!(2, intersections.len());
-        assert_eq!(Sphere::default(), intersections[0].thing);
-        assert_eq!(Sphere::default(), intersections[1].thing);
+        assert_eq!(sphere, *intersections[0].thing);
+        assert_eq!(sphere, *intersections[1].thing);
     }
 
     #[test]
     fn hit_when_all_intersections_have_positive_t() {
-        let i1 = Intersection::new(1.0, Sphere::default());
-        let i2 = Intersection::new(2.0, Sphere::default());
+        let sphere = Sphere::default();
+        let i1 = Intersection::new(1.0, &sphere);
+        let i2 = Intersection::new(2.0, &sphere);
         let intersections = vec![i1.clone(), i2.clone()];
 
         let the_hit = hit(&intersections);
@@ -212,8 +207,9 @@ mod tests {
 
     #[test]
     fn hit_when_some_intersections_have_negative_t() {
-        let i1 = Intersection::new(-1.0, Sphere::default());
-        let i2 = Intersection::new(1.0, Sphere::default());
+        let sphere = Sphere::default();
+        let i1 = Intersection::new(-1.0, &sphere);
+        let i2 = Intersection::new(1.0, &sphere);
         let intersections = vec![i1.clone(), i2.clone()];
 
         let the_hit = hit(&intersections);
@@ -222,8 +218,9 @@ mod tests {
 
     #[test]
     fn hit_when_all_intersections_have_negative_t() {
-        let i1 = Intersection::new(-2.0, Sphere::default());
-        let i2 = Intersection::new(-1.0, Sphere::default());
+        let sphere = Sphere::default();
+        let i1 = Intersection::new(-2.0, &sphere);
+        let i2 = Intersection::new(-1.0, &sphere);
         let intersections = vec![i1, i2];
 
         let the_hit = hit(&intersections);
@@ -232,10 +229,11 @@ mod tests {
 
     #[test]
     fn hit_is_always_the_lowest_nonnegative_intersection() {
-        let i1 = Intersection::new(5.0, Sphere::default());
-        let i2 = Intersection::new(7.0, Sphere::default());
-        let i3 = Intersection::new(-3.0, Sphere::default());
-        let i4 = Intersection::new(2.0, Sphere::default());
+        let sphere = Sphere::default();
+        let i1 = Intersection::new(5.0, &sphere);
+        let i2 = Intersection::new(7.0, &sphere);
+        let i3 = Intersection::new(-3.0, &sphere);
+        let i4 = Intersection::new(2.0, &sphere);
         let intersections = vec![i1.clone(), i2.clone(), i3.clone(), i4.clone()];
 
         let the_hit = hit(&intersections);
@@ -272,7 +270,7 @@ mod tests {
         let comps = intersection.pre_computations(&ray);
 
         assert_eq!(intersection.time, comps.time);
-        assert_eq!(intersection.thing, comps.thing);
+        assert_eq!(*intersection.thing, comps.thing);
         assert_eq!(Point::at(0, 0, -1), comps.point);
         assert_eq!(Vector::new(0, 0, -1), comps.eye_vector);
         assert_eq!(Vector::new(0, 0, -1), comps.normal_vector);

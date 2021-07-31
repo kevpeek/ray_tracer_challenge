@@ -84,7 +84,7 @@ mod tests {
     use crate::geometry::point::Point;
     use crate::geometry::transformations::scaling;
     use crate::geometry::vector::Vector;
-    use crate::tracing::intersection::{intersect_world, intersects};
+    use crate::tracing::intersection::{intersects};
     use crate::tracing::material::Material;
     use crate::tracing::point_light::PointLight;
     use crate::tracing::ray::Ray;
@@ -111,7 +111,8 @@ mod tests {
         let world = World::default();
         let ray = Ray::new(Point::at(0, 0, -5), Vector::new(0, 0, 1));
 
-        let intersections = intersect_world(world, &ray);
+        let ray_argument = &ray;
+        let intersections = world.intersected_by(ray_argument);
 
         assert_eq!(4, intersections.len());
         assert_eq!(4.0, intersections[0].time());
