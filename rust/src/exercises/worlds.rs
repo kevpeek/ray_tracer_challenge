@@ -27,7 +27,7 @@ fn make_camera() -> Camera {
         Point::at(0, 1, 0),
         Vector::new(0, 1, 0),
     );
-    let camera = Camera::new(Resolution::FHD, PI / 3.0, camera_transform);
+    let camera = Camera::new(Resolution::LOW, PI / 3.0, camera_transform);
     camera
 }
 

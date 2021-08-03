@@ -2,7 +2,6 @@ use crate::display::canvas::Canvas;
 use crate::display::color::Color;
 use crate::geometry::matrix::Matrix;
 use crate::geometry::point::Point;
-use crate::helper::enumerate_coordinates;
 use crate::tracing::ray::Ray;
 use crate::tracing::world::World;
 use rayon::prelude::*;

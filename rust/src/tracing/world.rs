@@ -2,7 +2,7 @@ use crate::display::color::Color;
 use crate::geometry::matrix::Matrix;
 use crate::geometry::point::Point;
 use crate::geometry::transformations::scaling;
-use crate::tracing::intersection::{hit, intersects, Intersection, PreComputedIntersection};
+use crate::tracing::intersection::{intersects, Intersection, PreComputedIntersection, Intersections};
 use crate::tracing::material::{lighting, Material};
 use crate::tracing::point_light::PointLight;
 use crate::tracing::ray::Ray;
@@ -54,21 +54,18 @@ impl World {
      */
     pub fn color_at(&self, ray: &Ray) -> Color {
         let intersections = &self.intersected_by(ray);
-        let hit = hit(intersections);
+        let hit = intersections.hit();
         match hit {
             Some(hit) => self.shade_hit(hit.pre_computations(ray)),
             None => Color::BLACK,
         }
     }
 
-    pub fn intersected_by(&self, ray: &Ray) -> Vec<Intersection> {
-        let mut intersections: Vec<Intersection> = self
-            .objects
-            .iter()
-            .flat_map(|it| intersects(it, ray))
+    pub fn intersected_by(&self, ray: &Ray) -> Intersections {
+        let intersections: Vec<Intersections> = self.objects.iter()
+            .map(|it| intersects(it, ray))
             .collect();
-        intersections.sort_by(|a, b| a.time().partial_cmp(&b.time()).unwrap());
-        intersections
+        Intersections::combine(intersections)
     }
 
     pub fn is_shadowed(&self, point: Point) -> bool {
@@ -79,7 +76,8 @@ impl World {
         let ray = Ray::new(point, direction);
         let intersections = self.intersected_by(&ray);
 
-        let hit = hit(&intersections);
+        let intersections_argument = &intersections;
+        let hit = intersections_argument.hit();
         match hit {
             Some(hit) if hit.time() < distance => true,
             _ => false,
@@ -133,6 +131,7 @@ mod tests {
         let ray_argument = &ray;
         let intersections = world.intersected_by(ray_argument);
 
+        let intersections = intersections.intersections;
         assert_eq!(4, intersections.len());
         assert_eq!(4.0, intersections[0].time());
         assert_eq!(4.5, intersections[1].time());
@@ -145,7 +144,7 @@ mod tests {
         let world = World::default();
         let ray = Ray::new(Point::at(0, 0, -5), Vector::new(0, 0, 1));
         let shape = world.objects.first().unwrap().clone();
-        let intersect = &intersects(&shape, &ray)[0];
+        let intersect = &intersects(&shape, &ray).intersections[0];
 
         let comps = intersect.pre_computations(&ray);
 
@@ -159,7 +158,7 @@ mod tests {
         let world = World::new(default_spheres(), light_source);
         let ray = Ray::new(Point::origin(), Vector::new(0, 0, 1));
         let shape = world.objects[1].clone();
-        let intersect = &intersects(&shape, &ray)[1];
+        let intersect = &intersects(&shape, &ray).intersections[1];
 
         let comps = intersect.pre_computations(&ray);
 

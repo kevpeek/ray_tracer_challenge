@@ -2,8 +2,47 @@ use crate::geometry::point::Point;
 use crate::geometry::vector::Vector;
 use crate::tracing::ray::Ray;
 use crate::tracing::sphere::Sphere;
-use crate::tracing::world::World;
 use crate::helper::EPSILON;
+
+pub struct Intersections<'a> {
+    pub intersections: Vec<Intersection<'a>>
+}
+
+/*
+ * Macro for variadic intersections![] functionality
+ */
+#[macro_export]
+macro_rules! intersections {
+    ( $( $x:expr ),* ) => {
+        {
+            let mut temp_vec = Vec::new();
+            $(
+                temp_vec.push($x);
+            )*
+            $crate::tracing::intersection::Intersections { intersections: temp_vec }
+        }
+    };
+}
+
+impl<'a> Intersections<'a> {
+    pub fn combine(others: Vec<Intersections>) -> Intersections {
+        let mut values: Vec<Intersection> = others.into_iter()
+            .flat_map(|it| it.intersections)
+            .collect();
+        values.sort_by(|a, b| a.time().partial_cmp(&b.time()).unwrap());
+        Intersections { intersections: values}
+    }
+
+    /**
+     * Finds the Intersection with the lowest, non-negative time value.
+     */
+    pub fn hit(&self) -> Option<&Intersection> {
+        self.intersections
+            .iter()
+            .filter(|it| it.time.is_sign_positive())
+            .min_by(|a, b| a.time.partial_cmp(&b.time).unwrap())
+    }
+}
 
 /**
  * Precompute details about the intersection.
@@ -65,7 +104,7 @@ impl<'a> Intersection<'a> {
 /**
  * Returns the list of Intersections between the ray and sphere.
  */
-pub fn intersects<'a>(sphere: &'a Sphere, ray: &Ray) -> Vec<Intersection<'a>> {
+pub fn intersects<'a>(sphere: &'a Sphere, ray: &Ray) -> Intersections<'a> {
     let transformed_ray = ray.transform(sphere.transform().inverse());
     let sphere_to_ray = transformed_ray.origin() - sphere.origin();
     let a = transformed_ray.direction().dot(transformed_ray.direction());
@@ -75,26 +114,16 @@ pub fn intersects<'a>(sphere: &'a Sphere, ray: &Ray) -> Vec<Intersection<'a>> {
     let discriminant = b * b - 4.0 * a * c;
 
     if discriminant < 0.0 {
-        return Vec::new();
+        return intersections![]
     }
 
     let t1 = (-b - discriminant.sqrt()) / (2.0 * a);
     let t2 = (-b + discriminant.sqrt()) / (2.0 * a);
 
-    vec![
+    intersections![
         Intersection::new(t1, sphere),
-        Intersection::new(t2, sphere),
+        Intersection::new(t2, sphere)
     ]
-}
-
-/**
- * Finds the Intersection with the lowest, non-negative time letue.
- */
-pub fn hit<'a>(intersections: &'a [Intersection<>]) -> Option<&'a Intersection<'a>> {
-    intersections
-        .iter()
-        .filter(|it| it.time.is_sign_positive())
-        .min_by(|a, b| a.time.partial_cmp(&b.time).unwrap())
 }
 
 #[cfg(test)]
@@ -102,7 +131,7 @@ mod tests {
     use crate::geometry::point::Point;
     use crate::geometry::transformations::{scaling, translation};
     use crate::geometry::vector::Vector;
-    use crate::tracing::intersection::{hit, intersects, Intersection};
+    use crate::tracing::intersection::{intersects, Intersection};
     use crate::tracing::material::Material;
     use crate::tracing::ray::Ray;
     use crate::tracing::sphere::Sphere;
@@ -114,6 +143,7 @@ mod tests {
 
         let intersections = intersects(&sphere, &ray);
 
+        let intersections = intersections.intersections;
         assert_eq!(2, intersections.len());
         assert_eq!(4.0, intersections[0].time);
         assert_eq!(6.0, intersections[1].time);
@@ -126,6 +156,7 @@ mod tests {
 
         let intersections = intersects(&sphere, &ray);
 
+        let intersections = intersections.intersections;
         assert_eq!(2, intersections.len());
         assert_eq!(5.0, intersections[0].time);
         assert_eq!(5.0, intersections[1].time);
@@ -138,6 +169,7 @@ mod tests {
 
         let intersections = intersects(&sphere, &ray);
 
+        let intersections = intersections.intersections;
         assert!(intersections.is_empty());
     }
 
@@ -148,6 +180,7 @@ mod tests {
 
         let intersections = intersects(&sphere, &ray);
 
+        let intersections = intersections.intersections;
         assert_eq!(2, intersections.len());
         assert_eq!(-1.0, intersections[0].time);
         assert_eq!(1.0, intersections[1].time);
@@ -160,6 +193,7 @@ mod tests {
 
         let intersections = intersects(&sphere, &ray);
 
+        let intersections = intersections.intersections;
         assert_eq!(2, intersections.len());
         assert_eq!(-6.0, intersections[0].time);
         assert_eq!(-4.0, intersections[1].time);
@@ -194,6 +228,7 @@ mod tests {
         let sphere = Sphere::default();
         let intersections = intersects(&sphere, &ray);
 
+        let intersections = intersections.intersections;
         assert_eq!(2, intersections.len());
         assert_eq!(sphere, *intersections[0].thing);
         assert_eq!(sphere, *intersections[1].thing);
@@ -204,9 +239,9 @@ mod tests {
         let sphere = Sphere::default();
         let i1 = Intersection::new(1.0, &sphere);
         let i2 = Intersection::new(2.0, &sphere);
-        let intersections = vec![i1.clone(), i2.clone()];
+        let intersections = intersections![i1.clone(), i2.clone()];
 
-        let the_hit = hit(&intersections);
+        let the_hit =  intersections.hit();
         assert_eq!(i1, *the_hit.unwrap());
     }
 
@@ -215,9 +250,10 @@ mod tests {
         let sphere = Sphere::default();
         let i1 = Intersection::new(-1.0, &sphere);
         let i2 = Intersection::new(1.0, &sphere);
-        let intersections = vec![i1.clone(), i2.clone()];
+        let intersections = intersections![i1.clone(), i2.clone()];
 
-        let the_hit = hit(&intersections);
+        let intersections_argument = &intersections;
+        let the_hit = intersections_argument.hit();
         assert_eq!(i2, *the_hit.unwrap());
     }
 
@@ -226,9 +262,10 @@ mod tests {
         let sphere = Sphere::default();
         let i1 = Intersection::new(-2.0, &sphere);
         let i2 = Intersection::new(-1.0, &sphere);
-        let intersections = vec![i1, i2];
+        let intersections = intersections![i1, i2];
 
-        let the_hit = hit(&intersections);
+        let intersections_argument = &intersections;
+        let the_hit = intersections_argument.hit();
         assert!(the_hit.is_none())
     }
 
@@ -239,9 +276,10 @@ mod tests {
         let i2 = Intersection::new(7.0, &sphere);
         let i3 = Intersection::new(-3.0, &sphere);
         let i4 = Intersection::new(2.0, &sphere);
-        let intersections = vec![i1.clone(), i2.clone(), i3.clone(), i4.clone()];
+        let intersections = intersections![i1.clone(), i2.clone(), i3.clone(), i4.clone()];
 
-        let the_hit = hit(&intersections);
+        let intersections_argument = &intersections;
+        let the_hit = intersections_argument.hit();
         assert_eq!(i4, *the_hit.unwrap());
     }
 
@@ -252,6 +290,7 @@ mod tests {
 
         let intersections = intersects(&sphere, &ray);
 
+        let intersections = intersections.intersections;
         assert_eq!(2, intersections.len());
         assert_eq!(3.0, intersections[0].time);
         assert_eq!(7.0, intersections[1].time);
@@ -263,6 +302,7 @@ mod tests {
         let sphere = Sphere::new(Point::origin(), Material::default(), translation(5, 0, 0));
 
         let intersections = intersects(&sphere, &ray);
+        let intersections = intersections.intersections;
         assert!(intersections.is_empty());
     }
 
@@ -270,7 +310,7 @@ mod tests {
     fn precomputing_state_of_an_intersection() {
         let ray = Ray::new(Point::at(0, 0, -5), Vector::new(0, 0, 1));
         let shape = Sphere::default();
-        let intersection = &intersects(&shape, &ray)[0];
+        let intersection = &intersects(&shape, &ray).intersections[0];
 
         let comps = intersection.pre_computations(&ray);
 
@@ -286,7 +326,7 @@ mod tests {
         let ray = Ray::new(Point::at(0, 0, -5), Vector::new(0, 0, 1));
         let shape = Sphere::default();
 
-        let intersect = &intersects(&shape, &ray)[0];
+        let intersect = &intersects(&shape, &ray).intersections[0];
 
         let comps = intersect.pre_computations(&ray);
         assert!(!comps.inside);
@@ -297,7 +337,7 @@ mod tests {
         let ray = Ray::new(Point::at(0, 0, 0), Vector::new(0, 0, 1));
         let shape = Sphere::default();
 
-        let intersect = &intersects(&shape, &ray)[1];
+        let intersect = &intersects(&shape, &ray).intersections[1];
 
         let comps = intersect.pre_computations(&ray);
         assert!(comps.inside);
