@@ -15,11 +15,11 @@ pub fn lighting(
     let ambient = ambient_contribution(material, light);
     let diffuse = match in_shadow {
         true => Color::BLACK,
-        false => diffuse_contribution(material, light, position, normal)
+        false => diffuse_contribution(material, light, position, normal),
     };
     let specular = match in_shadow {
         true => Color::BLACK,
-        false => specular_contribution(material, light, position, eye_vector, normal)
+        false => specular_contribution(material, light, position, eye_vector, normal),
     };
     ambient + diffuse + specular
 }
@@ -289,7 +289,7 @@ mod test {
             Point::origin(),
             eye_vector,
             normal,
-            in_shadow
+            in_shadow,
         );
         assert_eq!(Color::new(0.1, 0.1, 0.1), result);
     }

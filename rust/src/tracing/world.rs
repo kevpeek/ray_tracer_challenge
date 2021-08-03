@@ -2,7 +2,9 @@ use crate::display::color::Color;
 use crate::geometry::matrix::Matrix;
 use crate::geometry::point::Point;
 use crate::geometry::transformations::scaling;
-use crate::tracing::intersection::{intersects, Intersection, PreComputedIntersection, Intersections};
+use crate::tracing::intersection::{
+    intersects, Intersection, Intersections, PreComputedIntersection,
+};
 use crate::tracing::material::{lighting, Material};
 use crate::tracing::point_light::PointLight;
 use crate::tracing::ray::Ray;
@@ -62,9 +64,8 @@ impl World {
     }
 
     pub fn intersected_by(&self, ray: &Ray) -> Intersections {
-        let intersections: Vec<Intersections> = self.objects.iter()
-            .map(|it| intersects(it, ray))
-            .collect();
+        let intersections: Vec<Intersections> =
+            self.objects.iter().map(|it| intersects(it, ray)).collect();
         Intersections::combine(intersections)
     }
 
@@ -97,16 +98,16 @@ mod tests {
     use crate::display::color::Color;
     use crate::geometry::matrix::Matrix;
     use crate::geometry::point::Point;
+    use crate::geometry::transformations;
     use crate::geometry::transformations::{scaling, translation};
     use crate::geometry::vector::Vector;
+    use crate::helper::EPSILON;
     use crate::tracing::intersection::{intersects, Intersection};
     use crate::tracing::material::Material;
     use crate::tracing::point_light::PointLight;
     use crate::tracing::ray::Ray;
     use crate::tracing::sphere::Sphere;
     use crate::tracing::world::{default_spheres, World};
-    use crate::geometry::transformations;
-    use crate::helper::EPSILON;
 
     #[test]
     fn creating_a_world() {
@@ -235,8 +236,7 @@ mod tests {
         let light = PointLight::new(Point::at(0, 0, -10), Color::WHITE);
 
         let sphere_one = Sphere::default();
-        let sphere_two = Sphere::default()
-            .with_transform(translation(0, 0, 10));
+        let sphere_two = Sphere::default().with_transform(translation(0, 0, 10));
 
         let world = World::new(vec![sphere_one, sphere_two.clone()], light);
 
@@ -251,11 +251,10 @@ mod tests {
     #[test]
     fn the_hit_should_offset_the_point() {
         let ray = Ray::new(Point::at(0, 0, -5), Vector::new(0, 0, 1));
-        let sphere = Sphere::default()
-            .with_transform(transformations::translation(0, 0, 1));
+        let sphere = Sphere::default().with_transform(transformations::translation(0, 0, 1));
         let intersection = Intersection::new(5.0, &sphere);
         let pre_computations = intersection.pre_computations(&ray);
-        assert!(pre_computations.over_point.z < -EPSILON/2.0);
+        assert!(pre_computations.over_point.z < -EPSILON / 2.0);
         assert!(pre_computations.point.z > pre_computations.over_point.z);
     }
 }

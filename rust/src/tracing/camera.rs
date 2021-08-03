@@ -1,12 +1,11 @@
 use crate::display::canvas::Canvas;
 use crate::display::color::Color;
+use crate::display::resolution::Resolution;
 use crate::geometry::matrix::Matrix;
 use crate::geometry::point::Point;
 use crate::tracing::ray::Ray;
 use crate::tracing::world::World;
 use rayon::prelude::*;
-use crate::display::resolution::Resolution;
-
 
 pub struct Camera {
     resolution: Resolution,
@@ -92,15 +91,15 @@ impl Camera {
 #[cfg(test)]
 mod tests {
     use crate::display::color::Color;
+    use crate::display::resolution::Resolution;
     use crate::geometry::matrix::Matrix;
     use crate::geometry::point::Point;
     use crate::geometry::transformations::{rotation_y, translation, view_transform};
     use crate::geometry::vector::Vector;
     use crate::helper::almost;
-    use crate::tracing::camera::{Camera};
+    use crate::tracing::camera::Camera;
     use crate::tracing::world::World;
     use std::f64::consts::PI;
-    use crate::display::resolution::Resolution;
 
     #[test]
     fn constructing_a_camera() {

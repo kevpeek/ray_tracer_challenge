@@ -1,11 +1,11 @@
 use crate::geometry::point::Point;
 use crate::geometry::vector::Vector;
+use crate::helper::EPSILON;
 use crate::tracing::ray::Ray;
 use crate::tracing::sphere::Sphere;
-use crate::helper::EPSILON;
 
 pub struct Intersections<'a> {
-    pub intersections: Vec<Intersection<'a>>
+    pub intersections: Vec<Intersection<'a>>,
 }
 
 /*
@@ -26,11 +26,12 @@ macro_rules! intersections {
 
 impl<'a> Intersections<'a> {
     pub fn combine(others: Vec<Intersections>) -> Intersections {
-        let mut values: Vec<Intersection> = others.into_iter()
-            .flat_map(|it| it.intersections)
-            .collect();
+        let mut values: Vec<Intersection> =
+            others.into_iter().flat_map(|it| it.intersections).collect();
         values.sort_by(|a, b| a.time().partial_cmp(&b.time()).unwrap());
-        Intersections { intersections: values}
+        Intersections {
+            intersections: values,
+        }
     }
 
     /**
@@ -114,16 +115,13 @@ pub fn intersects<'a>(sphere: &'a Sphere, ray: &Ray) -> Intersections<'a> {
     let discriminant = b * b - 4.0 * a * c;
 
     if discriminant < 0.0 {
-        return intersections![]
+        return intersections![];
     }
 
     let t1 = (-b - discriminant.sqrt()) / (2.0 * a);
     let t2 = (-b + discriminant.sqrt()) / (2.0 * a);
 
-    intersections![
-        Intersection::new(t1, sphere),
-        Intersection::new(t2, sphere)
-    ]
+    intersections![Intersection::new(t1, sphere), Intersection::new(t2, sphere)]
 }
 
 #[cfg(test)]
@@ -241,7 +239,7 @@ mod tests {
         let i2 = Intersection::new(2.0, &sphere);
         let intersections = intersections![i1.clone(), i2.clone()];
 
-        let the_hit =  intersections.hit();
+        let the_hit = intersections.hit();
         assert_eq!(i1, *the_hit.unwrap());
     }
 
