@@ -3,6 +3,7 @@ use crate::geometry::point::Point;
 use crate::geometry::vector::Vector;
 use num::NumCast;
 
+#[derive(Debug, Eq, PartialEq)]
 pub struct Ray {
     origin: Point,
     direction: Vector,
