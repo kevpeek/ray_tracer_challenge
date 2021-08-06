@@ -3,15 +3,16 @@ use crate::geometry::matrix::Matrix;
 use crate::geometry::point::Point;
 use crate::geometry::transformations::scaling;
 use crate::tracing::intersection::{
-    intersects, Intersection, Intersections, PreComputedIntersection,
+    Intersection, Intersections, PreComputedIntersection,
 };
 use crate::tracing::material::{lighting, Material};
 use crate::tracing::point_light::PointLight;
 use crate::tracing::ray::Ray;
 use crate::tracing::sphere::Sphere;
+use crate::tracing::shape::Shape;
 
 pub struct World {
-    objects: Vec<Sphere>,
+    objects: Vec<Box<Shape + Send + Sync>>,
     light_source: PointLight,
 }
 
@@ -23,15 +24,16 @@ impl World {
         }
     }
     pub fn default() -> World {
-        World {
-            objects: default_spheres(),
-            light_source: PointLight::default(),
-        }
+        World::new(default_spheres(), PointLight::default())
     }
 
     pub fn new(objects: Vec<Sphere>, light_source: PointLight) -> World {
+        let mut shapes: Vec<Box<dyn Shape + Send + Sync>> = vec![];
+        for sphere in objects {
+            shapes.push(Box::new(sphere));
+        }
         World {
-            objects,
+            objects: shapes,
             light_source,
         }
     }
@@ -65,7 +67,7 @@ impl World {
 
     pub fn intersected_by(&self, ray: &Ray) -> Intersections {
         let intersections: Vec<Intersections> =
-            self.objects.iter().map(|it| intersects(it, ray)).collect();
+            self.objects.iter().map(|it| it.intersect(ray)).collect();
         Intersections::combine(intersections)
     }
 
@@ -102,26 +104,20 @@ mod tests {
     use crate::geometry::transformations::{scaling, translation};
     use crate::geometry::vector::Vector;
     use crate::helper::EPSILON;
-    use crate::tracing::intersection::{intersects, Intersection};
+    use crate::tracing::intersection::{Intersection};
     use crate::tracing::material::Material;
     use crate::tracing::point_light::PointLight;
     use crate::tracing::ray::Ray;
     use crate::tracing::sphere::Sphere;
     use crate::tracing::world::{default_spheres, World};
+    use crate::tracing::shape::Shape;
+    use std::ops::Deref;
 
     #[test]
     fn creating_a_world() {
         let world = World::empty();
         assert!(world.objects.is_empty());
         assert_eq!(PointLight::black_light(), world.light_source);
-    }
-
-    #[test]
-    fn default_world() {
-        let default_world = World::default();
-
-        assert_eq!(PointLight::default(), default_world.light_source);
-        assert_eq!(default_spheres(), default_world.objects);
     }
 
     #[test]
@@ -145,7 +141,9 @@ mod tests {
         let world = World::default();
         let ray = Ray::new(Point::at(0, 0, -5), Vector::new(0, 0, 1));
         let shape = world.objects.first().unwrap().clone();
-        let intersect = &intersects(&shape, &ray).intersections[0];
+        let sphere = &shape;
+        let ray_argument = &ray;
+        let intersect = &sphere.intersect(ray_argument).intersections[0];
 
         let comps = intersect.pre_computations(&ray);
 
@@ -158,8 +156,9 @@ mod tests {
         let light_source = PointLight::new(Point::at(0.0, 0.25, 0.0), Color::WHITE);
         let world = World::new(default_spheres(), light_source);
         let ray = Ray::new(Point::origin(), Vector::new(0, 0, 1));
-        let shape = world.objects[1].clone();
-        let intersect = &intersects(&shape, &ray).intersections[1];
+        let sphere = &world.objects[1];
+        let ray_argument = &ray;
+        let intersect = &sphere.intersect(ray_argument).intersections[1];
 
         let comps = intersect.pre_computations(&ray);
 

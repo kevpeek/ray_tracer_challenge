@@ -2,28 +2,64 @@ use crate::geometry::matrix::Matrix;
 use crate::geometry::point::Point;
 use crate::geometry::vector::Vector;
 use crate::tracing::material::Material;
+use crate::tracing::intersection::{Intersections, Intersection};
+use crate::tracing::ray::Ray;
+use crate::intersections;
+use crate::tracing::shape::Shape;
 
 #[derive(Eq, PartialEq, Debug, Clone)]
 pub struct Sphere {
-    transform: Matrix,
     origin: Point,
     material: Material,
+    transform: Matrix
+}
+
+impl Shape for Sphere {
+    fn intersect(&self, ray: &Ray) -> Intersections {
+        let transformed_ray = ray.transform(self.transform().inverse());
+        let sphere_to_ray = transformed_ray.origin() - self.origin();
+        let a = transformed_ray.direction().dot(transformed_ray.direction());
+        let b = 2.0 * transformed_ray.direction().dot(sphere_to_ray);
+        let c = sphere_to_ray.dot(sphere_to_ray) - 1.0;
+
+        let discriminant = b * b - 4.0 * a * c;
+
+        if discriminant < 0.0 {
+            return intersections![];
+        }
+
+        let t1 = (-b - discriminant.sqrt()) / (2.0 * a);
+        let t2 = (-b + discriminant.sqrt()) / (2.0 * a);
+
+        intersections![Intersection::new(t1, self), Intersection::new(t2, self)]
+    }
+
+    /**
+     * Return the Vector normal to this sphere at the supplied point.
+     */
+    fn normal_at(&self, point: Point) -> Vector {
+        let transform_to_object_space = self.transform.inverse();
+        let point_in_object_space = &transform_to_object_space * point;
+        let normal_in_object_space = point_in_object_space - self.origin;
+        let transform_to_world_space = self.transform.submatrix(3, 3).inverse().transpose();
+        (&transform_to_world_space * normal_in_object_space).normalize()
+    }
 }
 
 impl Sphere {
     pub fn default() -> Sphere {
         Sphere {
-            transform: Matrix::identity(4),
             origin: Point::origin(),
             material: Material::default(),
+            transform: Matrix::identity(4)
         }
     }
 
     pub fn new(origin: Point, material: Material, transform: Matrix) -> Sphere {
         Sphere {
-            transform,
             origin,
             material,
+            transform
         }
     }
 
@@ -37,17 +73,6 @@ impl Sphere {
 
     pub fn with_transform(self, new_transform: Matrix) -> Sphere {
         Sphere::new(self.origin, self.material, new_transform)
-    }
-
-    /**
-     * Return the Vector normal to this sphere at the supplied point.
-     */
-    pub fn normal_at(&self, point: Point) -> Vector {
-        let transform_to_object_space = self.transform.inverse();
-        let point_in_object_space = &transform_to_object_space * point;
-        let normal_in_object_space = point_in_object_space - self.origin;
-        let transform_to_world_space = self.transform.submatrix(3, 3).inverse().transpose();
-        (&transform_to_world_space * normal_in_object_space).normalize()
     }
 
     pub fn transform(&self) -> &Matrix {
@@ -72,6 +97,7 @@ mod tests {
     use crate::tracing::material::Material;
     use crate::tracing::sphere::Sphere;
     use std::f64::consts::PI;
+    use crate::tracing::shape::Shape;
 
     #[test]
     fn spheres_default_transformation() {
