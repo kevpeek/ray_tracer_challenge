@@ -11,7 +11,7 @@ use crate::geometry::vector::Vector;
 use crate::tracing::camera::Camera;
 use crate::tracing::material::Material;
 use crate::tracing::point_light::PointLight;
-use crate::tracing::shape::WorldShape;
+use crate::tracing::shape::{WorldShape, Shape};
 use crate::tracing::sphere::Sphere;
 use crate::tracing::world::World;
 
@@ -81,7 +81,7 @@ fn world_one() -> World {
         .with_material(left_material)
         .with_transform(scaling(0.33, 0.33, 0.33).then(&translation(-1.5, 0.33, -0.75)));
 
-    let objects: Vec<WorldShape> = vec![
+    let objects: Vec<Box<dyn Shape>> = vec![
         Box::new(floor),
         Box::new(left_wall),
         Box::new(right_wall),

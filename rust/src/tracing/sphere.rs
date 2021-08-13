@@ -19,11 +19,7 @@ impl Shape for Sphere {
         self
     }
 
-    fn clone_boxed(&self) -> WorldShape {
-        Box::new((*self).clone())
-    }
-
-    fn box_eq(&self, other: &dyn Any) -> bool {
+    fn equals_shape(&self, other: &dyn Any) -> bool {
         other.downcast_ref::<Self>().map_or(false, |a| self == a)
     }
 
@@ -47,8 +43,8 @@ impl Shape for Sphere {
         let t2 = (-b + discriminant.sqrt()) / (2.0 * a);
 
         intersections![
-            Intersection::new(t1, self.clone_boxed()),
-            Intersection::new(t2, self.clone_boxed())
+            Intersection::new(t1, self),
+            Intersection::new(t2, self)
         ]
     }
 

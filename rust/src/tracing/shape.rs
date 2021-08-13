@@ -6,44 +6,38 @@ use crate::tracing::material::Material;
 use crate::tracing::ray::Ray;
 use std::any::Any;
 use std::fmt::Debug;
+use std::ops::Deref;
 
-pub type WorldShape = Box<dyn Shape>;
+pub type WorldShape<'a> = &'a dyn Shape;
 
-impl Clone for WorldShape {
-    fn clone(&self) -> Self {
-        self.clone_boxed()
-    }
-}
-
-impl PartialEq for WorldShape {
+impl<'a> PartialEq for WorldShape<'a> {
     fn eq(&self, other: &WorldShape) -> bool {
-        self.box_eq(other.as_any())
+        self.equals_shape(other.as_any())
     }
 }
 
-pub trait Shape: Any + Send + Sync + Debug {
+pub trait Shape: ShapeClone + Any + Send + Sync + Debug {
     fn as_any(&self) -> &dyn Any;
-    fn clone_boxed(&self) -> WorldShape;
-    fn box_eq(&self, other: &dyn Any) -> bool;
+    fn equals_shape(&self, other: &dyn Any) -> bool;
     fn material(&self) -> &Material;
     fn intersect(&self, ray: &Ray) -> Intersections;
     fn normal_at(&self, point: Point) -> Vector;
 }
 
-#[derive(Clone, Debug)]
+#[derive(Debug, Clone)]
 pub struct TransformedShape {
     transformation: Matrix,
-    delegate: WorldShape,
+    delegate: Box<dyn Shape>,
 }
 
 impl PartialEq for TransformedShape {
     fn eq(&self, other: &TransformedShape) -> bool {
-        self.delegate.box_eq(&other.delegate) && self.transformation == other.transformation
+        self.delegate.equals_shape(&other.delegate) && self.transformation == other.transformation
     }
 }
 
 impl TransformedShape {
-    pub fn new(delegate: WorldShape, transformation: Matrix) -> TransformedShape {
+    pub fn new(delegate: Box<dyn Shape>, transformation: Matrix) -> TransformedShape {
         TransformedShape {
             transformation,
             delegate,
@@ -56,11 +50,7 @@ impl Shape for TransformedShape {
         self
     }
 
-    fn clone_boxed(&self) -> WorldShape {
-        Box::new((*self).clone())
-    }
-
-    fn box_eq(&self, other: &dyn Any) -> bool {
+    fn equals_shape(&self, other: &dyn Any) -> bool {
         other.downcast_ref::<Self>().map_or(false, |a| self == a)
     }
 
@@ -79,7 +69,7 @@ impl Shape for TransformedShape {
             .intersections
             .iter()
             .map(Intersection::time)
-            .map(|time| Intersection::new(time, self.clone_boxed()))
+            .map(|time| Intersection::new(time, self))
             .collect();
 
         Intersections::new(corrected_intersections)
@@ -90,6 +80,26 @@ impl Shape for TransformedShape {
         let local_normal = self.delegate.normal_at(local_point);
         let world_normal = &self.transformation.inverse().transpose() * local_normal;
         world_normal.normalize()
+    }
+}
+
+pub trait ShapeClone {
+    fn clone_box(&self) -> Box<dyn Shape>;
+}
+
+impl<T> ShapeClone for T
+    where
+        T: 'static + Shape + Clone,
+{
+    fn clone_box(&self) -> Box<dyn Shape> {
+        Box::new(self.clone())
+    }
+}
+
+// We can now implement Clone manually by forwarding to clone_box.
+impl Clone for Box<dyn Shape> {
+    fn clone(&self) -> Box<dyn Shape> {
+        self.clone_box()
     }
 }
 
@@ -133,11 +143,7 @@ mod tests {
             self
         }
 
-        fn clone_boxed(&self) -> WorldShape {
-            Box::new((*self).clone())
-        }
-
-        fn box_eq(&self, other: &dyn Any) -> bool {
+        fn equals_shape(&self, other: &dyn Any) -> bool {
             other.downcast_ref::<Self>().map_or(false, |a| self == a)
         }
 

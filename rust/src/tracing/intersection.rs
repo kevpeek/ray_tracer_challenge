@@ -4,8 +4,8 @@ use crate::helper::{almost, EPSILON};
 use crate::tracing::ray::Ray;
 use crate::tracing::shape::WorldShape;
 
-pub struct Intersections {
-    pub intersections: Vec<Intersection>,
+pub struct Intersections<'a> {
+    pub intersections: Vec<Intersection<'a>>,
 }
 
 /*
@@ -24,7 +24,7 @@ macro_rules! intersections {
     };
 }
 
-impl<'a> Intersections {
+impl<'a> Intersections<'a> {
     pub fn combine(others: Vec<Intersections>) -> Intersections {
         let mut values: Vec<Intersection> =
             others.into_iter().flat_map(|it| it.intersections).collect();
@@ -52,9 +52,9 @@ impl<'a> Intersections {
 /**
  * Precompute details about the intersection.
  */
-pub struct PreComputedIntersection {
+pub struct PreComputedIntersection<'a> {
     pub time: f64,
-    pub thing: WorldShape,
+    pub thing: WorldShape<'a>,
     pub inside: bool,
     pub point: Point,
     pub over_point: Point,
@@ -63,18 +63,18 @@ pub struct PreComputedIntersection {
 }
 
 #[derive(Debug, Clone)]
-pub struct Intersection {
+pub struct Intersection<'a> {
     time: f64,
-    thing: WorldShape,
+    thing: WorldShape<'a>,
 }
 
-impl PartialEq for Intersection {
+impl<'a> PartialEq for Intersection<'a> {
     fn eq(&self, other: &Intersection) -> bool {
         almost(self.time, other.time) && &self.thing == &other.thing
     }
 }
 
-impl Intersection {
+impl<'a> Intersection<'a> {
     pub fn new(time: f64, thing: WorldShape) -> Intersection {
         Intersection { time, thing }
     }
@@ -197,7 +197,7 @@ mod tests {
 
     #[test]
     fn intersection_encapsulates_t_and_object() {
-        let sphere: WorldShape = Box::new(Sphere::default());
+        let sphere: WorldShape = &Sphere::default();
         let intersection = Intersection::new(3.5, sphere.clone());
 
         assert_eq!(3.5, intersection.time);
@@ -206,7 +206,7 @@ mod tests {
 
     #[test]
     fn aggregating_intersections() {
-        let sphere: WorldShape = Box::new(Sphere::default());
+        let sphere: WorldShape = &Sphere::default();
         let i1 = Intersection::new(1.0, sphere.clone());
         let i2 = Intersection::new(2.0, sphere);
 
@@ -221,7 +221,7 @@ mod tests {
     fn intersect_sets_the_object_on_the_intersection() {
         let ray = Ray::new(Point::at(0, 0, -5), Vector::new(0, 0, 1));
 
-        let sphere: WorldShape = Box::new(Sphere::default());
+        let sphere: WorldShape = &Sphere::default();
         let ray_argument = &ray;
         let intersections = sphere.intersect(ray_argument);
 
@@ -233,7 +233,7 @@ mod tests {
 
     #[test]
     fn hit_when_all_intersections_have_positive_t() {
-        let sphere: WorldShape = Box::new(Sphere::default());
+        let sphere: WorldShape = &Sphere::default();
         let i1 = Intersection::new(1.0, sphere.clone());
         let i2 = Intersection::new(2.0, sphere);
         let intersections = intersections![i1.clone(), i2.clone()];
@@ -244,7 +244,7 @@ mod tests {
 
     #[test]
     fn hit_when_some_intersections_have_negative_t() {
-        let sphere: WorldShape = Box::new(Sphere::default());
+        let sphere: WorldShape = &Sphere::default();
         let i1 = Intersection::new(-1.0, sphere.clone());
         let i2 = Intersection::new(1.0, sphere);
         let intersections = intersections![i1.clone(), i2.clone()];
@@ -256,7 +256,7 @@ mod tests {
 
     #[test]
     fn hit_when_all_intersections_have_negative_t() {
-        let sphere: WorldShape = Box::new(Sphere::default());
+        let sphere: WorldShape = &Sphere::default();
         let i1 = Intersection::new(-2.0, sphere.clone());
         let i2 = Intersection::new(-1.0, sphere);
         let intersections = intersections![i1, i2];
@@ -268,7 +268,7 @@ mod tests {
 
     #[test]
     fn hit_is_always_the_lowest_nonnegative_intersection() {
-        let sphere: WorldShape = Box::new(Sphere::default());
+        let sphere: WorldShape = &Sphere::default();
         let i1 = Intersection::new(5.0, sphere.clone());
         let i2 = Intersection::new(7.0, sphere.clone());
         let i3 = Intersection::new(-3.0, sphere.clone());
