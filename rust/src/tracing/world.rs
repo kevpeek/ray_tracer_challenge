@@ -1,3 +1,5 @@
+use std::ops::Deref;
+
 use crate::display::color::Color;
 use crate::geometry::point::Point;
 use crate::geometry::transformations::scaling;
@@ -5,10 +7,8 @@ use crate::tracing::intersection::{Intersections, PreComputedIntersection};
 use crate::tracing::material::{lighting, Material};
 use crate::tracing::point_light::PointLight;
 use crate::tracing::ray::Ray;
-use crate::tracing::shape::{WorldShape, Shape};
+use crate::tracing::shape::{Shape, WorldShape};
 use crate::tracing::sphere::Sphere;
-use std::slice::Iter;
-use std::ops::Deref;
 
 type BoxedShape = Box<dyn Shape>;
 
@@ -101,7 +101,6 @@ fn default_spheres() -> Vec<BoxedShape> {
 #[cfg(test)]
 mod tests {
     use crate::display::color::Color;
-    use crate::geometry::matrix::Matrix;
     use crate::geometry::point::Point;
     use crate::geometry::transformations;
     use crate::geometry::transformations::{scaling, translation};
@@ -111,10 +110,8 @@ mod tests {
     use crate::tracing::material::Material;
     use crate::tracing::point_light::PointLight;
     use crate::tracing::ray::Ray;
-    use crate::tracing::shape::{Shape, WorldShape};
     use crate::tracing::sphere::Sphere;
-    use crate::tracing::world::{default_spheres, World, BoxedShape};
-    use std::ops::Deref;
+    use crate::tracing::world::{BoxedShape, default_spheres, World};
 
     #[test]
     fn creating_a_world() {

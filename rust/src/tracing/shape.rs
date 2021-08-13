@@ -1,12 +1,12 @@
+use std::any::Any;
+use std::fmt::Debug;
+
 use crate::geometry::matrix::Matrix;
 use crate::geometry::point::Point;
 use crate::geometry::vector::Vector;
 use crate::tracing::intersection::{Intersection, Intersections};
 use crate::tracing::material::Material;
 use crate::tracing::ray::Ray;
-use std::any::Any;
-use std::fmt::Debug;
-use std::ops::Deref;
 
 pub type WorldShape<'a> = &'a dyn Shape;
 
@@ -105,6 +105,9 @@ impl Clone for Box<dyn Shape> {
 
 #[cfg(test)]
 mod tests {
+    use std::any::Any;
+    use std::f64::consts::PI;
+
     use crate::geometry::point::Point;
     use crate::geometry::transformations;
     use crate::geometry::vector::Vector;
@@ -112,10 +115,7 @@ mod tests {
     use crate::tracing::intersection::Intersections;
     use crate::tracing::material::Material;
     use crate::tracing::ray::Ray;
-    use crate::tracing::shape::{Shape, TransformedShape, WorldShape};
-    use crate::tracing::sphere::Sphere;
-    use std::any::Any;
-    use std::f64::consts::PI;
+    use crate::tracing::shape::{Shape, TransformedShape};
 
     #[derive(Debug, Clone, PartialEq)]
     struct TestShape {

@@ -11,7 +11,7 @@ use crate::geometry::vector::Vector;
 use crate::tracing::camera::Camera;
 use crate::tracing::material::Material;
 use crate::tracing::point_light::PointLight;
-use crate::tracing::shape::{WorldShape, Shape};
+use crate::tracing::shape::Shape;
 use crate::tracing::sphere::Sphere;
 use crate::tracing::world::World;
 

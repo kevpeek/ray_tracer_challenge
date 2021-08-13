@@ -102,7 +102,7 @@ impl<'a> Intersection<'a> {
 
         PreComputedIntersection {
             time: self.time,
-            thing: self.thing.clone(),
+            thing: self.thing,
             inside,
             point,
             over_point,
@@ -198,10 +198,10 @@ mod tests {
     #[test]
     fn intersection_encapsulates_t_and_object() {
         let sphere: WorldShape = &Sphere::default();
-        let intersection = Intersection::new(3.5, sphere.clone());
+        let intersection = Intersection::new(3.5, sphere);
 
         assert_eq!(3.5, intersection.time);
-        assert!(sphere == intersection.thing);
+        assert_eq!(sphere, intersection.thing);
     }
 
     #[test]
@@ -227,8 +227,8 @@ mod tests {
 
         let intersections = intersections.intersections;
         assert_eq!(2, intersections.len());
-        assert!(sphere == intersections[0].clone().thing);
-        assert!(sphere == intersections[1].clone().thing);
+        assert_eq!(sphere, intersections[0].clone().thing);
+        assert_eq!(sphere, intersections[1].clone().thing);
     }
 
     #[test]

@@ -5,7 +5,7 @@ use crate::intersections;
 use crate::tracing::intersection::{Intersection, Intersections};
 use crate::tracing::material::Material;
 use crate::tracing::ray::Ray;
-use crate::tracing::shape::{Shape, TransformedShape, WorldShape};
+use crate::tracing::shape::{Shape, TransformedShape};
 use std::any::Any;
 
 #[derive(Eq, PartialEq, Debug, Clone)]
@@ -87,7 +87,6 @@ impl Sphere {
 
 #[cfg(test)]
 mod tests {
-    use crate::geometry::matrix::Matrix;
     use crate::geometry::point::Point;
     use crate::geometry::transformations::{rotation_z, scaling, translation};
     use crate::geometry::vector::Vector;
@@ -152,7 +151,7 @@ mod tests {
 
     #[test]
     fn computing_normal_on_translated_sphere() {
-        let mut sphere = Sphere::default().with_transform(translation(0, 1, 0));
+        let sphere = Sphere::default().with_transform(translation(0, 1, 0));
 
         let normal = sphere.normal_at(Point::at(0.0, 1.70711, -0.70711));
         assert_eq!(Vector::new(0.0, 0.70711, -0.70711), normal);
