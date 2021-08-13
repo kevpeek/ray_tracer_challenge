@@ -19,7 +19,7 @@ impl Shape for Sphere {
         self
     }
 
-    fn box_clone(&self) -> WorldShape {
+    fn clone_boxed(&self) -> WorldShape {
         Box::new((*self).clone())
     }
 
@@ -47,8 +47,8 @@ impl Shape for Sphere {
         let t2 = (-b + discriminant.sqrt()) / (2.0 * a);
 
         intersections![
-            Intersection::new(t1, self.box_clone()),
-            Intersection::new(t2, self.box_clone())
+            Intersection::new(t1, self.clone_boxed()),
+            Intersection::new(t2, self.clone_boxed())
         ]
     }
 

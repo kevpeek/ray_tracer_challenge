@@ -12,7 +12,7 @@ pub type WorldShape = Box<dyn Shape>;
 
 impl Clone for WorldShape {
     fn clone(&self) -> Self {
-        self.box_clone()
+        self.clone_boxed()
     }
 }
 
@@ -24,7 +24,7 @@ impl PartialEq for WorldShape {
 
 pub trait Shape: Any + Send + Sync + Debug {
     fn as_any(&self) -> &dyn Any;
-    fn box_clone(&self) -> WorldShape;
+    fn clone_boxed(&self) -> WorldShape;
     fn box_eq(&self, other: &dyn Any) -> bool;
     fn material(&self) -> &Material;
     fn intersect(&self, ray: &Ray) -> Intersections;
@@ -57,7 +57,7 @@ impl Shape for TransformedShape {
         self
     }
 
-    fn box_clone(&self) -> WorldShape {
+    fn clone_boxed(&self) -> WorldShape {
         Box::new((*self).clone())
     }
 
@@ -80,7 +80,7 @@ impl Shape for TransformedShape {
             .intersections
             .iter()
             .map(Intersection::time)
-            .map(|time| Intersection::new(time, self.box_clone()))
+            .map(|time| Intersection::new(time, self.clone_boxed()))
             .collect();
 
         Intersections::new(corrected_intersections)
@@ -134,7 +134,7 @@ mod tests {
             self
         }
 
-        fn box_clone(&self) -> WorldShape {
+        fn clone_boxed(&self) -> WorldShape {
             Box::new((*self).clone())
         }
 

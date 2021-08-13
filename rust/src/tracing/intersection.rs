@@ -104,7 +104,7 @@ impl Intersection {
 
         PreComputedIntersection {
             time: self.time,
-            thing: self.thing.box_clone(),
+            thing: self.thing.clone(),
             inside,
             point,
             over_point,
@@ -200,7 +200,7 @@ mod tests {
     #[test]
     fn intersection_encapsulates_t_and_object() {
         let sphere: WorldShape = Box::new(Sphere::default());
-        let intersection = Intersection::new(3.5, sphere.box_clone());
+        let intersection = Intersection::new(3.5, sphere.clone());
 
         assert_eq!(3.5, intersection.time);
         assert!(sphere == intersection.thing);
@@ -209,7 +209,7 @@ mod tests {
     #[test]
     fn aggregating_intersections() {
         let sphere: WorldShape = Box::new(Sphere::default());
-        let i1 = Intersection::new(1.0, sphere.box_clone());
+        let i1 = Intersection::new(1.0, sphere.clone());
         let i2 = Intersection::new(2.0, sphere);
 
         let intersections = vec![i1.clone(), i2.clone()];
@@ -236,7 +236,7 @@ mod tests {
     #[test]
     fn hit_when_all_intersections_have_positive_t() {
         let sphere: WorldShape = Box::new(Sphere::default());
-        let i1 = Intersection::new(1.0, sphere.box_clone());
+        let i1 = Intersection::new(1.0, sphere.clone());
         let i2 = Intersection::new(2.0, sphere);
         let intersections = intersections![i1.clone(), i2.clone()];
 
@@ -247,7 +247,7 @@ mod tests {
     #[test]
     fn hit_when_some_intersections_have_negative_t() {
         let sphere: WorldShape = Box::new(Sphere::default());
-        let i1 = Intersection::new(-1.0, sphere.box_clone());
+        let i1 = Intersection::new(-1.0, sphere.clone());
         let i2 = Intersection::new(1.0, sphere);
         let intersections = intersections![i1.clone(), i2.clone()];
 
@@ -259,7 +259,7 @@ mod tests {
     #[test]
     fn hit_when_all_intersections_have_negative_t() {
         let sphere: WorldShape = Box::new(Sphere::default());
-        let i1 = Intersection::new(-2.0, sphere.box_clone());
+        let i1 = Intersection::new(-2.0, sphere.clone());
         let i2 = Intersection::new(-1.0, sphere);
         let intersections = intersections![i1, i2];
 
@@ -271,10 +271,10 @@ mod tests {
     #[test]
     fn hit_is_always_the_lowest_nonnegative_intersection() {
         let sphere: WorldShape = Box::new(Sphere::default());
-        let i1 = Intersection::new(5.0, sphere.box_clone());
-        let i2 = Intersection::new(7.0, sphere.box_clone());
-        let i3 = Intersection::new(-3.0, sphere.box_clone());
-        let i4 = Intersection::new(2.0, sphere.box_clone());
+        let i1 = Intersection::new(5.0, sphere.clone());
+        let i2 = Intersection::new(7.0, sphere.clone());
+        let i3 = Intersection::new(-3.0, sphere.clone());
+        let i4 = Intersection::new(2.0, sphere.clone());
         let intersections = intersections![i1.clone(), i2.clone(), i3.clone(), i4.clone()];
 
         let intersections_argument = &intersections;
