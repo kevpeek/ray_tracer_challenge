@@ -86,10 +86,6 @@ impl Intersection {
         self.time
     }
 
-    pub fn thing(&self) -> WorldShape {
-        self.thing.clone()
-    }
-
     /**
      * Calculate the PreComputed details.
      */

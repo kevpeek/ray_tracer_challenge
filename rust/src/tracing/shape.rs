@@ -73,11 +73,14 @@ impl Shape for TransformedShape {
     fn intersect(&self, ray: &Ray) -> Intersections {
         let local_ray = ray.transform(self.transformation.inverse());
 
-        // The delegate will return intersections that contain copies of delegate, not wrapped by this struct.
-        // Rewrap them here.
         let delegate_intersections = self.delegate.intersect(&local_ray);
-        let corrected_intersections = delegate_intersections.intersections.into_iter()
-            .map(|it| Intersection::new(it.time(), Box::new(TransformedShape::new(it.thing(), self.transformation.clone()))))
+
+
+        // The delegate will return intersections that contain copies of delegate, not wrapped by this struct.
+        // Recreate those intersections with the same times, but using this shape.
+        let corrected_intersections = delegate_intersections.intersections.iter()
+            .map(Intersection::time)
+            .map(|time| Intersection::new(time, self.box_clone()))
             .collect();
 
         Intersections::new(corrected_intersections)
