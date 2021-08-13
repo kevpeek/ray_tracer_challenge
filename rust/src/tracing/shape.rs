@@ -88,8 +88,8 @@ pub trait ShapeClone {
 }
 
 impl<T> ShapeClone for T
-    where
-        T: 'static + Shape + Clone,
+where
+    T: 'static + Shape + Clone,
 {
     fn clone_box(&self) -> Box<dyn Shape> {
         Box::new(self.clone())

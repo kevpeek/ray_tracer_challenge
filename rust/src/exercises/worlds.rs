@@ -87,7 +87,7 @@ fn world_one() -> World {
         Box::new(right_wall),
         Box::new(middle),
         Box::new(right),
-        Box::new(left)
+        Box::new(left),
     ];
 
     World::new(objects, light_source)

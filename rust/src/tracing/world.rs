@@ -33,9 +33,7 @@ impl World {
     }
 
     pub fn objects(&self) -> Vec<WorldShape> {
-        self.objects.iter()
-            .map(Box::deref)
-            .collect()
+        self.objects.iter().map(Box::deref).collect()
     }
 
     /**
@@ -67,10 +65,7 @@ impl World {
 
     pub fn intersected_by(&self, ray: &Ray) -> Intersections {
         let intersections: Vec<Intersections> =
-            self.objects()
-                .iter()
-                .map(|it| it.intersect(ray))
-                .collect();
+            self.objects().iter().map(|it| it.intersect(ray)).collect();
         Intersections::combine(intersections)
     }
 
@@ -111,7 +106,7 @@ mod tests {
     use crate::tracing::point_light::PointLight;
     use crate::tracing::ray::Ray;
     use crate::tracing::sphere::Sphere;
-    use crate::tracing::world::{BoxedShape, default_spheres, World};
+    use crate::tracing::world::{default_spheres, BoxedShape, World};
 
     #[test]
     fn creating_a_world() {
@@ -193,10 +188,7 @@ mod tests {
             Sphere::new(Point::origin(), material).with_transform(scaling(0.5, 0.5, 0.5));
 
         let world = World::new(
-            vec![
-                Box::new(outer_sphere),
-                Box::new(inner_sphere),
-            ],
+            vec![Box::new(outer_sphere), Box::new(inner_sphere)],
             PointLight::default(),
         );
 
@@ -240,7 +232,11 @@ mod tests {
 
         let sphere_one = Box::new(Sphere::default());
         let sphere_two_actual = Sphere::default();
-        let sphere_two = Box::new(sphere_two_actual.clone().with_transform(translation(0, 0, 10)));
+        let sphere_two = Box::new(
+            sphere_two_actual
+                .clone()
+                .with_transform(translation(0, 0, 10)),
+        );
 
         let mut objects: Vec<BoxedShape> = Vec::new();
         objects.push(sphere_one);

@@ -42,10 +42,7 @@ impl Shape for Sphere {
         let t1 = (-b - discriminant.sqrt()) / (2.0 * a);
         let t2 = (-b + discriminant.sqrt()) / (2.0 * a);
 
-        intersections![
-            Intersection::new(t1, self),
-            Intersection::new(t2, self)
-        ]
+        intersections![Intersection::new(t1, self), Intersection::new(t2, self)]
     }
 
     /**
