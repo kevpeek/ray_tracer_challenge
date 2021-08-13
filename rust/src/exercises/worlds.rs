@@ -1,3 +1,5 @@
+use std::f64::consts::PI;
+
 use crate::display::color::Color;
 use crate::display::resolution::Resolution;
 use crate::display::writer::write_canvas;
@@ -9,10 +11,9 @@ use crate::geometry::vector::Vector;
 use crate::tracing::camera::Camera;
 use crate::tracing::material::Material;
 use crate::tracing::point_light::PointLight;
-use crate::tracing::shape::{Shape, WorldShape};
+use crate::tracing::shape::WorldShape;
 use crate::tracing::sphere::Sphere;
 use crate::tracing::world::World;
-use std::f64::consts::PI;
 
 pub fn run_world() {
     let world = world_one();
@@ -28,8 +29,7 @@ fn make_camera() -> Camera {
         Point::at(0, 1, 0),
         Vector::new(0, 1, 0),
     );
-    let camera = Camera::new(Resolution::LOW, PI / 3.0, camera_transform);
-    camera
+    Camera::new(Resolution::LOW, PI / 3.0, camera_transform)
 }
 
 fn world_one() -> World {
@@ -81,13 +81,14 @@ fn world_one() -> World {
         .with_material(left_material)
         .with_transform(scaling(0.33, 0.33, 0.33).then(&translation(-1.5, 0.33, -0.75)));
 
-    let mut objects: Vec<WorldShape> = Vec::new();
-    objects.push(Box::new(floor));
-    objects.push(Box::new(left_wall));
-    objects.push(Box::new(right_wall));
-    objects.push(Box::new(middle));
-    objects.push(Box::new(right));
-    objects.push(Box::new(left));
+    let objects: Vec<WorldShape> = vec![
+        Box::new(floor),
+        Box::new(left_wall),
+        Box::new(right_wall),
+        Box::new(middle),
+        Box::new(right),
+        Box::new(left)
+    ];
 
     World::new(objects, light_source)
 }

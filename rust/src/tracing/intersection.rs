@@ -2,9 +2,7 @@ use crate::geometry::point::Point;
 use crate::geometry::vector::Vector;
 use crate::helper::{almost, EPSILON};
 use crate::tracing::ray::Ray;
-use crate::tracing::shape::{Shape, TransformedShape, WorldShape};
-use crate::tracing::sphere::Sphere;
-use crate::tracing::world::World;
+use crate::tracing::shape::WorldShape;
 
 pub struct Intersections {
     pub intersections: Vec<Intersection>,

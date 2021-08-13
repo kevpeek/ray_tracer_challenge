@@ -4,7 +4,6 @@ use crate::geometry::vector::Vector;
 use crate::tracing::intersection::{Intersection, Intersections};
 use crate::tracing::material::Material;
 use crate::tracing::ray::Ray;
-use crate::tracing::sphere::Sphere;
 use std::any::Any;
 use std::fmt::Debug;
 

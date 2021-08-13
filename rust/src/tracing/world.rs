@@ -1,12 +1,11 @@
 use crate::display::color::Color;
-use crate::geometry::matrix::Matrix;
 use crate::geometry::point::Point;
 use crate::geometry::transformations::scaling;
-use crate::tracing::intersection::{Intersection, Intersections, PreComputedIntersection};
+use crate::tracing::intersection::{Intersections, PreComputedIntersection};
 use crate::tracing::material::{lighting, Material};
 use crate::tracing::point_light::PointLight;
 use crate::tracing::ray::Ray;
-use crate::tracing::shape::{Shape, WorldShape};
+use crate::tracing::shape::WorldShape;
 use crate::tracing::sphere::Sphere;
 
 pub struct World {
@@ -75,10 +74,8 @@ impl World {
 
         let intersections_argument = &intersections;
         let hit = intersections_argument.hit();
-        match hit {
-            Some(hit) if hit.time() < distance => true,
-            _ => false,
-        }
+
+        matches!(hit, Some(hit) if hit.time() < distance)
     }
 }
 
@@ -88,10 +85,7 @@ fn default_spheres() -> Vec<WorldShape> {
     let inner_sphere =
         Sphere::new(Point::origin(), Material::default()).with_transform(scaling(0.5, 0.5, 0.5));
 
-    let mut spheres: Vec<WorldShape> = Vec::new();
-    spheres.push(Box::new(outer_sphere));
-    spheres.push(Box::new(inner_sphere));
-    spheres
+    vec![Box::new(outer_sphere), Box::new(inner_sphere)]
 }
 
 #[cfg(test)]
