@@ -2,14 +2,12 @@ use crate::display::color::Color;
 use crate::geometry::matrix::Matrix;
 use crate::geometry::point::Point;
 use crate::geometry::transformations::scaling;
-use crate::tracing::intersection::{
-    Intersection, Intersections, PreComputedIntersection,
-};
+use crate::tracing::intersection::{Intersection, Intersections, PreComputedIntersection};
 use crate::tracing::material::{lighting, Material};
 use crate::tracing::point_light::PointLight;
 use crate::tracing::ray::Ray;
-use crate::tracing::sphere::Sphere;
 use crate::tracing::shape::{Shape, WorldShape};
+use crate::tracing::sphere::Sphere;
 
 pub struct World {
     objects: Vec<WorldShape>,
@@ -28,7 +26,10 @@ impl World {
     }
 
     pub fn new(objects: Vec<WorldShape>, light_source: PointLight) -> World {
-        World { objects, light_source }
+        World {
+            objects,
+            light_source,
+        }
     }
 
     /**
@@ -84,8 +85,8 @@ impl World {
 fn default_spheres() -> Vec<WorldShape> {
     let outer_sphere_material = Material::new(Color::new(0.8, 1.0, 0.6), 0.1, 0.7, 0.2, 200.0);
     let outer_sphere = Sphere::new(Point::origin(), outer_sphere_material);
-    let inner_sphere = Sphere::new(Point::origin(), Material::default())
-        .with_transform(scaling(0.5, 0.5, 0.5));
+    let inner_sphere =
+        Sphere::new(Point::origin(), Material::default()).with_transform(scaling(0.5, 0.5, 0.5));
 
     let mut spheres: Vec<WorldShape> = Vec::new();
     spheres.push(Box::new(outer_sphere));
@@ -102,13 +103,13 @@ mod tests {
     use crate::geometry::transformations::{scaling, translation};
     use crate::geometry::vector::Vector;
     use crate::helper::EPSILON;
-    use crate::tracing::intersection::{Intersection};
+    use crate::tracing::intersection::Intersection;
     use crate::tracing::material::Material;
     use crate::tracing::point_light::PointLight;
     use crate::tracing::ray::Ray;
+    use crate::tracing::shape::{Shape, WorldShape};
     use crate::tracing::sphere::Sphere;
     use crate::tracing::world::{default_spheres, World};
-    use crate::tracing::shape::{Shape, WorldShape};
     use std::ops::Deref;
 
     #[test]
@@ -187,11 +188,14 @@ mod tests {
         let outer_sphere_material = Material::new(Color::new(0.8, 1.0, 0.6), 1.0, 0.7, 0.2, 200.0);
         let outer_sphere = Sphere::new(Point::origin(), outer_sphere_material);
         let material = Material::default().with_ambient(1.0);
-        let inner_sphere = Sphere::new(Point::origin(), material)
-            .with_transform(scaling(0.5, 0.5, 0.5));
+        let inner_sphere =
+            Sphere::new(Point::origin(), material).with_transform(scaling(0.5, 0.5, 0.5));
 
         let world = World::new(
-            vec![Box::new(outer_sphere.clone()), Box::new(inner_sphere.clone())],
+            vec![
+                Box::new(outer_sphere.clone()),
+                Box::new(inner_sphere.clone()),
+            ],
             PointLight::default(),
         );
 
@@ -253,7 +257,8 @@ mod tests {
     #[test]
     fn the_hit_should_offset_the_point() {
         let ray = Ray::new(Point::at(0, 0, -5), Vector::new(0, 0, 1));
-        let sphere: WorldShape = Box::new(Sphere::default().with_transform(transformations::translation(0, 0, 1)));
+        let sphere: WorldShape =
+            Box::new(Sphere::default().with_transform(transformations::translation(0, 0, 1)));
         let intersection = Intersection::new(5.0, sphere);
         let pre_computations = intersection.pre_computations(&ray);
         assert!(pre_computations.over_point.z < -EPSILON / 2.0);

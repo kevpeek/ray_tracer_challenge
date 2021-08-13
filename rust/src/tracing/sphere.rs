@@ -1,17 +1,17 @@
 use crate::geometry::matrix::Matrix;
 use crate::geometry::point::Point;
 use crate::geometry::vector::Vector;
-use crate::tracing::material::Material;
-use crate::tracing::intersection::{Intersections, Intersection};
-use crate::tracing::ray::Ray;
 use crate::intersections;
+use crate::tracing::intersection::{Intersection, Intersections};
+use crate::tracing::material::Material;
+use crate::tracing::ray::Ray;
 use crate::tracing::shape::{Shape, TransformedShape, WorldShape};
 use std::any::Any;
 
 #[derive(Eq, PartialEq, Debug, Clone)]
 pub struct Sphere {
     origin: Point,
-    material: Material
+    material: Material,
 }
 
 impl Shape for Sphere {
@@ -31,7 +31,6 @@ impl Shape for Sphere {
         &self.material
     }
 
-
     fn intersect(&self, ray: &Ray) -> Intersections {
         let sphere_to_ray = ray.origin() - self.origin();
         let a = ray.direction().dot(ray.direction());
@@ -47,7 +46,10 @@ impl Shape for Sphere {
         let t1 = (-b - discriminant.sqrt()) / (2.0 * a);
         let t2 = (-b + discriminant.sqrt()) / (2.0 * a);
 
-        intersections![Intersection::new(t1, self.box_clone()), Intersection::new(t2, self.box_clone())]
+        intersections![
+            Intersection::new(t1, self.box_clone()),
+            Intersection::new(t2, self.box_clone())
+        ]
     }
 
     /**
@@ -67,10 +69,7 @@ impl Sphere {
     }
 
     pub fn new(origin: Point, material: Material) -> Sphere {
-        Sphere {
-            origin,
-            material,
-        }
+        Sphere { origin, material }
     }
 
     pub fn with_origin(self, new_origin: Point) -> Sphere {
@@ -101,9 +100,9 @@ mod tests {
     use crate::geometry::transformations::{rotation_z, scaling, translation};
     use crate::geometry::vector::Vector;
     use crate::tracing::material::Material;
+    use crate::tracing::shape::Shape;
     use crate::tracing::sphere::Sphere;
     use std::f64::consts::PI;
-    use crate::tracing::shape::Shape;
 
     #[test]
     fn normal_on_sphere_at_point_on_x_axis() {
@@ -161,8 +160,7 @@ mod tests {
 
     #[test]
     fn computing_normal_on_translated_sphere() {
-        let mut sphere = Sphere::default()
-            .with_transform(translation(0, 1, 0));
+        let mut sphere = Sphere::default().with_transform(translation(0, 1, 0));
 
         let normal = sphere.normal_at(Point::at(0.0, 1.70711, -0.70711));
         assert_eq!(Vector::new(0.0, 0.70711, -0.70711), normal);
@@ -170,8 +168,8 @@ mod tests {
 
     #[test]
     fn computing_normal_on_transformed_sphere() {
-        let sphere = Sphere::default()
-            .with_transform(&scaling(1.0, 0.5, 1.0) * &rotation_z(PI / 5.0));
+        let sphere =
+            Sphere::default().with_transform(&scaling(1.0, 0.5, 1.0) * &rotation_z(PI / 5.0));
 
         let normal = sphere.normal_at(Point::at(0.0, 2.0_f64.sqrt() / 2.0, -2.0_f64.sqrt() / 2.0));
         assert_eq!(Vector::new(0.0, 0.97014, -0.24254), normal);

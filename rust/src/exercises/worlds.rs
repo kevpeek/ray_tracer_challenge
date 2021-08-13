@@ -9,9 +9,9 @@ use crate::geometry::vector::Vector;
 use crate::tracing::camera::Camera;
 use crate::tracing::material::Material;
 use crate::tracing::point_light::PointLight;
+use crate::tracing::shape::{Shape, WorldShape};
 use crate::tracing::sphere::Sphere;
 use crate::tracing::world::World;
-use crate::tracing::shape::{Shape, WorldShape};
 use std::f64::consts::PI;
 
 pub fn run_world() {
@@ -89,8 +89,5 @@ fn world_one() -> World {
     objects.push(Box::new(right));
     objects.push(Box::new(left));
 
-    World::new(
-        objects,
-        light_source,
-    )
+    World::new(objects, light_source)
 }

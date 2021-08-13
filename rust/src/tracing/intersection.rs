@@ -1,9 +1,9 @@
 use crate::geometry::point::Point;
 use crate::geometry::vector::Vector;
-use crate::helper::{EPSILON, almost};
+use crate::helper::{almost, EPSILON};
 use crate::tracing::ray::Ray;
+use crate::tracing::shape::{Shape, TransformedShape, WorldShape};
 use crate::tracing::sphere::Sphere;
-use crate::tracing::shape::{TransformedShape, Shape, WorldShape};
 use crate::tracing::world::World;
 
 pub struct Intersections {
@@ -72,8 +72,7 @@ pub struct Intersection {
 
 impl PartialEq for Intersection {
     fn eq(&self, other: &Intersection) -> bool {
-        almost(self.time, other.time) &&
-            &self.thing == &other.thing
+        almost(self.time, other.time) && &self.thing == &other.thing
     }
 }
 
@@ -120,11 +119,11 @@ mod tests {
     use crate::geometry::point::Point;
     use crate::geometry::transformations::{scaling, translation};
     use crate::geometry::vector::Vector;
-    use crate::tracing::intersection::{Intersection};
+    use crate::tracing::intersection::Intersection;
     use crate::tracing::material::Material;
     use crate::tracing::ray::Ray;
-    use crate::tracing::sphere::Sphere;
     use crate::tracing::shape::{Shape, WorldShape};
+    use crate::tracing::sphere::Sphere;
 
     #[test]
     fn a_ray_intersects_sphere_at_two_points() {
@@ -286,8 +285,8 @@ mod tests {
     #[test]
     fn intersecting_scaled_sphere_with_ray() {
         let ray = Ray::new(Point::at(0, 0, -5), Vector::new(0, 0, 1));
-        let sphere = Sphere::new(Point::origin(), Material::default())
-            .with_transform(scaling(2, 2, 2));
+        let sphere =
+            Sphere::new(Point::origin(), Material::default()).with_transform(scaling(2, 2, 2));
 
         let sphere_argument = &sphere;
         let ray_argument = &ray;
@@ -302,8 +301,8 @@ mod tests {
     #[test]
     fn intersecting_translated_sphere_with_ray() {
         let ray = Ray::new(Point::at(0, 0, -5), Vector::new(0, 0, 1));
-        let sphere = Sphere::new(Point::origin(), Material::default())
-            .with_transform(translation(5, 0, 0));
+        let sphere =
+            Sphere::new(Point::origin(), Material::default()).with_transform(translation(5, 0, 0));
 
         let sphere_argument = &sphere;
         let ray_argument = &ray;
