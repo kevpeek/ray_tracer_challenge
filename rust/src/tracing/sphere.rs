@@ -28,7 +28,7 @@ impl Shape for Sphere {
     }
 
     fn intersect(&self, ray: &Ray) -> Intersections {
-        let sphere_to_ray = ray.origin() - self.origin();
+        let sphere_to_ray = ray.origin() - self.origin;
         let a = ray.direction().dot(ray.direction());
         let b = 2.0 * ray.direction().dot(sphere_to_ray);
         let c = sphere_to_ray.dot(sphere_to_ray) - 1.0;
@@ -75,10 +75,6 @@ impl Sphere {
 
     pub fn with_transform(self, new_transform: Matrix) -> TransformedShape {
         TransformedShape::new(Box::new(self), new_transform)
-    }
-
-    pub fn origin(&self) -> Point {
-        self.origin
     }
 }
 

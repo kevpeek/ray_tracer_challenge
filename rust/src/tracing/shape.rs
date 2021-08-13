@@ -63,8 +63,8 @@ impl Shape for TransformedShape {
 
         let delegate_intersections = self.delegate.intersect(&local_ray);
 
-        // The delegate will return intersections that contain copies of delegate, not wrapped by this struct.
-        // Recreate those intersections with the same times, but using this shape.
+        // The delegate will return intersections that reference delegate instead of this wrapper.
+        // Recreate those intersections using this shape instead.
         let corrected_intersections = delegate_intersections
             .intersections
             .iter()

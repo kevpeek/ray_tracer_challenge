@@ -231,21 +231,16 @@ mod tests {
         let light = PointLight::new(Point::at(0, 0, -10), Color::WHITE);
 
         let sphere_one = Box::new(Sphere::default());
-        let sphere_two_actual = Sphere::default();
-        let sphere_two = Box::new(
-            sphere_two_actual
-                .clone()
-                .with_transform(translation(0, 0, 10)),
-        );
+        let sphere_two = Sphere::default().with_transform(translation(0, 0, 10));
 
         let mut objects: Vec<BoxedShape> = Vec::new();
         objects.push(sphere_one);
-        objects.push(sphere_two);
+        objects.push(Box::new(sphere_two.clone()));
 
         let world = World::new(objects, light);
 
         let ray = Ray::new(Point::at(0, 0, 5), Vector::new(0, 0, 1));
-        let intersection = Intersection::new(4.0, &sphere_two_actual);
+        let intersection = Intersection::new(4.0, &sphere_two);
 
         let pre_computations = intersection.pre_computations(&ray);
         let color = world.shade_hit(pre_computations);
