@@ -5,21 +5,37 @@ use crate::tracing::material::Material;
 use crate::tracing::intersection::{Intersections, Intersection};
 use crate::tracing::ray::Ray;
 use crate::intersections;
-use crate::tracing::shape::Shape;
+use crate::tracing::shape::{Shape, TransformedShape, WorldShape};
+use std::any::Any;
 
 #[derive(Eq, PartialEq, Debug, Clone)]
 pub struct Sphere {
     origin: Point,
-    material: Material,
-    transform: Matrix
+    material: Material
 }
 
 impl Shape for Sphere {
+    fn as_any(&self) -> &dyn Any {
+        self
+    }
+
+    fn box_clone(&self) -> WorldShape {
+        Box::new((*self).clone())
+    }
+
+    fn box_eq(&self, other: &dyn Any) -> bool {
+        other.downcast_ref::<Self>().map_or(false, |a| self == a)
+    }
+
+    fn material(&self) -> &Material {
+        &self.material
+    }
+
+
     fn intersect(&self, ray: &Ray) -> Intersections {
-        let transformed_ray = ray.transform(self.transform().inverse());
-        let sphere_to_ray = transformed_ray.origin() - self.origin();
-        let a = transformed_ray.direction().dot(transformed_ray.direction());
-        let b = 2.0 * transformed_ray.direction().dot(sphere_to_ray);
+        let sphere_to_ray = ray.origin() - self.origin();
+        let a = ray.direction().dot(ray.direction());
+        let b = 2.0 * ray.direction().dot(sphere_to_ray);
         let c = sphere_to_ray.dot(sphere_to_ray) - 1.0;
 
         let discriminant = b * b - 4.0 * a * c;
@@ -31,18 +47,14 @@ impl Shape for Sphere {
         let t1 = (-b - discriminant.sqrt()) / (2.0 * a);
         let t2 = (-b + discriminant.sqrt()) / (2.0 * a);
 
-        intersections![Intersection::new(t1, self), Intersection::new(t2, self)]
+        intersections![Intersection::new(t1, self.box_clone()), Intersection::new(t2, self.box_clone())]
     }
 
     /**
      * Return the Vector normal to this sphere at the supplied point.
      */
     fn normal_at(&self, point: Point) -> Vector {
-        let transform_to_object_space = self.transform.inverse();
-        let point_in_object_space = &transform_to_object_space * point;
-        let normal_in_object_space = point_in_object_space - self.origin;
-        let transform_to_world_space = self.transform.submatrix(3, 3).inverse().transpose();
-        (&transform_to_world_space * normal_in_object_space).normalize()
+        point - self.origin
     }
 }
 
@@ -51,32 +63,26 @@ impl Sphere {
         Sphere {
             origin: Point::origin(),
             material: Material::default(),
-            transform: Matrix::identity(4)
         }
     }
 
-    pub fn new(origin: Point, material: Material, transform: Matrix) -> Sphere {
+    pub fn new(origin: Point, material: Material) -> Sphere {
         Sphere {
             origin,
             material,
-            transform
         }
     }
 
     pub fn with_origin(self, new_origin: Point) -> Sphere {
-        Sphere::new(new_origin, self.material, self.transform)
+        Sphere::new(new_origin, self.material)
     }
 
     pub fn with_material(self, new_material: Material) -> Sphere {
-        Sphere::new(self.origin, new_material, self.transform)
+        Sphere::new(self.origin, new_material)
     }
 
-    pub fn with_transform(self, new_transform: Matrix) -> Sphere {
-        Sphere::new(self.origin, self.material, new_transform)
-    }
-
-    pub fn transform(&self) -> &Matrix {
-        &self.transform
+    pub fn with_transform(self, new_transform: Matrix) -> TransformedShape {
+        TransformedShape::new(Box::new(self), new_transform)
     }
 
     pub fn origin(&self) -> Point {
@@ -98,20 +104,6 @@ mod tests {
     use crate::tracing::sphere::Sphere;
     use std::f64::consts::PI;
     use crate::tracing::shape::Shape;
-
-    #[test]
-    fn spheres_default_transformation() {
-        let sphere = Sphere::default();
-        assert_eq!(Matrix::identity(4), sphere.transform);
-    }
-
-    #[test]
-    fn changing_spheres_transformation() {
-        let transformation = translation(2, 3, 4);
-        let mut sphere = Sphere::default();
-        sphere.transform = transformation.clone();
-        assert_eq!(transformation, sphere.transform);
-    }
 
     #[test]
     fn normal_on_sphere_at_point_on_x_axis() {
@@ -169,8 +161,8 @@ mod tests {
 
     #[test]
     fn computing_normal_on_translated_sphere() {
-        let mut sphere = Sphere::default();
-        sphere.transform = translation(0, 1, 0);
+        let mut sphere = Sphere::default()
+            .with_transform(translation(0, 1, 0));
 
         let normal = sphere.normal_at(Point::at(0.0, 1.70711, -0.70711));
         assert_eq!(Vector::new(0.0, 0.70711, -0.70711), normal);
@@ -178,8 +170,8 @@ mod tests {
 
     #[test]
     fn computing_normal_on_transformed_sphere() {
-        let mut sphere = Sphere::default();
-        sphere.transform = &scaling(1.0, 0.5, 1.0) * &rotation_z(PI / 5.0);
+        let sphere = Sphere::default()
+            .with_transform(&scaling(1.0, 0.5, 1.0) * &rotation_z(PI / 5.0));
 
         let normal = sphere.normal_at(Point::at(0.0, 2.0_f64.sqrt() / 2.0, -2.0_f64.sqrt() / 2.0));
         assert_eq!(Vector::new(0.0, 0.97014, -0.24254), normal);

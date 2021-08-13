@@ -9,10 +9,10 @@ use crate::tracing::material::{lighting, Material};
 use crate::tracing::point_light::PointLight;
 use crate::tracing::ray::Ray;
 use crate::tracing::sphere::Sphere;
-use crate::tracing::shape::Shape;
+use crate::tracing::shape::{Shape, WorldShape};
 
 pub struct World {
-    objects: Vec<Box<Shape + Send + Sync>>,
+    objects: Vec<WorldShape>,
     light_source: PointLight,
 }
 
@@ -27,15 +27,8 @@ impl World {
         World::new(default_spheres(), PointLight::default())
     }
 
-    pub fn new(objects: Vec<Sphere>, light_source: PointLight) -> World {
-        let mut shapes: Vec<Box<dyn Shape + Send + Sync>> = vec![];
-        for sphere in objects {
-            shapes.push(Box::new(sphere));
-        }
-        World {
-            objects: shapes,
-            light_source,
-        }
+    pub fn new(objects: Vec<WorldShape>, light_source: PointLight) -> World {
+        World { objects, light_source }
     }
 
     /**
@@ -88,11 +81,16 @@ impl World {
     }
 }
 
-fn default_spheres() -> Vec<Sphere> {
+fn default_spheres() -> Vec<WorldShape> {
     let outer_sphere_material = Material::new(Color::new(0.8, 1.0, 0.6), 0.1, 0.7, 0.2, 200.0);
-    let outer_sphere = Sphere::new(Point::origin(), outer_sphere_material, Matrix::identity(4));
-    let inner_sphere = Sphere::new(Point::origin(), Material::default(), scaling(0.5, 0.5, 0.5));
-    vec![outer_sphere, inner_sphere]
+    let outer_sphere = Sphere::new(Point::origin(), outer_sphere_material);
+    let inner_sphere = Sphere::new(Point::origin(), Material::default())
+        .with_transform(scaling(0.5, 0.5, 0.5));
+
+    let mut spheres: Vec<WorldShape> = Vec::new();
+    spheres.push(Box::new(outer_sphere));
+    spheres.push(Box::new(inner_sphere));
+    spheres
 }
 
 #[cfg(test)]
@@ -110,7 +108,7 @@ mod tests {
     use crate::tracing::ray::Ray;
     use crate::tracing::sphere::Sphere;
     use crate::tracing::world::{default_spheres, World};
-    use crate::tracing::shape::Shape;
+    use crate::tracing::shape::{Shape, WorldShape};
     use std::ops::Deref;
 
     #[test]
@@ -187,12 +185,13 @@ mod tests {
     #[test]
     fn the_color_with_an_intersection_behind_the_ray() {
         let outer_sphere_material = Material::new(Color::new(0.8, 1.0, 0.6), 1.0, 0.7, 0.2, 200.0);
-        let outer_sphere = Sphere::new(Point::origin(), outer_sphere_material, Matrix::identity(4));
+        let outer_sphere = Sphere::new(Point::origin(), outer_sphere_material);
         let material = Material::default().with_ambient(1.0);
-        let inner_sphere = Sphere::new(Point::origin(), material, scaling(0.5, 0.5, 0.5));
+        let inner_sphere = Sphere::new(Point::origin(), material)
+            .with_transform(scaling(0.5, 0.5, 0.5));
 
         let world = World::new(
-            vec![outer_sphere.clone(), inner_sphere.clone()],
+            vec![Box::new(outer_sphere.clone()), Box::new(inner_sphere.clone())],
             PointLight::default(),
         );
 
@@ -234,13 +233,17 @@ mod tests {
     fn shade_hit_is_given_an_intersection_in_shadow() {
         let light = PointLight::new(Point::at(0, 0, -10), Color::WHITE);
 
-        let sphere_one = Sphere::default();
-        let sphere_two = Sphere::default().with_transform(translation(0, 0, 10));
+        let sphere_one = Box::new(Sphere::default());
+        let sphere_two = Box::new(Sphere::default().with_transform(translation(0, 0, 10)));
 
-        let world = World::new(vec![sphere_one, sphere_two.clone()], light);
+        let mut objects: Vec<WorldShape> = Vec::new();
+        objects.push(sphere_one);
+        objects.push(sphere_two.clone());
+
+        let world = World::new(objects, light);
 
         let ray = Ray::new(Point::at(0, 0, 5), Vector::new(0, 0, 1));
-        let intersection = Intersection::new(4.0, &sphere_two);
+        let intersection = Intersection::new(4.0, sphere_two);
 
         let pre_computations = intersection.pre_computations(&ray);
         let color = world.shade_hit(pre_computations);
@@ -250,8 +253,8 @@ mod tests {
     #[test]
     fn the_hit_should_offset_the_point() {
         let ray = Ray::new(Point::at(0, 0, -5), Vector::new(0, 0, 1));
-        let sphere = Sphere::default().with_transform(transformations::translation(0, 0, 1));
-        let intersection = Intersection::new(5.0, &sphere);
+        let sphere: WorldShape = Box::new(Sphere::default().with_transform(transformations::translation(0, 0, 1)));
+        let intersection = Intersection::new(5.0, sphere);
         let pre_computations = intersection.pre_computations(&ray);
         assert!(pre_computations.over_point.z < -EPSILON / 2.0);
         assert!(pre_computations.point.z > pre_computations.over_point.z);

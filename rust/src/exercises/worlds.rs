@@ -11,6 +11,7 @@ use crate::tracing::material::Material;
 use crate::tracing::point_light::PointLight;
 use crate::tracing::sphere::Sphere;
 use crate::tracing::world::World;
+use crate::tracing::shape::{Shape, WorldShape};
 use std::f64::consts::PI;
 
 pub fn run_world() {
@@ -80,8 +81,16 @@ fn world_one() -> World {
         .with_material(left_material)
         .with_transform(scaling(0.33, 0.33, 0.33).then(&translation(-1.5, 0.33, -0.75)));
 
+    let mut objects: Vec<WorldShape> = Vec::new();
+    objects.push(Box::new(floor));
+    objects.push(Box::new(left_wall));
+    objects.push(Box::new(right_wall));
+    objects.push(Box::new(middle));
+    objects.push(Box::new(right));
+    objects.push(Box::new(left));
+
     World::new(
-        vec![floor, left_wall, right_wall, middle, right, left],
+        objects,
         light_source,
     )
 }

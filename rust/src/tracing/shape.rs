@@ -1,21 +1,51 @@
 use crate::geometry::matrix::Matrix;
 use crate::tracing::ray::Ray;
-use crate::tracing::intersection::Intersections;
+use crate::tracing::intersection::{Intersections, Intersection};
 use crate::geometry::point::Point;
 use crate::geometry::vector::Vector;
+use std::fmt::Debug;
+use crate::tracing::material::Material;
+use std::any::Any;
+use crate::tracing::sphere::Sphere;
 
-pub trait Shape {
+pub type WorldShape = Box<dyn Shape>;
+
+impl Clone for WorldShape {
+    fn clone(&self) -> Self {
+        self.box_clone()
+    }
+}
+
+impl PartialEq for WorldShape {
+    fn eq(&self, other: &WorldShape) -> bool {
+        self.box_eq(other.as_any())
+    }
+}
+
+pub trait Shape: Any + Send + Sync + Debug {
+    fn as_any(&self) -> &dyn Any;
+    fn box_clone(&self) -> WorldShape;
+    fn box_eq(&self, other: &dyn Any) -> bool;
+    fn material(&self) -> &Material;
     fn intersect(&self, ray: &Ray) -> Intersections;
     fn normal_at(&self, point: Point) -> Vector;
 }
 
+
+#[derive(Clone, Debug)]
 pub struct TransformedShape {
     transformation: Matrix,
-    delegate: Box<dyn Shape>
+    delegate: WorldShape
+}
+
+impl PartialEq for TransformedShape {
+    fn eq(&self, other: &TransformedShape) -> bool {
+        self.delegate.box_eq(&other.delegate) && self.transformation == other.transformation
+    }
 }
 
 impl TransformedShape {
-    pub fn new(delegate: Box<dyn Shape>, transformation: Matrix) -> TransformedShape {
+    pub fn new(delegate: WorldShape, transformation: Matrix) -> TransformedShape {
         TransformedShape {
             transformation,
             delegate
@@ -24,9 +54,33 @@ impl TransformedShape {
 }
 
 impl Shape for TransformedShape {
+    fn as_any(&self) -> &dyn Any {
+        self
+    }
+
+    fn box_clone(&self) -> WorldShape {
+        Box::new((*self).clone())
+    }
+
+    fn box_eq(&self, other: &dyn Any) -> bool {
+        other.downcast_ref::<Self>().map_or(false, |a| self == a)
+    }
+
+    fn material(&self) -> &Material {
+        self.delegate.material()
+    }
+
     fn intersect(&self, ray: &Ray) -> Intersections {
         let local_ray = ray.transform(self.transformation.inverse());
-        self.delegate.intersect(&local_ray)
+
+        // The delegate will return intersections that contain copies of delegate, not wrapped by this struct.
+        // Rewrap them here.
+        let delegate_intersections = self.delegate.intersect(&local_ray);
+        let corrected_intersections = delegate_intersections.intersections.into_iter()
+            .map(|it| Intersection::new(it.time(), Box::new(TransformedShape::new(it.thing(), self.transformation.clone()))))
+            .collect();
+
+        Intersections::new(corrected_intersections)
     }
 
     fn normal_at(&self, point: Point) -> Vector {
@@ -43,28 +97,49 @@ mod tests {
     use crate::geometry::point::Point;
     use crate::geometry::vector::Vector;
     use crate::geometry::transformations;
-    use crate::tracing::shape::{Shape, TransformedShape};
+    use crate::tracing::shape::{Shape, TransformedShape, WorldShape};
     use crate::tracing::intersection::Intersections;
     use crate::intersections;
     use crate::tracing::sphere::Sphere;
     use std::f64::consts::PI;
+    use crate::tracing::material::Material;
+    use std::any::Any;
 
+    #[derive(Debug, Clone, PartialEq)]
     struct TestShape {
+        material: Material,
         expected_ray: Option<Ray>,
     }
 
     impl TestShape {
         fn new() -> TestShape {
-            TestShape { expected_ray: None }
+            TestShape { expected_ray: None, material: Material::default() }
         }
         fn with_ray(ray: Ray) -> TestShape {
             TestShape {
                 expected_ray: Some(ray),
+                material: Material::default()
             }
         }
     }
 
     impl Shape for TestShape {
+        fn as_any(&self) -> &dyn Any {
+            self
+        }
+
+        fn box_clone(&self) -> WorldShape {
+            Box::new((*self).clone())
+        }
+
+        fn box_eq(&self, other: &dyn Any) -> bool {
+            other.downcast_ref::<Self>().map_or(false, |a| self == a)
+        }
+
+        fn material(&self) -> &Material {
+            &self.material
+        }
+
         fn intersect(&self, ray: &Ray) -> Intersections {
             assert_eq!(*ray, *self.expected_ray.as_ref().unwrap());
             intersections!()
