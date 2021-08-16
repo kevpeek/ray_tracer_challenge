@@ -1,23 +1,24 @@
 package tracing
 
 import display.Canvas
+import display.Resolution
 import geometry.Matrix
 import geometry.Point
 import geometry.WORLD_ORIGIN
 import kotlin.math.tan
 
-class Camera(val hsize: Int, val vsize: Int, val fieldOfView: Double, val transform: Matrix = Matrix.identity(4)) {
+class Camera(val resolution: Resolution, val fieldOfView: Double, val transform: Matrix = Matrix.identity(4)) {
     private val halfWidth = calculateHalfWidth()
     private val halfHeight = calculateHalfHeight()
 
-    val pixelSize = halfWidth * 2 / hsize
+    val pixelSize = halfWidth * 2 / resolution.hsize
 
     /**
      * Produce the image of the world as seen from this camera.
      */
     fun render(world: World): Canvas {
-        val canvas = Canvas(hsize, vsize)
-        (0 until vsize).flatMap { y -> (0 until hsize).map { x -> x to y } }
+        val canvas = Canvas(Resolution(resolution.hsize, resolution.vsize))
+            resolution.enumerate()
             .parallelStream()
             .map { (x, y) -> Triple(x, y, rayForPixel(x, y)) }
             .map { (x, y, ray) -> Triple(x, y, world.colorAt(ray)) }
@@ -51,14 +52,14 @@ class Camera(val hsize: Int, val vsize: Int, val fieldOfView: Double, val transf
 
     private fun calculateHalfHeight(): Double {
         val halfView = tan(fieldOfView / 2)
-        val aspect = hsize.toDouble() / vsize
+        val aspect = resolution.aspect()
 
         return if (aspect >= 1) halfView / aspect else halfView
     }
 
     private fun calculateHalfWidth(): Double {
         val halfView = tan(fieldOfView / 2)
-        val aspect = hsize.toDouble() / vsize
+        val aspect = resolution.aspect()
 
         return if (aspect >= 1) halfView else halfView * aspect
     }

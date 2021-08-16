@@ -1,9 +1,6 @@
 package exercises
 
-import display.Canvas
-import display.Color
-import display.canvasToPpm
-import display.writePpm
+import display.*
 import geometry.Matrix
 import geometry.Point
 import tracing.Material
@@ -11,7 +8,6 @@ import tracing.PointLight
 import tracing.Ray
 import tracing.Sphere
 import tracing.hit
-import tracing.intersects
 import tracing.lighting
 
 private fun getShape(): Sphere {
@@ -31,7 +27,7 @@ fun main() {
     val light = getLight()
 
     val canvasPixels = 100
-    val canvas = Canvas(canvasPixels, canvasPixels)
+    val canvas = Canvas(Resolution(canvasPixels, canvasPixels))
     val rayOrigin = Point(0, 0, -5)
     val wallZ = 10
     val wallSize = 7.0
@@ -44,7 +40,7 @@ fun main() {
         val position = Point(worldX, worldY, wallZ)
         val rayDirection = (position - rayOrigin).normalize()
         val ray = Ray(rayOrigin, rayDirection)
-        val intersections = intersects(shape, ray)
+        val intersections = shape.intersects(ray)
         hit(intersections)?.let { hit ->
             val point = ray.position(hit.time)
             val normal = hit.thing.normalAt(point)

@@ -1,9 +1,6 @@
 package exercises
 
-import display.Canvas
-import display.Color
-import display.canvasToPpm
-import display.writePpm
+import display.*
 import geometry.Matrix
 import geometry.Point
 import geometry.rotationY
@@ -15,7 +12,7 @@ val height = 200
  * Creates an image showing a dot at each hour of a clock.
  */
 fun main() {
-    val canvas = Canvas(width, height)
+    val canvas = Canvas(Resolution(width, height))
 
     val noon = Point(0, 0, 1)
     val oneHourRotation = rotationY(Math.PI / 6)

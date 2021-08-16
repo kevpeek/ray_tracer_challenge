@@ -30,7 +30,7 @@ class WorldTest {
         val world = World.default()
         val ray = Ray(Point(0, 0, -5), Vector(0, 0, 1))
 
-        val intersections = intersectWorld(world, ray)
+        val intersections = world.intersects(ray)
 
         assertEquals(4, intersections.size)
         assertEquals(4.0, intersections[0].time)
@@ -44,7 +44,7 @@ class WorldTest {
         val world = World.default()
         val ray = Ray(Point(0, 0, -5), Vector(0, 0, 1))
         val shape = world.objects.first()
-        val intersect = intersects(shape, ray)[0]
+        val intersect = shape.intersects(ray)[0]
 
         val comps = intersect.preComputations(ray)
 
@@ -58,7 +58,7 @@ class WorldTest {
         val world = World(DEFAULT_SPHERES, lightSource)
         val ray = Ray(Point(0, 0, 0), Vector(0, 0, 1))
         val shape = world.objects[1]
-        val intersect = intersects(shape, ray)[1]
+        val intersect = shape.intersects(ray)[1]
 
         val comps = intersect.preComputations(ray)
 

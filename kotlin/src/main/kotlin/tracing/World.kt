@@ -30,10 +30,19 @@ class World(val objects: List<Sphere> = emptyList(), val lightSource: PointLight
     }
 
     /**
+     * Returns all intersections of the supplied Ray with every object in the world.
+     *
+     * Resulting Intersections are sorted by time, so intersections from any given object may not adjacent in the list.
+     */
+    fun intersects(ray: Ray): List<Intersection> {
+        return objects.flatMap { it.intersects(ray) }.sortedBy { it.time }
+    }
+
+    /**
      * Calculate the color produced by firing ray at this World.
      */
     fun colorAt(ray: Ray): Color {
-        return hit(intersectWorld(this, ray))?.preComputations(ray)
+        return hit(this.intersects(ray))?.preComputations(ray)
             ?.let(this::shadeHit)
             ?: Color.BLACK
     }

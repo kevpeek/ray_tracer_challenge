@@ -1,19 +1,15 @@
 package exercises
 
-import display.Canvas
-import display.Color
-import display.canvasToPpm
-import display.writePpm
+import display.*
 import geometry.Matrix
 import geometry.Point
 import tracing.Ray
 import tracing.Sphere
 import tracing.hit
-import tracing.intersects
 
 fun main() {
     val canvasPixels = 100
-    val canvas = Canvas(canvasPixels, canvasPixels)
+    val canvas = Canvas(Resolution(canvasPixels, canvasPixels))
     val transformation = Matrix.identity(4)
     val shape = Sphere(transformation)
 
@@ -31,7 +27,7 @@ fun main() {
             val position = Point(worldX, worldY, wallZ)
             val rayDirection = (position - rayOrigin).normalize()
             val ray = Ray(rayOrigin, rayDirection)
-            val intersections = intersects(shape, ray)
+            val intersections = shape.intersects(ray)
             hit(intersections)?.let { canvas.writePixel(x, y, Color.RED) }
         }
     }

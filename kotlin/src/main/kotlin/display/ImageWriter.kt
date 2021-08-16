@@ -18,7 +18,7 @@ fun canvasToPpm(canvas: Canvas): String {
 private fun generateHeader(canvas: Canvas): String {
     return """
 P3
-${canvas.width} ${canvas.height}
+${canvas.resolution.hsize} ${canvas.resolution.vsize}
 255
 
 

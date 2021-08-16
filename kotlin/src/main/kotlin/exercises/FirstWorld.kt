@@ -1,6 +1,7 @@
 package exercises
 
 import display.Color
+import display.Resolution
 import display.canvasToPpm
 import display.writePpm
 import geometry.Point
@@ -64,7 +65,7 @@ fun main() {
         val world = World(listOf(floor, leftWall, rightWall, middle, right, left), lightSource)
 
         val cameraTransform = viewTransform(Point(0, 1.5, -5), Point(0, 1, 0), Vector(0, 1, 0))
-        val camera = Camera(400, 200, Math.PI / 3, cameraTransform)
+        val camera = Camera(Resolution(400, 200), Math.PI / 3, cameraTransform)
 
         val canvas = camera.render(world)
         writePpm(canvasToPpm(canvas))

@@ -1,9 +1,6 @@
 package exercises
 
-import display.Canvas
-import display.Color
-import display.canvasToPpm
-import display.writePpm
+import display.*
 import geometry.Point
 import geometry.Vector
 
@@ -19,7 +16,7 @@ fun main() {
 
     val width = 200
     val height = 200
-    val canvas = Canvas(width, height)
+    val canvas = Canvas(Resolution(width, height))
     points.map { it.first }
         .map { point -> Pair((point.x * 10).toInt(), (point.y * 10).toInt()) }
         .map { (x, y) -> Pair(x, height - y - 1) }

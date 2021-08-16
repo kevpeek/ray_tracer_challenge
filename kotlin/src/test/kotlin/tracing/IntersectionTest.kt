@@ -17,7 +17,7 @@ class IntersectionTest {
         val ray = Ray(Point(0, 0, -5), Vector(0, 0, 1))
         val sphere = Sphere()
 
-        val intersections = intersects(sphere, ray)
+        val intersections = sphere.intersects(ray)
 
         assertEquals(2, intersections.size)
         assertEquals(4.0, intersections[0].time)
@@ -29,7 +29,7 @@ class IntersectionTest {
         val ray = Ray(Point(0, 1, -5), Vector(0, 0, 1))
         val sphere = Sphere()
 
-        val intersections = intersects(sphere, ray)
+        val intersections = sphere.intersects(ray)
 
         assertEquals(2, intersections.size)
         assertEquals(5.0, intersections[0].time)
@@ -41,7 +41,7 @@ class IntersectionTest {
         val ray = Ray(Point(0, 2, -5), Vector(0, 0, 1))
         val sphere = Sphere()
 
-        val intersections = intersects(sphere, ray)
+        val intersections = sphere.intersects(ray)
 
         assertTrue(intersections.isEmpty())
     }
@@ -51,7 +51,7 @@ class IntersectionTest {
         val ray = Ray(Point(0, 0, 0), Vector(0, 0, 1))
         val sphere = Sphere()
 
-        val intersections = intersects(sphere, ray)
+        val intersections = sphere.intersects(ray)
 
         assertEquals(2, intersections.size)
         assertEquals(-1.0, intersections[0].time)
@@ -63,7 +63,7 @@ class IntersectionTest {
         val ray = Ray(Point(0, 0, 5), Vector(0, 0, 1))
         val sphere = Sphere()
 
-        val intersections = intersects(sphere, ray)
+        val intersections = sphere.intersects(ray)
 
         assertEquals(2, intersections.size)
         assertEquals(-6.0, intersections[0].time)
@@ -99,7 +99,7 @@ class IntersectionTest {
         val ray = Ray(Point(0, 0, -5), Vector(0, 0, 1))
         val sphere = Sphere()
 
-        val intersections = intersects(sphere, ray)
+        val intersections = sphere.intersects(ray)
 
         assertEquals(2, intersections.size)
         assertEquals(sphere, intersections[0].thing)
@@ -160,7 +160,7 @@ class IntersectionTest {
         val ray = Ray(Point(0, 0, -5), Vector(0, 0, 1))
         val sphere = Sphere(scaling(2, 2, 2))
 
-        val intersections = intersects(sphere, ray)
+        val intersections = sphere.intersects(ray)
 
         assertEquals(2, intersections.size)
         assertEquals(3.0, intersections[0].time)
@@ -172,7 +172,7 @@ class IntersectionTest {
         val ray = Ray(Point(0, 0, -5), Vector(0, 0, 1))
         val sphere = Sphere(translation(5, 0, 0))
 
-        val intersections = intersects(sphere, ray)
+        val intersections = sphere.intersects(ray)
         assertTrue(intersections.isEmpty())
     }
 
@@ -180,7 +180,7 @@ class IntersectionTest {
     fun `Precomputing the state of an intersection`() {
         val ray = Ray(Point(0, 0, -5), Vector(0, 0, 1))
         val shape = Sphere()
-        val intersection = intersects(shape, ray)[0]
+        val intersection = shape.intersects(ray)[0]
 
         val comps = intersection.preComputations(ray)
 
@@ -196,7 +196,7 @@ class IntersectionTest {
         val ray = Ray(Point(0, 0, -5), Vector(0, 0, 1))
         val shape = Sphere()
 
-        val intersect = intersects(shape, ray)[0]
+        val intersect = shape.intersects(ray)[0]
 
         val comps = intersect.preComputations(ray)
         assertFalse(comps.inside)
@@ -207,7 +207,7 @@ class IntersectionTest {
         val ray = Ray(Point(0, 0, 0), Vector(0, 0, 1))
         val shape = Sphere()
 
-        val intersect = intersects(shape, ray)[1]
+        val intersect = shape.intersects(ray)[1]
 
         val comps = intersect.preComputations(ray)
         assertTrue(comps.inside)

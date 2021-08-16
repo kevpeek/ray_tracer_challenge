@@ -1,6 +1,7 @@
 package tracing
 
 import display.Color
+import display.Resolution
 import geometry.Matrix
 import geometry.Point
 import geometry.Vector
@@ -21,29 +22,29 @@ class CameraTest {
         val vsize = 120
         val fieldOfView = Math.PI / 2
 
-        val camera = Camera(hsize, vsize, fieldOfView)
+        val camera = Camera(Resolution(hsize, vsize), fieldOfView)
 
-        assertEquals(160, camera.hsize)
-        assertEquals(120, camera.vsize)
+        assertEquals(160, camera.resolution.hsize)
+        assertEquals(120, camera.resolution.vsize)
         assertEquals(Math.PI / 2, camera.fieldOfView)
         assertEquals(Matrix.identity(4), camera.transform)
     }
 
     @Test
     fun `The pixel size for a horizontal canvas`() {
-        val camera = Camera(200, 125, Math.PI / 2)
+        val camera = Camera(Resolution(200, 125), Math.PI / 2)
         assertEquals(0.01, camera.pixelSize, EPSILON)
     }
 
     @Test
     fun `The pixel size for a vertical canvas`() {
-        val camera = Camera(125, 200, Math.PI / 2)
+        val camera = Camera(Resolution(125, 200), Math.PI / 2)
         assertEquals(0.01, camera.pixelSize, EPSILON)
     }
 
     @Test
     fun `Constructing a ray through the center of the canvas`() {
-        val camera = Camera(201, 101, Math.PI / 2)
+        val camera = Camera(Resolution(201, 101), Math.PI / 2)
 
         val ray = camera.rayForPixel(100, 50)
 
@@ -53,7 +54,7 @@ class CameraTest {
 
     @Test
     fun `Constructing a ray through a corner of the canvas`() {
-        val camera = Camera(201, 101, Math.PI / 2)
+        val camera = Camera(Resolution(201, 101), Math.PI / 2)
 
         val ray = camera.rayForPixel(0, 0)
 
@@ -64,7 +65,7 @@ class CameraTest {
     @Test
     fun `Constructing a ray when the camera is transformed`() {
         val transform = translation(0, -2, 5).then(rotationY(Math.PI / 4))
-        val camera = Camera(201, 101, Math.PI / 2, transform)
+        val camera = Camera(Resolution(201, 101), Math.PI / 2, transform)
 
         val ray = camera.rayForPixel(100, 50)
 
@@ -79,7 +80,7 @@ class CameraTest {
         val from = Point(0, 0, -5)
         val to = WORLD_ORIGIN
         val up = Vector(0, 1, 0)
-        val camera = Camera(11, 11, Math.PI / 2, viewTransform(from, to, up))
+        val camera = Camera(Resolution(11, 11), Math.PI / 2, viewTransform(from, to, up))
 
         val image = camera.render(world)
         assertEquals(Color(0.38066, 0.47583, 0.2855), image.pixelAt(5, 5))
