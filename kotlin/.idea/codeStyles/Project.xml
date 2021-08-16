@@ -1,17 +1,8 @@
 <component name="ProjectCodeStyleConfiguration">
   <code_scheme name="Project" version="173">
-    <JavaCodeStyleSettings>
-      <option name="CLASS_COUNT_TO_USE_IMPORT_ON_DEMAND" value="999" />
-      <option name="NAMES_COUNT_TO_USE_IMPORT_ON_DEMAND" value="999" />
-    </JavaCodeStyleSettings>
     <JetCodeStyleSettings>
-      <option name="NAME_COUNT_TO_USE_STAR_IMPORT" value="99" />
-      <option name="NAME_COUNT_TO_USE_STAR_IMPORT_FOR_MEMBERS" value="99" />
       <option name="CODE_STYLE_DEFAULTS" value="KOTLIN_OFFICIAL" />
     </JetCodeStyleSettings>
-    <MarkdownNavigatorCodeStyleSettings>
-      <option name="RIGHT_MARGIN" value="72" />
-    </MarkdownNavigatorCodeStyleSettings>
     <codeStyleSettings language="kotlin">
       <option name="CODE_STYLE_DEFAULTS" value="KOTLIN_OFFICIAL" />
     </codeStyleSettings>

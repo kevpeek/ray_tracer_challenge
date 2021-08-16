@@ -68,4 +68,4 @@ fun intersectWorld(world: World, ray: Ray): List<Intersection> {
 /**
  * Finds the Intersection with the lowest, non-negative time value.
  */
-fun hit(intersections: List<Intersection>) = intersections.filter { it.time >= 0 }.minBy { it.time }
+fun hit(intersections: List<Intersection>) = intersections.filter { it.time >= 0 }.minByOrNull { it.time }
