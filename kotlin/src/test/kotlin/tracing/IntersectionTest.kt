@@ -113,7 +113,7 @@ class IntersectionTest {
         val i2 = Intersection(2.0, shape)
         val intersections = intersections(i1, i2)
 
-        val theHit = hit(intersections)
+        val theHit = intersections.hit()
         assertEquals(i1, theHit)
     }
 
@@ -125,7 +125,7 @@ class IntersectionTest {
         val i2 = Intersection(1.0, shape)
         val intersections = intersections(i1, i2)
 
-        val theHit = hit(intersections)
+        val theHit = intersections.hit()
         assertEquals(i2, theHit)
     }
 
@@ -137,7 +137,7 @@ class IntersectionTest {
         val i2 = Intersection(-1.0, shape)
         val intersections = intersections(i1, i2)
 
-        val theHit = hit(intersections)
+        val theHit = intersections.hit()
         assertNull(theHit)
     }
 
@@ -151,14 +151,14 @@ class IntersectionTest {
         val i4 = Intersection(2.0, shape)
         val intersections = intersections(i1, i2, i3, i4)
 
-        val theHit = hit(intersections)
+        val theHit = intersections.hit()
         assertEquals(i4, theHit)
     }
 
     @Test
     fun `Intersecting a scaled sphere with a ray`() {
         val ray = Ray(Point(0, 0, -5), Vector(0, 0, 1))
-        val sphere = Sphere(scaling(2, 2, 2))
+        val sphere = Sphere().withTransform { scaling(2, 2, 2) }
 
         val intersections = sphere.intersects(ray)
 
@@ -170,7 +170,7 @@ class IntersectionTest {
     @Test
     fun `Intersecting a translated sphere with a ray`() {
         val ray = Ray(Point(0, 0, -5), Vector(0, 0, 1))
-        val sphere = Sphere(translation(5, 0, 0))
+        val sphere = Sphere().withTransform { translation(5, 0, 0) }
 
         val intersections = sphere.intersects(ray)
         assertTrue(intersections.isEmpty())

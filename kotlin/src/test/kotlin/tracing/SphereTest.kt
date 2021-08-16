@@ -14,15 +14,9 @@ import kotlin.math.sqrt
 class SphereTest {
 
     @Test
-    fun `A sphere's default transformation`() {
-        val sphere = Sphere()
-        assertEquals(Matrix.identity(4), sphere.transform)
-    }
-
-    @Test
     fun `Changing a sphere's transformation`() {
         val transformation = translation(2, 3, 4)
-        val sphere = Sphere(transformation)
+        val sphere = Sphere().withTransform { transformation }
         assertEquals(transformation, sphere.transform)
     }
 
@@ -67,7 +61,7 @@ class SphereTest {
 
     @Test
     fun `Computing the normal on a translated sphere`() {
-        val sphere = Sphere(translation(0, 1, 0))
+        val sphere = Sphere().withTransform { translation(0, 1, 0) }
 
         val normal = sphere.normalAt(Point(0, 1.70711, -0.70711))
         assertEquals(Vector(0, 0.70711, -0.70711), normal)
@@ -75,7 +69,7 @@ class SphereTest {
 
     @Test
     fun `Computing the normal on a transformed sphere`() {
-        val sphere = Sphere(scaling(1, 0.5, 1) * rotationZ(Math.PI / 5))
+        val sphere = Sphere().withTransform { scaling(1, 0.5, 1) * rotationZ(Math.PI / 5) }
 
         val normal = sphere.normalAt(Point(0, sqrt(2.0) / 2, -sqrt(2.0) / 2))
         assertEquals(Vector(0, 0.97014, -0.24254), normal)

@@ -90,13 +90,13 @@ class WorldTest {
             color = Color(0.8, 1.0, 0.6), ambient = 1.0, diffuse = 0.7, specular = 0.2
         )
         val outerSphere = Sphere(material = outerSphereMaterial)
-        val innerSphere = Sphere(transform = scaling(0.5, 0.5, 0.5), material = Material(ambient = 1.0))
+        val innerSphere = Sphere(material = Material(ambient = 1.0)).withTransform { scaling(0.5, 0.5, 0.5) }
 
         val world = World(listOf(outerSphere, innerSphere), DEFAULT_LIGHT)
 
         val ray = Ray(Point(0, 0, 0.75), Vector(0, 0, -1))
 
         val color = world.colorAt(ray)
-        assertEquals(innerSphere.material.color, color)
+        assertEquals(innerSphere.material().color, color)
     }
 }

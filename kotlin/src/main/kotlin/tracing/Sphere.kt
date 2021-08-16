@@ -10,19 +10,19 @@ import kotlin.math.sqrt
  * Representation of a Sphere.
  */
 class Sphere(
-    val transform: Matrix = Matrix.identity(4),
     val origin: Point = WORLD_ORIGIN,
-    val material: Material = Material.DEFAULT
-) {
+    val material: Material = Material.DEFAULT,
+) : Shape {
+
+    override fun material() = material
 
     /**
      * Returns the list of Intersections between the ray and sphere.
      */
-    fun intersects(ray: Ray): List<Intersection> {
-        val transformedRay = ray.transform(transform.inverse())
-        val sphereToRay = transformedRay.origin - origin
-        val a = transformedRay.direction.dot(transformedRay.direction)
-        val b = 2 * transformedRay.direction.dot(sphereToRay)
+    override fun intersects(ray: Ray): List<Intersection> {
+        val sphereToRay = ray.origin - origin
+        val a = ray.direction.dot(ray.direction)
+        val b = 2 * ray.direction.dot(sphereToRay)
         val c = sphereToRay.dot(sphereToRay) - 1
 
         val discriminant = b * b - 4 * a * c
@@ -40,15 +40,10 @@ class Sphere(
     /**
      * Return the Vector normal to this sphere at the supplied point.
      */
-    fun normalAt(point: Point): Vector {
-        val transformToObjectSpace = transform.inverse()
-        val pointInObjectSpace = transformToObjectSpace * point
-        val normalInObjectSpace = (pointInObjectSpace - origin)
-        val transformToWorldSpace = transform.submatrix(3, 3).inverse().transpose()
-        return (transformToWorldSpace * normalInObjectSpace).normalize()
+    override fun normalAt(point: Point): Vector {
+        return point - origin
     }
 
-    fun withTransform(otherTransform: () -> Matrix) = Sphere(otherTransform(), origin, material)
-    fun withOrigin(otherOrigin: Point) = Sphere(transform, otherOrigin, material)
-    fun withMaterial(otherMaterial: Material) = Sphere(transform, origin, otherMaterial)
+    fun withOrigin(otherOrigin: Point) = Sphere(otherOrigin, material)
+    fun withMaterial(otherMaterial: Material) = Sphere(origin, otherMaterial)
 }

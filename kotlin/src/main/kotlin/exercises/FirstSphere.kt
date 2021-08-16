@@ -11,7 +11,7 @@ fun main() {
     val canvasPixels = 100
     val canvas = Canvas(Resolution(canvasPixels, canvasPixels))
     val transformation = Matrix.identity(4)
-    val shape = Sphere(transformation)
+    val shape = Sphere().withTransform { transformation }
 
     val rayOrigin = Point(0, 0, -5)
     val wallZ = 10
@@ -28,7 +28,7 @@ fun main() {
             val rayDirection = (position - rayOrigin).normalize()
             val ray = Ray(rayOrigin, rayDirection)
             val intersections = shape.intersects(ray)
-            hit(intersections)?.let { canvas.writePixel(x, y, Color.RED) }
+            intersections.hit()?.let { canvas.writePixel(x, y, Color.RED) }
         }
     }
 

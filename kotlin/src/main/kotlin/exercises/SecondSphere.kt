@@ -3,17 +3,12 @@ package exercises
 import display.*
 import geometry.Matrix
 import geometry.Point
-import tracing.Material
-import tracing.PointLight
-import tracing.Ray
-import tracing.Sphere
-import tracing.hit
-import tracing.lighting
+import tracing.*
 
-private fun getShape(): Sphere {
+private fun getShape(): Shape {
     val material = Material(color = Color(1, 0.2, 1))
     val transformation = Matrix.identity(4)
-    return Sphere(transform = transformation, material = material)
+    return Sphere(material = material).withTransform { transformation }
 }
 
 private fun getLight(): PointLight {
@@ -41,11 +36,11 @@ fun main() {
         val rayDirection = (position - rayOrigin).normalize()
         val ray = Ray(rayOrigin, rayDirection)
         val intersections = shape.intersects(ray)
-        hit(intersections)?.let { hit ->
+        intersections.hit()?.let { hit ->
             val point = ray.position(hit.time)
             val normal = hit.thing.normalAt(point)
             val eye = -(ray.direction)
-            val color = lighting(shape.material, light, point, eye, normal)
+            val color = lighting(shape.material(), light, point, eye, normal)
             canvas.writePixel(x, y, color)
         }
     }

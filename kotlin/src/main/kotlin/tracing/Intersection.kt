@@ -8,14 +8,14 @@ import geometry.Vector
  */
 data class PreComputedIntersection(
     val time: Double,
-    val thing: Sphere,
+    val thing: Shape,
     val inside: Boolean,
     val point: Point,
     val eyeVector: Vector,
     val normalVector: Vector
 )
 
-data class Intersection(val time: Double, val thing: Sphere) {
+data class Intersection(val time: Double, val thing: Shape) {
     /**
      * Calculate the PreComputed details.
      */
@@ -36,4 +36,4 @@ fun intersections(vararg intersections: Intersection) = intersections.toList()
 /**
  * Finds the Intersection with the lowest, non-negative time value.
  */
-fun hit(intersections: List<Intersection>) = intersections.filter { it.time >= 0 }.minByOrNull { it.time }
+fun List<Intersection>.hit() = this.filter { it.time >= 0 }.minByOrNull { it.time }
