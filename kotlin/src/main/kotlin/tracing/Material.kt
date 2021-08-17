@@ -5,10 +5,23 @@ import geometry.Point
 import geometry.Vector
 import kotlin.math.pow
 
-fun lighting(material: Material, light: PointLight, position: Point, eyeVector: Vector, normal: Vector): Color {
+fun lighting(
+    material: Material,
+    light: PointLight,
+    position: Point,
+    eyeVector: Vector,
+    normal: Vector,
+    inShadow: Boolean
+): Color {
     val ambient = ambientContribution(material, light)
-    val diffuse = diffuseContribution(material, light, position, normal)
-    val specular = specularContribution(material, light, position, eyeVector, normal)
+    val diffuse = when (inShadow) {
+        true -> Color.BLACK
+        false -> diffuseContribution(material, light, position, normal)
+    }
+    val specular = when(inShadow) {
+        true -> Color.BLACK
+        false -> specularContribution(material, light, position, eyeVector, normal)
+    }
     return ambient + diffuse + specular
 }
 

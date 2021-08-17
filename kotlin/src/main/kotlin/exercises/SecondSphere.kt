@@ -40,7 +40,7 @@ fun main() {
             val point = ray.position(hit.time)
             val normal = hit.thing.normalAt(point)
             val eye = -(ray.direction)
-            val color = lighting(shape.material(), light, point, eye, normal)
+            val color = lighting(shape.material(), light, point, eye, normal, false)
             canvas.writePixel(x, y, color)
         }
     }

@@ -4,6 +4,7 @@ import geometry.Point
 import geometry.Vector
 import geometry.scaling
 import geometry.translation
+import helper.EPSILON
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNull
@@ -214,5 +215,16 @@ class IntersectionTest {
         assertEquals(Point(0, 0, 1), comps.point)
         assertEquals(Vector(0, 0, -1), comps.eyeVector)
         assertEquals(Vector(0, 0, -1), comps.normalVector)
+    }
+
+    @Test
+    fun hit_should_offset_point() {
+        val ray = Ray(Point(0, 0, -5), Vector(0, 0, 1))
+        val sphere = Sphere().withTransform { translation(0, 0, 1) }
+        val intersection = Intersection(5.0, sphere)
+        val preComputations = intersection.preComputations(ray)
+        assertTrue(preComputations.overPoint.z < -EPSILON / 2)
+        assertTrue(preComputations.point.z > preComputations.overPoint.z)
+
     }
 }

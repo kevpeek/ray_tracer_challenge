@@ -7,7 +7,7 @@ import geometry.scaling
 
 val BLACK_LIGHT = PointLight(WORLD_ORIGIN, Color.BLACK)
 
-val DEFAULT_LIGHT = PointLight(Point(-10, -10, -10), Color.WHITE)
+val DEFAULT_LIGHT = PointLight(Point(-10, 10, -10), Color.WHITE)
 val DEFAULT_SPHERES = defaultSpheres()
 
 /**
@@ -51,12 +51,24 @@ class World(val objects: List<Shape> = emptyList(), val lightSource: PointLight 
      * Determine the Color given a PreComputedIntersection.
      */
     fun shadeHit(preComputations: PreComputedIntersection): Color {
+        val isShadowed = isShadowed(preComputations.overPoint)
         return lighting(
             preComputations.thing.material(),
             lightSource,
             preComputations.point,
             preComputations.eyeVector,
-            preComputations.normalVector
+            preComputations.normalVector,
+            isShadowed
         )
+    }
+
+    fun isShadowed(point: Point): Boolean {
+        val vector = lightSource.position - point
+        val distance = vector.magnitude()
+        val direction = vector.normalize()
+        val ray = Ray(point, direction)
+        val intersections = intersects(ray)
+        val hit = intersections.hit() ?: return false
+        return hit.time < distance
     }
 }

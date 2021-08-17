@@ -27,7 +27,7 @@ class MaterialTest {
         val normal = Vector(0, 0, -1)
         val light = PointLight(Point(0, 0, -10), Color(1, 1, 1))
 
-        val result = lighting(material, light, position, eyeVector, normal)
+        val result = lighting(material, light, position, eyeVector, normal, false)
         assertEquals(Color(1.9, 1.9, 1.9), result)
     }
 
@@ -37,7 +37,7 @@ class MaterialTest {
         val normal = Vector(0, 0, -1)
         val light = PointLight(Point(0, 0, -10), Color(1, 1, 1))
 
-        val result = lighting(material, light, position, eyeVector, normal)
+        val result = lighting(material, light, position, eyeVector, normal, false)
         assertEquals(Color(1, 1, 1), result)
     }
 
@@ -47,7 +47,7 @@ class MaterialTest {
         val normal = Vector(0, 0, -1)
         val light = PointLight(Point(0, 10, -10), Color(1, 1, 1))
 
-        val result = lighting(material, light, position, eyeVector, normal)
+        val result = lighting(material, light, position, eyeVector, normal, false)
         assertEquals(Color(0.7364, 0.7364, 0.7364), result)
     }
 
@@ -57,7 +57,7 @@ class MaterialTest {
         val normal = Vector(0, 0, -1)
         val light = PointLight(Point(0, 10, -10), Color(1, 1, 1))
 
-        val result = lighting(material, light, position, eyeVector, normal)
+        val result = lighting(material, light, position, eyeVector, normal, false)
         assertEquals(Color(1.6364, 1.6364, 1.6364), result)
     }
 
@@ -67,7 +67,17 @@ class MaterialTest {
         val normal = Vector(0, 0, -1)
         val light = PointLight(Point(0, 0, 10), Color(1, 1, 1))
 
-        val result = lighting(material, light, position, eyeVector, normal)
+        val result = lighting(material, light, position, eyeVector, normal, false)
+        assertEquals(Color(0.1, 0.1, 0.1), result)
+    }
+
+    @Test
+    fun lighting_with_surface_in_shadow() {
+        val eyeVector = Vector(0, 0, -1)
+        val normal = Vector(0, 0, -1)
+        val light = PointLight(Point(0, 0, -10), Color.WHITE)
+        val inShadow = true
+        val result = lighting(material, light, position, eyeVector, normal, inShadow)
         assertEquals(Color(0.1, 0.1, 0.1), result)
     }
 }

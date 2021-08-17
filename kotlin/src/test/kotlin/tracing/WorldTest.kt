@@ -4,9 +4,11 @@ import display.Color
 import geometry.Point
 import geometry.Vector
 import geometry.scaling
+import geometry.translation
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import kotlin.test.assertFalse
 
 class WorldTest {
 
@@ -63,7 +65,7 @@ class WorldTest {
         val comps = intersect.preComputations(ray)
 
         val color = world.shadeHit(comps)
-        assertEquals(Color(0.90498, 0.90498, 0.90498), color)
+        assertEquals(Color(0.1, 0.1, 0.1), color)
     }
 
     @Test
@@ -98,5 +100,45 @@ class WorldTest {
 
         val color = world.colorAt(ray)
         assertEquals(innerSphere.material().color, color)
+    }
+
+    @Test
+    fun no_shadow_when_nothing_collinear_with_point_and_light() {
+        var world = World.default()
+        var point = Point(0, 10, 0)
+        assertFalse(world.isShadowed(point))
+    }
+
+    @Test
+    fun shadow_when_something_between_point_and_light() {
+        var world = World.default()
+        var point = Point(10, -10, 10)
+        assertTrue(world.isShadowed(point))
+    }
+
+    @Test
+    fun no_shadow_when_object_behind_light() {
+        var world = World.default()
+        var point = Point(-20, 20, -20)
+        assertFalse(world.isShadowed(point))
+    }
+
+    @Test
+    fun no_shadow_when_object_behind_point() {
+        var world = World.default()
+        var point = Point(-2, 2, -2)
+        assertFalse(world.isShadowed(point))
+    }
+
+    @Test
+    fun shade_hit_given_intersection_in_shadow() {
+        val shape1 = Sphere()
+        val shape2 = Sphere().withTransform { translation(0, 0, 10) }
+        val world = World(objects = listOf(shape1, shape2), PointLight(Point(0, 0, -10), Color.WHITE))
+        val ray = Ray(Point(0, 0, 5), Vector(0, 0, 1))
+        val intersection = Intersection(4.0, shape2)
+        val preComputation = intersection.preComputations(ray)
+        val color = world.shadeHit(preComputation)
+        assertEquals(Color(0.1, 0.1, 0.1), color)
     }
 }

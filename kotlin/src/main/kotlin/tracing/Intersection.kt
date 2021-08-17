@@ -2,6 +2,7 @@ package tracing
 
 import geometry.Point
 import geometry.Vector
+import helper.EPSILON
 
 /**
  * Precompute details about the intersection.
@@ -12,7 +13,8 @@ data class PreComputedIntersection(
     val inside: Boolean,
     val point: Point,
     val eyeVector: Vector,
-    val normalVector: Vector
+    val normalVector: Vector,
+    val overPoint: Point
 )
 
 data class Intersection(val time: Double, val thing: Shape) {
@@ -26,8 +28,8 @@ data class Intersection(val time: Double, val thing: Shape) {
 
         val inside = normalVector.dot(eyeVector) < 0
         val actualNormal = if (inside) -normalVector else normalVector
-
-        return PreComputedIntersection(time, thing, inside, point, eyeVector, actualNormal)
+        val overPoint = point + normalVector * EPSILON
+        return PreComputedIntersection(time, thing, inside, point, eyeVector, actualNormal, overPoint)
     }
 }
 
