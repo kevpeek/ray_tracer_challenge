@@ -4,6 +4,7 @@ use crate::helper::{almost, EPSILON};
 use crate::tracing::ray::Ray;
 use crate::tracing::shape::WorldShape;
 
+#[derive(Debug, PartialEq)]
 pub struct Intersections<'a> {
     pub intersections: Vec<Intersection<'a>>,
 }
@@ -36,6 +37,14 @@ impl<'a> Intersections<'a> {
 
     pub fn new(intersections: Vec<Intersection>) -> Intersections {
         Intersections { intersections }
+    }
+
+    pub fn empty() -> Intersections<'a> {
+        intersections!()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.intersections.is_empty()
     }
 
     /**

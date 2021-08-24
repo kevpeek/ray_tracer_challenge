@@ -10,15 +10,14 @@ use crate::geometry::transformations::{
 use crate::geometry::vector::Vector;
 use crate::tracing::camera::Camera;
 use crate::tracing::material::Material;
+use crate::tracing::plane::Plane;
 use crate::tracing::point_light::PointLight;
 use crate::tracing::shape::Shape;
 use crate::tracing::sphere::Sphere;
 use crate::tracing::world::World;
 
-pub fn run_world() {
-    let world = world_one();
+pub fn run_world(world: World) {
     let camera = make_camera();
-
     let canvas = camera.render(world);
     write_canvas(&canvas).unwrap();
 }
@@ -32,7 +31,7 @@ fn make_camera() -> Camera {
     Camera::new(Resolution::LOW, PI / 3.0, camera_transform)
 }
 
-fn world_one() -> World {
+pub fn world_one() -> World {
     let light_source = PointLight::default();
 
     // ===== Walls =====
@@ -41,21 +40,17 @@ fn world_one() -> World {
         .with_color(Color::new(1.0, 0.9, 0.9))
         .with_specular(0.0);
 
-    let floor = Sphere::default()
-        .with_material(wall_material.clone())
-        .with_transform(scaling(10.0, 0.01, 10.0));
+    let floor = Plane::new().with_material(wall_material.clone());
 
-    let wall_transform = scaling(10.0, 0.01, 10.0)
-        .then(&rotation_x(PI / 2.0))
-        .then(&translation(0, 0, 5));
+    let wall_transform = rotation_x(PI / 2.0).then(&translation(0, 0, 1));
 
-    let left_wall = Sphere::default()
+    let left_wall = Plane::new()
         .with_material(wall_material.clone())
         .with_transform(wall_transform.then(&rotation_y(-PI / 4.0)));
 
-    let right_wall = Sphere::default()
-        .with_material(wall_material)
-        .with_transform(wall_transform.then(&rotation_y(PI / 4.0)));
+    // let right_wall = Sphere::default()
+    //     .with_material(wall_material)
+    //     .with_transform(wall_transform.then(&rotation_y(PI / 4.0)));
 
     // ===== Spheres =====
 
@@ -83,8 +78,8 @@ fn world_one() -> World {
 
     let objects: Vec<Box<dyn Shape>> = vec![
         Box::new(floor),
-        Box::new(left_wall),
-        Box::new(right_wall),
+        // Box::new(left_wall),
+        // Box::new(right_wall),
         Box::new(middle),
         Box::new(right),
         Box::new(left),
