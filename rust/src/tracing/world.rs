@@ -4,7 +4,7 @@ use crate::display::color::Color;
 use crate::geometry::point::Point;
 use crate::geometry::transformations::scaling;
 use crate::tracing::intersection::{Intersections, PreComputedIntersection};
-use crate::tracing::material::{lighting, Material};
+use crate::tracing::material::{Material};
 use crate::tracing::point_light::PointLight;
 use crate::tracing::ray::Ray;
 use crate::tracing::shape::{Shape, WorldShape};
@@ -41,14 +41,12 @@ impl World {
      */
     fn shade_hit(&self, pre_computations: PreComputedIntersection) -> Color {
         let in_shadow = self.is_shadowed(pre_computations.over_point);
-        lighting(
-            pre_computations.thing.material(),
-            &self.light_source,
-            pre_computations.point,
-            pre_computations.eye_vector,
-            pre_computations.normal_vector,
-            in_shadow,
-        )
+        let material = pre_computations.thing.material();
+        let light = &self.light_source;
+        let position = pre_computations.point;
+        let eye_vector_argument = pre_computations.eye_vector;
+        let normal = pre_computations.normal_vector;
+        material.lighting(light, position, eye_vector_argument, normal, in_shadow)
     }
 
     /**
