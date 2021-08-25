@@ -16,6 +16,7 @@ use crate::tracing::shape::Shape;
 use crate::tracing::sphere::Sphere;
 use crate::tracing::world::World;
 use crate::tracing::stripe_pattern::StripePattern;
+use crate::geometry::transformations;
 
 pub fn run_world(world: World) {
     let camera = make_camera();
@@ -69,7 +70,12 @@ pub fn world_one() -> World {
         .with_transform(scaling(0.5, 0.5, 0.5).then(&translation(1.5, 0.5, -0.5)));
 
     let left_material = Material::default()
-        .with_color(Color::MUSTARD_YELLOW)
+        // .with_color(Color::MUSTARD_YELLOW)
+        .with_pattern(
+            StripePattern::new(Color::MUSTARD_YELLOW, Color::BLACK)
+                .with_transform(transformations::scaling(0.2, 0.2, 0.2)
+                    .then(&transformations::rotation_z(PI / 2.0)))
+        )
         .with_diffuse(0.7)
         .with_specular(0.3);
 

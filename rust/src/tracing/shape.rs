@@ -7,6 +7,8 @@ use crate::geometry::vector::Vector;
 use crate::tracing::intersection::{Intersection, Intersections};
 use crate::tracing::material::Material;
 use crate::tracing::ray::Ray;
+use crate::display::color::Color;
+use crate::tracing::point_light::PointLight;
 
 pub type WorldShape<'a> = &'a dyn Shape;
 
@@ -22,6 +24,17 @@ pub trait Shape: ShapeClone + Any + Send + Sync + Debug {
     fn material(&self) -> &Material;
     fn intersect(&self, ray: &Ray) -> Intersections;
     fn normal_at(&self, point: Point) -> Vector;
+
+    fn lighting(
+        &self,
+        light: &PointLight,
+        position: Point,
+        eye_vector: Vector,
+        normal: Vector,
+        in_shadow: bool,
+    ) -> Color {
+        self.material().lighting(light, position, eye_vector, normal, in_shadow)
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -80,6 +93,18 @@ impl Shape for TransformedShape {
         let local_normal = self.delegate.normal_at(local_point);
         let world_normal = &self.transformation.inverse().transpose() * local_normal;
         world_normal.normalize()
+    }
+
+    fn lighting(
+        &self,
+        light: &PointLight,
+        position: Point,
+        eye_vector: Vector,
+        normal: Vector,
+        in_shadow: bool,
+    ) -> Color {
+        let transformed_point = &self.transformation.inverse() * position;
+        self.material().lighting(light, transformed_point, eye_vector, normal, in_shadow)
     }
 }
 

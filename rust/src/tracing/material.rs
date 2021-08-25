@@ -78,7 +78,7 @@ impl Material {
         )
     }
 
-    pub fn with_ambient(&self, ambient: f64) -> Material {
+    pub fn with_ambient(self, ambient: f64) -> Material {
         Material::new(
             self.pattern,
             ambient,

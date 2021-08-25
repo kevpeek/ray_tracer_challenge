@@ -41,12 +41,12 @@ impl World {
      */
     fn shade_hit(&self, pre_computations: PreComputedIntersection) -> Color {
         let in_shadow = self.is_shadowed(pre_computations.over_point);
-        let material = pre_computations.thing.material();
         let light = &self.light_source;
         let position = pre_computations.point;
         let eye_vector_argument = pre_computations.eye_vector;
         let normal = pre_computations.normal_vector;
-        material.lighting(light, position, eye_vector_argument, normal, in_shadow)
+
+        pre_computations.thing.lighting(light, position, eye_vector_argument, normal, in_shadow)
     }
 
     /**
