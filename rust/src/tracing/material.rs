@@ -3,6 +3,7 @@ use crate::geometry::point::Point;
 use crate::geometry::vector::Vector;
 use crate::helper::almost;
 use crate::tracing::point_light::PointLight;
+use crate::tracing::stripe_pattern::StripePattern;
 
 pub fn lighting(
     material: &Material,
@@ -12,10 +13,12 @@ pub fn lighting(
     normal: Vector,
     in_shadow: bool,
 ) -> Color {
-    let ambient = ambient_contribution(material, light);
+    let effective_color = material.pattern.stripe_at(position) * light.intensity();
+
+    let ambient = ambient_contribution(material, effective_color);
     let diffuse = match in_shadow {
         true => Color::BLACK,
-        false => diffuse_contribution(material, light, position, normal),
+        false => diffuse_contribution(material, light, position, normal, effective_color),
     };
     let specular = match in_shadow {
         true => Color::BLACK,
@@ -24,8 +27,7 @@ pub fn lighting(
     ambient + diffuse + specular
 }
 
-fn ambient_contribution(material: &Material, light: &PointLight) -> Color {
-    let effective_color = effective_color(material, light);
+fn ambient_contribution(material: &Material, effective_color: Color) -> Color {
     effective_color * material.ambient
 }
 
@@ -34,18 +36,15 @@ fn diffuse_contribution(
     light: &PointLight,
     position: Point,
     normal: Vector,
+    effective_color: Color,
 ) -> Color {
     let light_direction = (light.position() - position).normalize();
     let light_dot_normal = light_direction.dot(normal);
     if light_dot_normal < 0.0 {
         Color::BLACK
     } else {
-        effective_color(material, light) * material.diffuse * light_dot_normal
+        effective_color * material.diffuse * light_dot_normal
     }
-}
-
-fn effective_color(material: &Material, light: &PointLight) -> Color {
-    material.color * light.intensity()
 }
 
 fn specular_contribution(
@@ -74,7 +73,7 @@ fn specular_contribution(
 
 #[derive(Debug, Clone)]
 pub struct Material {
-    color: Color,
+    pattern: StripePattern,
     ambient: f64,
     diffuse: f64,
     specular: f64,
@@ -84,7 +83,7 @@ pub struct Material {
 impl Material {
     pub fn default() -> Material {
         Material {
-            color: Color::WHITE,
+            pattern: StripePattern::solid_pattern(Color::WHITE),
             ambient: 0.1,
             diffuse: 0.9,
             specular: 0.9,
@@ -93,14 +92,14 @@ impl Material {
     }
 
     pub fn new(
-        color: Color,
+        pattern: StripePattern,
         ambient: f64,
         diffuse: f64,
         specular: f64,
         shininess: f64,
     ) -> Material {
         Material {
-            color,
+            pattern,
             ambient,
             diffuse,
             specular,
@@ -108,9 +107,36 @@ impl Material {
         }
     }
 
-    pub fn with_color(&self, color: Color) -> Material {
-        Material::new(
+    pub fn solid_colored(
+        color: Color,
+        ambient: f64,
+        diffuse: f64,
+        specular: f64,
+        shininess: f64,
+    ) -> Material {
+        let pattern= StripePattern::solid_pattern(color);
+        Material {
+            pattern,
+            ambient,
+            diffuse,
+            specular,
+            shininess,
+        }
+    }
+
+    pub fn with_color(self, color: Color) -> Material {
+        Material::solid_colored(
             color,
+            self.ambient,
+            self.diffuse,
+            self.specular,
+            self.shininess,
+        )
+    }
+
+    pub fn with_pattern(self, pattern: StripePattern) -> Material {
+        Material::new(
+            pattern,
             self.ambient,
             self.diffuse,
             self.specular,
@@ -120,7 +146,7 @@ impl Material {
 
     pub fn with_ambient(&self, ambient: f64) -> Material {
         Material::new(
-            self.color,
+            self.pattern,
             ambient,
             self.diffuse,
             self.specular,
@@ -128,9 +154,9 @@ impl Material {
         )
     }
 
-    pub fn with_diffuse(&self, diffuse: f64) -> Material {
+    pub fn with_diffuse(self, diffuse: f64) -> Material {
         Material::new(
-            self.color,
+            self.pattern,
             self.ambient,
             diffuse,
             self.specular,
@@ -138,9 +164,9 @@ impl Material {
         )
     }
 
-    pub fn with_specular(&self, specular: f64) -> Material {
+    pub fn with_specular(self, specular: f64) -> Material {
         Material::new(
-            self.color,
+            self.pattern,
             self.ambient,
             self.diffuse,
             specular,
@@ -148,9 +174,9 @@ impl Material {
         )
     }
 
-    pub fn with_shininess(&self, shininess: f64) -> Material {
+    pub fn with_shininess(self, shininess: f64) -> Material {
         Material::new(
-            self.color,
+            self.pattern,
             self.ambient,
             self.diffuse,
             self.specular,
@@ -158,14 +184,14 @@ impl Material {
         )
     }
 
-    pub fn color(&self) -> &Color {
-        &self.color
+    pub fn color(&self) -> Color {
+        self.pattern.stripe_at(Point::origin())
     }
 }
 
 impl PartialEq for Material {
     fn eq(&self, other: &Self) -> bool {
-        self.color == other.color
+        self.pattern == other.pattern
             && almost(self.ambient, other.ambient)
             && almost(self.diffuse, other.diffuse)
             && almost(self.specular, other.specular)
@@ -181,10 +207,11 @@ mod test {
     use crate::geometry::vector::Vector;
     use crate::tracing::material::{lighting, Material};
     use crate::tracing::point_light::PointLight;
+    use crate::tracing::stripe_pattern::StripePattern;
 
     #[test]
     fn default_material() {
-        assert_eq!(Color::new(1, 1, 1), Material::default().color);
+        assert_eq!(Color::new(1, 1, 1), Material::default().color());
         assert_eq!(0.1, Material::default().ambient);
         assert_eq!(0.9, Material::default().diffuse);
         assert_eq!(0.9, Material::default().specular);
@@ -292,5 +319,18 @@ mod test {
             in_shadow,
         );
         assert_eq!(Color::new(0.1, 0.1, 0.1), result);
+    }
+
+    #[test]
+    fn lighting_with_pattern() {
+        let pattern = StripePattern::new(Color::WHITE, Color::BLACK);
+        let material = Material::new(pattern, 1.0, 0.0, 0.0, 200.0);
+        let eye_vector = Vector::new(0, 0, -1);
+        let normal = Vector::new(0, 0, -1);
+        let light = PointLight::new(Point::at(0, 0, -10), Color::WHITE);
+        let color_one = lighting(&material, &light, Point::at(0.9, 0.0, 0.0), eye_vector, normal, false);
+        let color_two = lighting(&material, &light, Point::at(1.1, 0.0, 0.0), eye_vector, normal, false);
+        assert_eq!(Color::WHITE, color_one);
+        assert_eq!(Color::BLACK, color_two);
     }
 }

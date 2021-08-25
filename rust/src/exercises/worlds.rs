@@ -15,6 +15,7 @@ use crate::tracing::point_light::PointLight;
 use crate::tracing::shape::Shape;
 use crate::tracing::sphere::Sphere;
 use crate::tracing::world::World;
+use crate::tracing::stripe_pattern::StripePattern;
 
 pub fn run_world(world: World) {
     let camera = make_camera();
@@ -37,20 +38,20 @@ pub fn world_one() -> World {
     // ===== Walls =====
 
     let wall_material = Material::default()
-        .with_color(Color::new(1.0, 0.9, 0.9))
+        .with_pattern(StripePattern::new(Color::WHITE, Color::RED))
         .with_specular(0.0);
 
     let floor = Plane::new().with_material(wall_material.clone());
 
-    let wall_transform = rotation_x(PI / 2.0).then(&translation(0, 0, 1));
+    let wall_transform = rotation_x(PI / 2.0).then(&translation(0, 0, 5));
 
     let left_wall = Plane::new()
         .with_material(wall_material.clone())
         .with_transform(wall_transform.then(&rotation_y(-PI / 4.0)));
 
-    // let right_wall = Sphere::default()
-    //     .with_material(wall_material)
-    //     .with_transform(wall_transform.then(&rotation_y(PI / 4.0)));
+    let right_wall = Plane::new()
+        .with_material(wall_material)
+        .with_transform(wall_transform.then(&rotation_y(PI / 4.0)));
 
     // ===== Spheres =====
 
@@ -78,8 +79,8 @@ pub fn world_one() -> World {
 
     let objects: Vec<Box<dyn Shape>> = vec![
         Box::new(floor),
-        // Box::new(left_wall),
-        // Box::new(right_wall),
+        Box::new(left_wall),
+        Box::new(right_wall),
         Box::new(middle),
         Box::new(right),
         Box::new(left),

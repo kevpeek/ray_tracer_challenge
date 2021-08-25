@@ -85,7 +85,7 @@ impl World {
 }
 
 fn default_spheres() -> Vec<BoxedShape> {
-    let outer_sphere_material = Material::new(Color::new(0.8, 1.0, 0.6), 0.1, 0.7, 0.2, 200.0);
+    let outer_sphere_material = Material::solid_colored(Color::new(0.8, 1.0, 0.6), 0.1, 0.7, 0.2, 200.0);
     let outer_sphere = Sphere::new(Point::origin(), outer_sphere_material);
     let inner_sphere =
         Sphere::new(Point::origin(), Material::default()).with_transform(scaling(0.5, 0.5, 0.5));
@@ -181,7 +181,7 @@ mod tests {
 
     #[test]
     fn the_color_with_an_intersection_behind_the_ray() {
-        let outer_sphere_material = Material::new(Color::new(0.8, 1.0, 0.6), 1.0, 0.7, 0.2, 200.0);
+        let outer_sphere_material = Material::solid_colored(Color::new(0.8, 1.0, 0.6), 1.0, 0.7, 0.2, 200.0);
         let outer_sphere = Sphere::new(Point::origin(), outer_sphere_material);
         let material = Material::default().with_ambient(1.0);
         let inner_sphere =
@@ -195,7 +195,7 @@ mod tests {
         let ray = Ray::new(Point::at(0.0, 0.0, 0.75), Vector::new(0, 0, -1));
 
         let color = world.color_at(&ray);
-        assert_eq!(*Material::default().color(), color);
+        assert_eq!(Material::default().color(), color);
     }
 
     #[test]

@@ -36,6 +36,11 @@ impl Color {
         green: 0.80,
         blue: 1.0,
     };
+    pub const RED: Color = Color {
+        red: 1.0,
+        green: 0.0,
+        blue: 0.0
+    };
 
     pub fn new<T: NumCast>(red: T, green: T, blue: T) -> Self {
         Color {
