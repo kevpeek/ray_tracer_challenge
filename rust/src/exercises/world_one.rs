@@ -2,7 +2,7 @@ use std::f64::consts::PI;
 
 use crate::display::color::Color;
 use crate::display::resolution::Resolution;
-use crate::display::writer::write_canvas;
+use crate::display::ppm_writer::write_canvas;
 use crate::geometry::point::Point;
 use crate::geometry::transformations::{
     rotation_x, rotation_y, scaling, translation, view_transform,
@@ -17,21 +17,8 @@ use crate::tracing::sphere::Sphere;
 use crate::tracing::world::World;
 use crate::tracing::stripe_pattern::StripePattern;
 use crate::geometry::transformations;
+use crate::exercises::snapshot;
 
-pub fn run_world(world: World) {
-    let camera = make_camera();
-    let canvas = camera.render(world);
-    write_canvas(&canvas).unwrap();
-}
-
-fn make_camera() -> Camera {
-    let camera_transform = view_transform(
-        Point::at(0.0, 1.5, -5.0),
-        Point::at(0, 1, 0),
-        Vector::new(0, 1, 0),
-    );
-    Camera::new(Resolution::LOW, PI / 3.0, camera_transform)
-}
 
 pub fn world_one() -> World {
     let light_source = PointLight::default();

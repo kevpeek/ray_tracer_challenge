@@ -7,6 +7,10 @@ pub struct Resolution {
 }
 
 impl Resolution {
+    pub const TEST: Resolution = Resolution {
+        hsize: 200,
+        vsize: 100,
+    };
     pub const LOW: Resolution = Resolution {
         hsize: 400,
         vsize: 200,
