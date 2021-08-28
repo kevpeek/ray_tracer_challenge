@@ -5,7 +5,7 @@ use crate::intersections;
 use crate::tracing::intersection::{Intersection, Intersections};
 use crate::tracing::material::Material;
 use crate::tracing::ray::Ray;
-use crate::tracing::shape::{Shape, TransformedShape};
+use crate::tracing::shapes::shape::{Shape, TransformedShape};
 use std::any::Any;
 
 #[derive(Eq, PartialEq, Debug, Clone)]
@@ -84,8 +84,8 @@ mod tests {
     use crate::geometry::transformations::{rotation_z, scaling, translation};
     use crate::geometry::vector::Vector;
     use crate::tracing::material::Material;
-    use crate::tracing::shape::Shape;
-    use crate::tracing::sphere::Sphere;
+    use crate::tracing::shapes::shape::Shape;
+    use crate::tracing::shapes::sphere::Sphere;
     use std::f64::consts::PI;
 
     #[test]

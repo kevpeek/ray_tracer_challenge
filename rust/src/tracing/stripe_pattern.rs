@@ -1,6 +1,6 @@
 use crate::display::color::Color;
 use crate::geometry::point::Point;
-use crate::tracing::shape::WorldShape;
+use crate::tracing::shapes::shape::WorldShape;
 use crate::geometry::matrix::Matrix;
 
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -43,10 +43,10 @@ mod tests {
     use crate::display::color::Color;
     use crate::tracing::stripe_pattern::StripePattern;
     use crate::geometry::point::Point;
-    use crate::tracing::sphere::Sphere;
+    use crate::tracing::shapes::sphere::Sphere;
     use crate::geometry::transformations;
     use crate::tracing::material::Material;
-    use crate::tracing::shape::Shape;
+    use crate::tracing::shapes::shape::Shape;
     use crate::tracing::point_light::PointLight;
     use crate::geometry::vector::Vector;
 

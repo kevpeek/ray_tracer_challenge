@@ -10,10 +10,10 @@ use crate::geometry::transformations::{
 use crate::geometry::vector::Vector;
 use crate::tracing::camera::Camera;
 use crate::tracing::material::Material;
-use crate::tracing::plane::Plane;
+use crate::tracing::shapes::plane::Plane;
 use crate::tracing::point_light::PointLight;
-use crate::tracing::shape::Shape;
-use crate::tracing::sphere::Sphere;
+use crate::tracing::shapes::shape::Shape;
+use crate::tracing::shapes::sphere::Sphere;
 use crate::tracing::world::World;
 use crate::tracing::stripe_pattern::StripePattern;
 use crate::geometry::transformations;

@@ -140,7 +140,7 @@ mod tests {
     use crate::tracing::intersection::Intersections;
     use crate::tracing::material::Material;
     use crate::tracing::ray::Ray;
-    use crate::tracing::shape::{Shape, TransformedShape};
+    use crate::tracing::shapes::shape::{Shape, TransformedShape};
 
     #[derive(Debug, Clone, PartialEq)]
     struct TestShape {

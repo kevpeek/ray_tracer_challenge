@@ -2,7 +2,7 @@ use crate::geometry::point::Point;
 use crate::geometry::vector::Vector;
 use crate::helper::{almost, EPSILON};
 use crate::tracing::ray::Ray;
-use crate::tracing::shape::WorldShape;
+use crate::tracing::shapes::shape::WorldShape;
 
 #[derive(Debug, PartialEq)]
 pub struct Intersections<'a> {
@@ -129,8 +129,8 @@ mod tests {
     use crate::tracing::intersection::Intersection;
     use crate::tracing::material::Material;
     use crate::tracing::ray::Ray;
-    use crate::tracing::shape::{Shape, WorldShape};
-    use crate::tracing::sphere::Sphere;
+    use crate::tracing::shapes::shape::{Shape, WorldShape};
+    use crate::tracing::shapes::sphere::Sphere;
 
     #[test]
     fn a_ray_intersects_sphere_at_two_points() {

@@ -6,7 +6,7 @@ use crate::intersections;
 use crate::tracing::intersection::{Intersection, Intersections};
 use crate::tracing::material::Material;
 use crate::tracing::ray::Ray;
-use crate::tracing::shape::{Shape, TransformedShape};
+use crate::tracing::shapes::shape::{Shape, TransformedShape};
 use std::any::Any;
 
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -65,9 +65,9 @@ mod tests {
     use crate::geometry::vector::Vector;
     use crate::intersections;
     use crate::tracing::intersection::Intersection;
-    use crate::tracing::plane::Plane;
+    use crate::tracing::shapes::plane::Plane;
     use crate::tracing::ray::Ray;
-    use crate::tracing::shape::Shape;
+    use crate::tracing::shapes::shape::Shape;
 
     #[test]
     fn normal_of_plane_is_constant() {

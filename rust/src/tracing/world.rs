@@ -7,8 +7,8 @@ use crate::tracing::intersection::{Intersections, PreComputedIntersection};
 use crate::tracing::material::{Material};
 use crate::tracing::point_light::PointLight;
 use crate::tracing::ray::Ray;
-use crate::tracing::shape::{Shape, WorldShape};
-use crate::tracing::sphere::Sphere;
+use crate::tracing::shapes::shape::{Shape, WorldShape};
+use crate::tracing::shapes::sphere::Sphere;
 
 type BoxedShape = Box<dyn Shape>;
 
@@ -103,7 +103,7 @@ mod tests {
     use crate::tracing::material::Material;
     use crate::tracing::point_light::PointLight;
     use crate::tracing::ray::Ray;
-    use crate::tracing::sphere::Sphere;
+    use crate::tracing::shapes::sphere::Sphere;
     use crate::tracing::world::{default_spheres, BoxedShape, World};
 
     #[test]
