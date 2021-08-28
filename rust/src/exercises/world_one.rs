@@ -18,9 +18,10 @@ use crate::tracing::world::World;
 use crate::tracing::patterns::stripe_pattern::StripePattern;
 use crate::geometry::transformations;
 use crate::exercises::snapshot;
+use crate::tracing::patterns::gradient::Gradient;
 
 
-pub fn world_one() -> World {
+pub fn make_world() -> World {
     let light_source = PointLight::default();
 
     // ===== Walls =====
@@ -53,7 +54,7 @@ pub fn world_one() -> World {
         .with_transform(translation(-0.5, 1.0, 0.5));
 
     let right = Sphere::default()
-        .with_material(middle_material.with_color(Color::LIGHT_BLUE))
+        .with_material(middle_material.with_pattern(Gradient::new(Color::LIGHT_BLUE, Color::RED)))
         .with_transform(scaling(0.5, 0.5, 0.5).then(&translation(1.5, 0.5, -0.5)));
 
     let left_material = Material::default()

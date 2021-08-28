@@ -163,7 +163,7 @@ mod tests {
         }
 
         fn equals_pattern(&self, other: &dyn Any) -> bool {
-            false
+            todo!()
         }
         fn pattern_at(&self, point: Point) -> Color {
             Color::new(point.x, point.y, point.z)

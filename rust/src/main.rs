@@ -9,8 +9,8 @@ mod helper;
 mod tracing;
 
 fn main() {
-    let world = exercises::spheres::make_world();
-    let camera = snapshot::make_camera_one(Resolution::TEST);
+    let world = exercises::world_one::make_world();
+    let camera = snapshot::make_camera_one(Resolution::LOW);
     exercises::snapshot::snapshot_world(world, camera)
 }
 
