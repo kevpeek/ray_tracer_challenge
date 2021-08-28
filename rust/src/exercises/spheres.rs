@@ -12,6 +12,7 @@ use crate::tracing::shapes::plane::Plane;
 use rand::prelude::*;
 use crate::geometry::point::Point;
 use std::ops::{Sub, Not};
+use crate::tracing::patterns::gradient::Gradient;
 
 pub fn make_world() -> World {
     let light_source = PointLight::default();
@@ -58,7 +59,7 @@ pub fn make_world() -> World {
 }
 
 fn make_sphere_origins(rng: &mut StdRng) -> Vec<(Point, f64)> {
-    let target = 10;
+    let target = 50;
     let max = 250;
 
     let mut sphere_details = Vec::new();
@@ -89,12 +90,23 @@ fn random_material(rng: &mut StdRng) -> Material {
     let color_a = *colors.choose(rng).unwrap();
     let color_b = *colors.choose(rng).unwrap();
 
-    let pattern = StripePattern::new(color_a, color_b)
-        .with_transform(
-            transformations::scaling(0.2, 0.2, 0.2)
-                .then(&transformations::rotation_y(rng.gen_range(0.0..PI/2.0)))
-                .then(&transformations::rotation_z(rng.gen_range(0.0..PI/2.0)))
-        );
+    let pattern = match rng.gen_range(0..2) {
+        0 => {
+            Gradient::new(color_a, color_b)
+                .with_transform(
+                    transformations::rotation_y(rng.gen_range(0.0..PI/2.0))
+                        .then(&transformations::rotation_z(rng.gen_range(0.0..PI/2.0)))
+                )
+        },
+        _ => {
+            StripePattern::new(color_a, color_b)
+                .with_transform(
+                    transformations::scaling(0.2, 0.2, 0.2)
+                        .then(&transformations::rotation_y(rng.gen_range(0.0..PI/2.0)))
+                        .then(&transformations::rotation_z(rng.gen_range(0.0..PI/2.0)))
+                )
+        },
+    };
 
     Material::default()
         .with_pattern(pattern)
