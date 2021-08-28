@@ -3,11 +3,12 @@ use crate::geometry::point::Point;
 use crate::geometry::vector::Vector;
 use crate::helper::almost;
 use crate::tracing::point_light::PointLight;
-use crate::tracing::stripe_pattern::StripePattern;
+use crate::tracing::patterns::stripe_pattern::StripePattern;
+use crate::tracing::patterns::pattern::{Pattern, PatternType};
 
 #[derive(Debug, Clone)]
 pub struct Material {
-    pattern: StripePattern,
+    pattern: PatternType,
     ambient: f64,
     diffuse: f64,
     specular: f64,
@@ -26,7 +27,7 @@ impl Material {
     }
 
     pub fn new(
-        pattern: StripePattern,
+        pattern: PatternType,
         ambient: f64,
         diffuse: f64,
         specular: f64,
@@ -68,7 +69,7 @@ impl Material {
         )
     }
 
-    pub fn with_pattern(self, pattern: StripePattern) -> Material {
+    pub fn with_pattern(self, pattern: PatternType) -> Material {
         Material::new(
             pattern,
             self.ambient,
@@ -119,7 +120,8 @@ impl Material {
     }
 
     pub fn color(&self) -> Color {
-        self.pattern.stripe_at(Point::origin())
+        let point = Point::origin();
+        self.pattern.pattern_at(point)
     }
 
     pub fn lighting(
@@ -130,7 +132,8 @@ impl Material {
         normal: Vector,
         in_shadow: bool,
     ) -> Color {
-        let effective_color = self.pattern.stripe_at(position) * light.intensity();
+        let point = position;
+        let effective_color = self.pattern.pattern_at(point) * light.intensity();
 
         let ambient = self.ambient_contribution(effective_color);
         let diffuse = match in_shadow {
@@ -207,7 +210,7 @@ mod test {
     use crate::geometry::vector::Vector;
     use crate::tracing::material::{Material};
     use crate::tracing::point_light::PointLight;
-    use crate::tracing::stripe_pattern::StripePattern;
+    use crate::tracing::patterns::stripe_pattern::StripePattern;
 
     #[test]
     fn default_material() {

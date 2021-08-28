@@ -4,7 +4,7 @@ use crate::geometry::transformations::{scaling, translation};
 use crate::tracing::shapes::sphere::Sphere;
 use crate::tracing::point_light::PointLight;
 use crate::tracing::material::Material;
-use crate::tracing::stripe_pattern::StripePattern;
+use crate::tracing::patterns::stripe_pattern::StripePattern;
 use crate::display::color::Color;
 use crate::geometry::transformations;
 use std::f64::consts::PI;

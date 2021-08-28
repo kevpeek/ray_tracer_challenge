@@ -15,7 +15,7 @@ use crate::tracing::point_light::PointLight;
 use crate::tracing::shapes::shape::Shape;
 use crate::tracing::shapes::sphere::Sphere;
 use crate::tracing::world::World;
-use crate::tracing::stripe_pattern::StripePattern;
+use crate::tracing::patterns::stripe_pattern::StripePattern;
 use crate::geometry::transformations;
 use crate::exercises::snapshot;
 
