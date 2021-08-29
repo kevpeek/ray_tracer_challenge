@@ -58,10 +58,11 @@ pub fn make_world() -> World {
     }
 
     World::new(objects, light_source)
+        .without_shadows()
 }
 
 fn make_sphere_origins(rng: &mut StdRng) -> Vec<(Point, f64)> {
-    let target = 50;
+    let target = 100;
     let max = 250;
 
     let mut sphere_details = Vec::new();

@@ -20,6 +20,7 @@ use crate::geometry::transformations;
 use crate::exercises::snapshot;
 use crate::tracing::patterns::gradient::Gradient;
 use crate::tracing::patterns::rings::Rings;
+use crate::tracing::patterns::checkers::Checkers;
 
 
 pub fn make_world() -> World {
@@ -28,7 +29,7 @@ pub fn make_world() -> World {
     // ===== Walls =====
 
     let wall_material = Material::default()
-        .with_pattern(Rings::new(Color::WHITE, Color::RED))
+        .with_pattern(Checkers::new(Color::WHITE, Color::BLACK))
         .with_specular(0.0);
 
     let floor = Plane::new().with_material(wall_material.clone());
@@ -74,8 +75,8 @@ pub fn make_world() -> World {
 
     let objects: Vec<Box<dyn Shape>> = vec![
         Box::new(floor),
-        Box::new(left_wall),
-        Box::new(right_wall),
+        // Box::new(left_wall),
+        // Box::new(right_wall),
         Box::new(middle),
         Box::new(right),
         Box::new(left),

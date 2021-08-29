@@ -15,6 +15,7 @@ type BoxedShape = Box<dyn Shape>;
 pub struct World {
     objects: Vec<BoxedShape>,
     light_source: PointLight,
+    shadows_enabled: bool
 }
 
 impl World {
@@ -29,7 +30,12 @@ impl World {
         World {
             objects,
             light_source,
+            shadows_enabled: true,
         }
+    }
+
+    pub fn without_shadows(self) -> World {
+        World { objects: self.objects, light_source: self.light_source, shadows_enabled: false }
     }
 
     pub fn objects(&self) -> Vec<WorldShape> {
@@ -42,7 +48,8 @@ impl World {
     fn shade_hit(&self, pre_computations: PreComputedIntersection) -> Color {
         let in_shadow = self.is_shadowed(pre_computations.over_point);
         let light = &self.light_source;
-        let position = pre_computations.point;
+        // Using over_point here fixes fuzziness with checker pattern.
+        let position = pre_computations.over_point;
         let eye_vector_argument = pre_computations.eye_vector;
         let normal = pre_computations.normal_vector;
 
@@ -68,6 +75,10 @@ impl World {
     }
 
     pub fn is_shadowed(&self, point: Point) -> bool {
+        if !self.shadows_enabled {
+            return false
+        }
+
         let point_to_light = self.light_source.position() - point;
         let distance = point_to_light.magnitude();
         let direction = point_to_light.normalize();
