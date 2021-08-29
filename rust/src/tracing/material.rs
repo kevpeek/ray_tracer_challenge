@@ -5,6 +5,7 @@ use crate::helper::almost;
 use crate::tracing::point_light::PointLight;
 use crate::tracing::patterns::stripe_pattern::StripePattern;
 use crate::tracing::patterns::pattern::{Pattern, PatternType};
+use crate::tracing::patterns::solid::Solid;
 
 #[derive(Debug, Clone)]
 pub struct Material {
@@ -18,7 +19,7 @@ pub struct Material {
 impl Material {
     pub fn default() -> Material {
         Material {
-            pattern: StripePattern::solid_pattern(Color::WHITE),
+            pattern: Solid::new(Color::WHITE),
             ambient: 0.1,
             diffuse: 0.9,
             specular: 0.9,
@@ -49,7 +50,7 @@ impl Material {
         specular: f64,
         shininess: f64,
     ) -> Material {
-        let pattern= StripePattern::solid_pattern(color);
+        let pattern= Solid::new(color);
         Material {
             pattern,
             ambient,

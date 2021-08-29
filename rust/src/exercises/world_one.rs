@@ -19,6 +19,7 @@ use crate::tracing::patterns::stripe_pattern::StripePattern;
 use crate::geometry::transformations;
 use crate::exercises::snapshot;
 use crate::tracing::patterns::gradient::Gradient;
+use crate::tracing::patterns::rings::Rings;
 
 
 pub fn make_world() -> World {
@@ -27,7 +28,7 @@ pub fn make_world() -> World {
     // ===== Walls =====
 
     let wall_material = Material::default()
-        .with_pattern(StripePattern::new(Color::WHITE, Color::RED))
+        .with_pattern(Rings::new(Color::WHITE, Color::RED))
         .with_specular(0.0);
 
     let floor = Plane::new().with_material(wall_material.clone());

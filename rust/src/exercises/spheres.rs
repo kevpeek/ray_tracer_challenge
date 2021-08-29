@@ -13,14 +13,16 @@ use rand::prelude::*;
 use crate::geometry::point::Point;
 use std::ops::{Sub, Not};
 use crate::tracing::patterns::gradient::Gradient;
+use crate::tracing::patterns::solid::Solid;
 
 pub fn make_world() -> World {
     let light_source = PointLight::default();
 
     // ===== Wall =====
 
+    let color = Color::LIGHT_BLUE;
     let backdrop_material = Material::default()
-        .with_pattern(StripePattern::solid_pattern(Color::LIGHT_BLUE))
+        .with_pattern(Solid::new(color))
         .with_ambient(0.75);
 
     let backdrop_transform = transformations::rotation_x(PI / 2.0)

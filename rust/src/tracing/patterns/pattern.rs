@@ -55,8 +55,12 @@ impl TransformedPattern {
         TransformedPattern { delegate, transform }
     }
 
-    pub fn with_transform(self, new_transform: Matrix) -> PatternType {
-        TransformedPattern::new(self.delegate, new_transform)
+    pub fn using_identity(delegate: Box<dyn Pattern>) -> TransformedPattern {
+        TransformedPattern { delegate, transform: Matrix::identity(4) }
+    }
+
+    pub fn with_transform(self, transform: Matrix) -> PatternType {
+        TransformedPattern::new(self.delegate, transform)
     }
 }
 

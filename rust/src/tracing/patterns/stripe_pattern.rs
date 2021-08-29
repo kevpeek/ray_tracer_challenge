@@ -4,6 +4,7 @@ use crate::tracing::shapes::shape::WorldShape;
 use crate::geometry::matrix::Matrix;
 use crate::tracing::patterns::pattern::{Pattern, TransformedPattern, PatternType};
 use std::any::Any;
+use crate::tracing::patterns::solid::Solid;
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct StripePattern {
@@ -13,19 +14,7 @@ pub struct StripePattern {
 
 impl StripePattern {
     pub fn new(color_a: Color, color_b: Color) -> PatternType {
-        TransformedPattern::new(Box::new(StripePattern {color_a, color_b}), Matrix::identity(4))
-    }
-
-    pub fn solid_pattern(color: Color) -> PatternType {
-        StripePattern::new(color, color)
-    }
-
-    pub fn with_transform(self, new_transform: Matrix) -> PatternType {
-        TransformedPattern::new(Box::new(self), new_transform)
-    }
-
-    pub fn without_transform(self) -> PatternType {
-        TransformedPattern::new(Box::new(self), Matrix::identity(4))
+        TransformedPattern::using_identity(Box::new(StripePattern {color_a, color_b}))
     }
 }
 
