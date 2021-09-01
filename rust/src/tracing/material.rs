@@ -3,7 +3,6 @@ use crate::geometry::point::Point;
 use crate::geometry::vector::Vector;
 use crate::helper::almost;
 use crate::tracing::point_light::PointLight;
-use crate::tracing::patterns::stripe_pattern::StripePattern;
 use crate::tracing::patterns::pattern::{Pattern, PatternType};
 use crate::tracing::patterns::solid::Solid;
 
@@ -14,7 +13,7 @@ pub struct Material {
     diffuse: f64,
     specular: f64,
     shininess: f64,
-    pub reflective: f64
+    reflective: f64
 }
 
 impl Material {
@@ -146,6 +145,10 @@ impl Material {
     pub fn color(&self) -> Color {
         let point = Point::origin();
         self.pattern.pattern_at(point)
+    }
+
+    pub fn reflective(&self) -> f64 {
+        self.reflective
     }
 
     pub fn lighting(

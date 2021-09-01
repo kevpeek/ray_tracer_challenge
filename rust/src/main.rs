@@ -1,4 +1,3 @@
-use crate::tracing::world::World;
 use crate::exercises::snapshot;
 use crate::display::resolution::Resolution;
 

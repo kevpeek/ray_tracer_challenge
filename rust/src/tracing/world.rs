@@ -45,7 +45,11 @@ impl World {
     /**
      * Calculate the color produced by firing ray at this World.
      */
-    pub fn color_at(&self, ray: &Ray, recursion_limit: usize) -> Color {
+    pub fn color_at(&self, ray: &Ray) -> Color {
+        self.color_at_internal(ray, 5)
+    }
+
+    fn color_at_internal(&self, ray: &Ray, recursion_limit: usize) -> Color {
         let intersections = &self.intersected_by(ray);
         let hit = intersections.hit();
         match hit {
@@ -71,13 +75,16 @@ impl World {
     }
 
     fn reflect_color(&self, pre_computations: PreComputedIntersection, recursion_limit: usize) -> Color {
-        if pre_computations.thing.material().reflective == 0.0 {
+        if recursion_limit == 0 {
+            return Color::BLACK;
+        }
+        if pre_computations.thing.material().reflective() == 0.0 {
             return Color::BLACK;
         }
 
         let reflect_ray = Ray::new(pre_computations.over_point, pre_computations.reflect_vector);
-        let color = self.color_at(&reflect_ray, recursion_limit - 1);
-        color * pre_computations.thing.material().reflective
+        let color = self.color_at_internal(&reflect_ray, recursion_limit - 1);
+        color * pre_computations.thing.material().reflective()
     }
 
     pub fn intersected_by(&self, ray: &Ray) -> Intersections {
@@ -174,13 +181,12 @@ mod tests {
         let world = World::new(default_spheres(), light_source);
         let ray = Ray::new(Point::origin(), Vector::new(0, 0, 1));
         let sphere = &world.objects[1];
-        let ray_argument = &ray;
-        let intersect = &sphere.intersect(ray_argument).intersections[1];
+        let intersect = &sphere.intersect(&ray).intersections[1];
 
         let comps = intersect.pre_computations(&ray);
 
         let color = world.shade_hit(comps, 5);
-        assert_eq!(Color::new(0.1, 0.1, 0.1), color);
+        assert_eq!(Color::new(0.975222, 0.975222, 0.975222), color);
     }
 
     #[test]
@@ -188,7 +194,7 @@ mod tests {
         let world = World::default();
         let ray = Ray::new(Point::at(0, 0, -5), Vector::new(0, 1, 0));
 
-        let color = world.color_at(&ray, 5);
+        let color = world.color_at(&ray);
         assert_eq!(Color::BLACK, color);
     }
 
@@ -197,7 +203,7 @@ mod tests {
         let world = World::default();
         let ray = Ray::new(Point::at(0, 0, -5), Vector::new(0, 0, 1));
 
-        let color = world.color_at(&ray, 5);
+        let color = world.color_at(&ray);
         assert_eq!(Color::new(0.38066, 0.47583, 0.28550), color);
     }
 
@@ -216,7 +222,7 @@ mod tests {
 
         let ray = Ray::new(Point::at(0.0, 0.0, 0.75), Vector::new(0, 0, -1));
 
-        let color = world.color_at(&ray, 5);
+        let color = world.color_at(&ray);
         assert_eq!(Material::default().color(), color);
     }
 
@@ -324,17 +330,14 @@ mod tests {
     #[test]
     fn color_at_with_mutually_reflective_surfaces() {
         let light = PointLight::new(Point::origin(), Color::WHITE);
-        let lower_plane = Plane::new()
-            .with_material(Material::default().with_reflective(1.0))
-            .with_transform(transformations::translation(0, -1, 0));
-        let upper_plane = Plane::new()
-            .with_material(Material::default().with_reflective(1.0))
-            .with_transform(transformations::translation(0, 1, 0));
 
-        let world = World::new(vec![Box::new(lower_plane), Box::new(upper_plane)], light);
+        // Placing the Ray inside a reflective sphere should produce infinite reflection if we don't stop it.
+        let sphere = Sphere::default().with_material(Material::default().with_reflective(1.0));
+        let world = World::new(vec![Box::new(sphere)], light);
+
         let ray = Ray::new(Point::origin(), Vector::new(0, 1, 0));
 
         // this should complete.
-        let color = world.color_at(&ray, 5);
+        let color = world.color_at(&ray);
     }
 }

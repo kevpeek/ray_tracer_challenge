@@ -34,7 +34,7 @@ impl Camera {
             .coordinates()
             .par_iter()
             .map(|(x, y)| (*x, *y, self.ray_for_pixel(*x, *y)))
-            .map(|(x, y, ray)| (x, y, world.color_at(&ray, 5)))
+            .map(|(x, y, ray)| (x, y, world.color_at(&ray)))
             .collect();
         pixels
             .into_iter()

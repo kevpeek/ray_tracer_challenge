@@ -1,6 +1,6 @@
 use crate::tracing::world::World;
 use crate::tracing::shapes::shape::Shape;
-use crate::geometry::transformations::{scaling, translation};
+use crate::geometry::transformations::{translation};
 use crate::tracing::shapes::sphere::Sphere;
 use crate::tracing::point_light::PointLight;
 use crate::tracing::material::Material;
@@ -11,7 +11,7 @@ use std::f64::consts::PI;
 use crate::tracing::shapes::plane::Plane;
 use rand::prelude::*;
 use crate::geometry::point::Point;
-use std::ops::{Sub, Not};
+use std::ops::{Sub};
 use crate::tracing::patterns::gradient::Gradient;
 use crate::tracing::patterns::solid::Solid;
 

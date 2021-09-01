@@ -7,7 +7,7 @@ use crate::geometry::vector::Vector;
 use crate::display::resolution::Resolution;
 use std::f64::consts::PI;
 use crate::display::canvas::Canvas;
-use image::{ImageBuffer, Rgb, RgbImage};
+use image::RgbImage;
 
 pub fn snapshot_world(world: World, camera: Camera) {
     let canvas = camera.render(world);

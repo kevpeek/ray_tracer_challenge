@@ -1,6 +1,5 @@
 use crate::display::color::Color;
 use crate::tracing::patterns::pattern::{PatternType, Pattern, TransformedPattern};
-use crate::tracing::patterns::solid::Solid;
 use std::any::Any;
 use crate::geometry::point::Point;
 

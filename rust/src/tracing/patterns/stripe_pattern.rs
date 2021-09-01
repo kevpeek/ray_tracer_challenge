@@ -1,10 +1,7 @@
 use crate::display::color::Color;
 use crate::geometry::point::Point;
-use crate::tracing::shapes::shape::WorldShape;
-use crate::geometry::matrix::Matrix;
 use crate::tracing::patterns::pattern::{Pattern, TransformedPattern, PatternType};
 use std::any::Any;
-use crate::tracing::patterns::solid::Solid;
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct StripePattern {

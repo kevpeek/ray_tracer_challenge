@@ -2,7 +2,6 @@ use crate::display::color::Color;
 use crate::tracing::patterns::pattern::{PatternType, Pattern, TransformedPattern};
 use std::any::Any;
 use crate::geometry::point::Point;
-use crate::geometry::matrix::Matrix;
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Gradient {

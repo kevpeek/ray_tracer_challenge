@@ -102,7 +102,7 @@ impl<'a> Intersection<'a> {
         let normal_vector = self.thing.normal_at(point).normalize();
 
         let inside = normal_vector.dot(eye_vector) < 0.0;
-        let actual_normal = if inside {
+        let normal_vector = if inside {
             -normal_vector
         } else {
             normal_vector
@@ -119,7 +119,7 @@ impl<'a> Intersection<'a> {
             point,
             over_point,
             eye_vector,
-            normal_vector: actual_normal,
+            normal_vector,
             reflect_vector
         }
     }
