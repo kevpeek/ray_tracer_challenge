@@ -14,6 +14,7 @@ pub struct Material {
     diffuse: f64,
     specular: f64,
     shininess: f64,
+    pub reflective: f64
 }
 
 impl Material {
@@ -24,6 +25,7 @@ impl Material {
             diffuse: 0.9,
             specular: 0.9,
             shininess: 200.0,
+            reflective: 0.0
         }
     }
 
@@ -33,6 +35,7 @@ impl Material {
         diffuse: f64,
         specular: f64,
         shininess: f64,
+        reflective: f64,
     ) -> Material {
         Material {
             pattern,
@@ -40,6 +43,7 @@ impl Material {
             diffuse,
             specular,
             shininess,
+            reflective
         }
     }
 
@@ -49,6 +53,7 @@ impl Material {
         diffuse: f64,
         specular: f64,
         shininess: f64,
+        reflective: f64,
     ) -> Material {
         let pattern= Solid::new(color);
         Material {
@@ -57,6 +62,7 @@ impl Material {
             diffuse,
             specular,
             shininess,
+            reflective
         }
     }
 
@@ -67,6 +73,7 @@ impl Material {
             self.diffuse,
             self.specular,
             self.shininess,
+            self.reflective,
         )
     }
 
@@ -77,6 +84,7 @@ impl Material {
             self.diffuse,
             self.specular,
             self.shininess,
+            self.reflective,
         )
     }
 
@@ -87,6 +95,7 @@ impl Material {
             self.diffuse,
             self.specular,
             self.shininess,
+            self.reflective,
         )
     }
 
@@ -97,6 +106,7 @@ impl Material {
             diffuse,
             self.specular,
             self.shininess,
+            self.reflective,
         )
     }
 
@@ -107,6 +117,7 @@ impl Material {
             self.diffuse,
             specular,
             self.shininess,
+            self.reflective,
         )
     }
 
@@ -117,6 +128,18 @@ impl Material {
             self.diffuse,
             self.specular,
             shininess,
+            self.reflective,
+        )
+    }
+
+    pub fn with_reflective(self, reflective: f64) -> Material {
+        Material::new(
+            self.pattern,
+            self.ambient,
+            self.diffuse,
+            self.specular,
+            self.shininess,
+            reflective,
         )
     }
 
@@ -309,7 +332,7 @@ mod test {
     #[test]
     fn lighting_with_pattern() {
         let pattern = StripePattern::new(Color::WHITE, Color::BLACK);
-        let material = Material::new(pattern, 1.0, 0.0, 0.0, 200.0);
+        let material = Material::new(pattern, 1.0, 0.0, 0.0, 200.0, 0.0);
         let eye_vector = Vector::new(0, 0, -1);
         let normal = Vector::new(0, 0, -1);
         let light = PointLight::new(Point::at(0, 0, -10), Color::WHITE);

@@ -30,7 +30,8 @@ pub fn make_world() -> World {
 
     let wall_material = Material::default()
         .with_pattern(Checkers::new(Color::WHITE, Color::BLACK))
-        .with_specular(0.0);
+        .with_specular(0.0)
+        .with_reflective(1.0);
 
     let floor = Plane::new().with_material(wall_material.clone());
 

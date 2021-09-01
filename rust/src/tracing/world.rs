@@ -43,9 +43,21 @@ impl World {
     }
 
     /**
+     * Calculate the color produced by firing ray at this World.
+     */
+    pub fn color_at(&self, ray: &Ray, recursion_limit: usize) -> Color {
+        let intersections = &self.intersected_by(ray);
+        let hit = intersections.hit();
+        match hit {
+            Some(hit) => self.shade_hit(hit.pre_computations(ray), recursion_limit),
+            None => Color::BLACK,
+        }
+    }
+
+    /**
      * Determine the Color given a PreComputedIntersection.
      */
-    fn shade_hit(&self, pre_computations: PreComputedIntersection) -> Color {
+    fn shade_hit(&self, pre_computations: PreComputedIntersection, recursion_limit: usize) -> Color {
         let in_shadow = self.is_shadowed(pre_computations.over_point);
         let light = &self.light_source;
         // Using over_point here fixes fuzziness with checker pattern.
@@ -53,19 +65,19 @@ impl World {
         let eye_vector_argument = pre_computations.eye_vector;
         let normal = pre_computations.normal_vector;
 
-        pre_computations.thing.lighting(light, position, eye_vector_argument, normal, in_shadow)
+        let surface_color = pre_computations.thing.lighting(light, position, eye_vector_argument, normal, in_shadow);
+        let reflected_color = self.reflect_color(pre_computations, recursion_limit);
+        surface_color + reflected_color
     }
 
-    /**
-     * Calculate the color produced by firing ray at this World.
-     */
-    pub fn color_at(&self, ray: &Ray) -> Color {
-        let intersections = &self.intersected_by(ray);
-        let hit = intersections.hit();
-        match hit {
-            Some(hit) => self.shade_hit(hit.pre_computations(ray)),
-            None => Color::BLACK,
+    fn reflect_color(&self, pre_computations: PreComputedIntersection, recursion_limit: usize) -> Color {
+        if pre_computations.thing.material().reflective == 0.0 {
+            return Color::BLACK;
         }
+
+        let reflect_ray = Ray::new(pre_computations.over_point, pre_computations.reflect_vector);
+        let color = self.color_at(&reflect_ray, recursion_limit - 1);
+        color * pre_computations.thing.material().reflective
     }
 
     pub fn intersected_by(&self, ray: &Ray) -> Intersections {
@@ -94,7 +106,7 @@ impl World {
 }
 
 fn default_spheres() -> Vec<BoxedShape> {
-    let outer_sphere_material = Material::solid_colored(Color::new(0.8, 1.0, 0.6), 0.1, 0.7, 0.2, 200.0);
+    let outer_sphere_material = Material::solid_colored(Color::new(0.8, 1.0, 0.6), 0.1, 0.7, 0.2, 200.0, 0.0);
     let outer_sphere = Sphere::new(Point::origin(), outer_sphere_material);
     let inner_sphere =
         Sphere::new(Point::origin(), Material::default()).with_transform(scaling(0.5, 0.5, 0.5));
@@ -116,6 +128,7 @@ mod tests {
     use crate::tracing::ray::Ray;
     use crate::tracing::shapes::sphere::Sphere;
     use crate::tracing::world::{default_spheres, BoxedShape, World};
+    use crate::tracing::shapes::plane::Plane;
 
     #[test]
     fn creating_a_world() {
@@ -151,7 +164,7 @@ mod tests {
 
         let comps = intersect.pre_computations(&ray);
 
-        let color = world.shade_hit(comps);
+        let color = world.shade_hit(comps, 5);
         assert_eq!(Color::new(0.38066, 0.47583, 0.2855), color);
     }
 
@@ -166,7 +179,7 @@ mod tests {
 
         let comps = intersect.pre_computations(&ray);
 
-        let color = world.shade_hit(comps);
+        let color = world.shade_hit(comps, 5);
         assert_eq!(Color::new(0.1, 0.1, 0.1), color);
     }
 
@@ -175,7 +188,7 @@ mod tests {
         let world = World::default();
         let ray = Ray::new(Point::at(0, 0, -5), Vector::new(0, 1, 0));
 
-        let color = world.color_at(&ray);
+        let color = world.color_at(&ray, 5);
         assert_eq!(Color::BLACK, color);
     }
 
@@ -184,13 +197,13 @@ mod tests {
         let world = World::default();
         let ray = Ray::new(Point::at(0, 0, -5), Vector::new(0, 0, 1));
 
-        let color = world.color_at(&ray);
+        let color = world.color_at(&ray, 5);
         assert_eq!(Color::new(0.38066, 0.47583, 0.28550), color);
     }
 
     #[test]
     fn the_color_with_an_intersection_behind_the_ray() {
-        let outer_sphere_material = Material::solid_colored(Color::new(0.8, 1.0, 0.6), 1.0, 0.7, 0.2, 200.0);
+        let outer_sphere_material = Material::solid_colored(Color::new(0.8, 1.0, 0.6), 1.0, 0.7, 0.2, 200.0, 0.0);
         let outer_sphere = Sphere::new(Point::origin(), outer_sphere_material);
         let material = Material::default().with_ambient(1.0);
         let inner_sphere =
@@ -203,7 +216,7 @@ mod tests {
 
         let ray = Ray::new(Point::at(0.0, 0.0, 0.75), Vector::new(0, 0, -1));
 
-        let color = world.color_at(&ray);
+        let color = world.color_at(&ray, 5);
         assert_eq!(Material::default().color(), color);
     }
 
@@ -252,7 +265,7 @@ mod tests {
         let intersection = Intersection::new(4.0, &sphere_two);
 
         let pre_computations = intersection.pre_computations(&ray);
-        let color = world.shade_hit(pre_computations);
+        let color = world.shade_hit(pre_computations, 5);
         assert_eq!(Color::new(0.1, 0.1, 0.1), color);
     }
 
@@ -265,5 +278,63 @@ mod tests {
         let pre_computations = intersection.pre_computations(&ray);
         assert!(pre_computations.over_point.z < -EPSILON / 2.0);
         assert!(pre_computations.point.z > pre_computations.over_point.z);
+    }
+
+    #[test]
+    fn reflected_color_of_non_reflective_surface() {
+        let shape = Sphere::default().with_material(Material::default().with_ambient(1.0));
+        let world = World::new(vec![Box::new(shape.clone())], PointLight::default());
+        let ray = Ray::new(Point::origin(), Vector::new(0, 0, 1));
+        let intersection = Intersection::new(1.0, &shape);
+        let pre_computations = intersection.pre_computations(&ray);
+
+        assert_eq!(Color::BLACK, world.reflect_color(pre_computations, 5))
+    }
+
+    #[test]
+    fn reflective_color_of_reflective_material() {
+        let mut shapes = default_spheres();
+        let shape = Plane::new()
+            .with_material(Material::default().with_reflective(0.5))
+            .with_transform(transformations::translation(0, -1, 0));
+        shapes.push(Box::new(shape.clone()));
+        let world = World::new(shapes, PointLight::default());
+        let ray = Ray::new(Point::at(0, 0, -3), Vector::new(0.0, -2.0_f64.sqrt()/2.0, 2.0_f64.sqrt()/2.0));
+        let intersection = Intersection::new(2.0_f64.sqrt(), &shape);
+        let pre_computations = intersection.pre_computations(&ray);
+
+        assert_eq!(Color::new(0.19033, 0.23791, 0.142749), world.reflect_color(pre_computations, 5));
+    }
+
+    #[test]
+    fn shade_hit_with_reflective_material() {
+        let mut shapes = default_spheres();
+        let shape = Plane::new()
+            .with_material(Material::default().with_reflective(0.5))
+            .with_transform(transformations::translation(0, -1, 0));
+        shapes.push(Box::new(shape.clone()));
+        let world = World::new(shapes, PointLight::default());
+        let ray = Ray::new(Point::at(0, 0, -3), Vector::new(0.0, -2.0_f64.sqrt()/2.0, 2.0_f64.sqrt()/2.0));
+        let intersection = Intersection::new(2.0_f64.sqrt(), &shape);
+        let pre_computations = intersection.pre_computations(&ray);
+
+        assert_eq!(Color::new(0.84424, 0.89182, 0.79666), world.shade_hit(pre_computations, 5));
+    }
+
+    #[test]
+    fn color_at_with_mutually_reflective_surfaces() {
+        let light = PointLight::new(Point::origin(), Color::WHITE);
+        let lower_plane = Plane::new()
+            .with_material(Material::default().with_reflective(1.0))
+            .with_transform(transformations::translation(0, -1, 0));
+        let upper_plane = Plane::new()
+            .with_material(Material::default().with_reflective(1.0))
+            .with_transform(transformations::translation(0, 1, 0));
+
+        let world = World::new(vec![Box::new(lower_plane), Box::new(upper_plane)], light);
+        let ray = Ray::new(Point::origin(), Vector::new(0, 1, 0));
+
+        // this should complete.
+        let color = world.color_at(&ray, 5);
     }
 }

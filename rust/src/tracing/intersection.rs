@@ -69,6 +69,7 @@ pub struct PreComputedIntersection<'a> {
     pub over_point: Point,
     pub eye_vector: Vector,
     pub normal_vector: Vector,
+    pub reflect_vector: Vector,
 }
 
 #[derive(Debug, Clone)]
@@ -109,6 +110,8 @@ impl<'a> Intersection<'a> {
 
         let over_point = point + normal_vector * EPSILON;
 
+        let reflect_vector = ray.direction().reflect(normal_vector);
+
         PreComputedIntersection {
             time: self.time,
             thing: self.thing,
@@ -117,6 +120,7 @@ impl<'a> Intersection<'a> {
             over_point,
             eye_vector,
             normal_vector: actual_normal,
+            reflect_vector
         }
     }
 }
@@ -131,6 +135,8 @@ mod tests {
     use crate::tracing::ray::Ray;
     use crate::tracing::shapes::shape::{Shape, WorldShape};
     use crate::tracing::shapes::sphere::Sphere;
+    use crate::tracing::shapes::plane::Plane;
+    use num::integer::Roots;
 
     #[test]
     fn a_ray_intersects_sphere_at_two_points() {
@@ -362,5 +368,15 @@ mod tests {
         assert_eq!(Point::at(0, 0, 1), comps.point);
         assert_eq!(Vector::new(0, 0, -1), comps.eye_vector);
         assert_eq!(Vector::new(0, 0, -1), comps.normal_vector);
+    }
+
+    #[test]
+    fn precompute_reflective_vector() {
+        let shape = Plane::new();
+        let ray = Ray::new(Point::at(0, 1, -1), Vector::new(0.0, -2.0_f64.sqrt()/2.0, 2.0_f64.sqrt()/2.0));
+        let intersection = Intersection::new(2.0_f64.sqrt(), &shape);
+
+        let pre_computations = intersection.pre_computations(&ray);
+        assert_eq!(Vector::new(0.0, 2.0_f64.sqrt()/2.0, 2.0_f64.sqrt()/2.0), pre_computations.reflect_vector);
     }
 }
