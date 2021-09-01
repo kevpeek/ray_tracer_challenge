@@ -38,6 +38,12 @@ impl World {
         World { objects: self.objects, light_source: self.light_source, shadows_enabled: false }
     }
 
+    pub fn plus_shape(self, new_shape: BoxedShape) -> World {
+        let mut objects = self.objects;
+        objects.push(new_shape);
+        World::new(objects, self.light_source)
+    }
+
     pub fn objects(&self) -> Vec<WorldShape> {
         self.objects.iter().map(Box::deref).collect()
     }
@@ -299,12 +305,10 @@ mod tests {
 
     #[test]
     fn reflective_color_of_reflective_material() {
-        let mut shapes = default_spheres();
         let shape = Plane::new()
             .with_material(Material::default().with_reflective(0.5))
             .with_transform(transformations::translation(0, -1, 0));
-        shapes.push(Box::new(shape.clone()));
-        let world = World::new(shapes, PointLight::default());
+        let world = World::default().plus_shape(Box::new(shape.clone()));
         let ray = Ray::new(Point::at(0, 0, -3), Vector::new(0.0, -2.0_f64.sqrt()/2.0, 2.0_f64.sqrt()/2.0));
         let intersection = Intersection::new(2.0_f64.sqrt(), &shape);
         let pre_computations = intersection.pre_computations(&ray);
@@ -314,12 +318,11 @@ mod tests {
 
     #[test]
     fn shade_hit_with_reflective_material() {
-        let mut shapes = default_spheres();
         let shape = Plane::new()
             .with_material(Material::default().with_reflective(0.5))
             .with_transform(transformations::translation(0, -1, 0));
-        shapes.push(Box::new(shape.clone()));
-        let world = World::new(shapes, PointLight::default());
+        let world = World::default().plus_shape(Box::new(shape.clone()));
+
         let ray = Ray::new(Point::at(0, 0, -3), Vector::new(0.0, -2.0_f64.sqrt()/2.0, 2.0_f64.sqrt()/2.0));
         let intersection = Intersection::new(2.0_f64.sqrt(), &shape);
         let pre_computations = intersection.pre_computations(&ray);
