@@ -104,7 +104,7 @@ impl Shape for TransformedShape {
         in_shadow: bool,
     ) -> Color {
         let transformed_point = &self.transformation.inverse() * position;
-        self.material().lighting(light, transformed_point, eye_vector, normal, in_shadow)
+        self.delegate.lighting(light, transformed_point, eye_vector, normal, in_shadow)
     }
 }
 
