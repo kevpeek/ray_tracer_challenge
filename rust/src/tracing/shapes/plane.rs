@@ -10,20 +10,11 @@ use crate::tracing::shapes::shape::{Shape, ShapeGeometry};
 use std::any::Any;
 
 #[derive(Debug, Clone, Eq, PartialEq)]
-pub struct Plane {
-}
+pub struct Plane {}
 
 impl Plane {
     pub fn new() -> Plane {
         Plane {}
-    }
-
-    pub fn with_transform(self, new_transform: Matrix) -> Shape {
-        Shape::new(Box::new(self), new_transform)
-    }
-
-    pub fn without_transform(self) -> Shape {
-        Shape::using(Box::new(self))
     }
 }
 

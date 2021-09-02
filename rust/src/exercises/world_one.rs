@@ -27,7 +27,7 @@ pub fn make_world() -> World {
         .with_specular(0.0)
         .with_reflective(1.0);
 
-    let floor = Plane::new()
+    let floor = Shape::plane()
         .without_transform()
         .with_material(wall_material.clone());
 
@@ -48,11 +48,11 @@ pub fn make_world() -> World {
         .with_diffuse(0.7)
         .with_specular(0.3);
 
-    let middle = Sphere::new()
+    let middle = Shape::sphere()
         .with_transform(translation(-0.5, 1.0, 0.5))
         .with_material(middle_material.clone());
 
-    let right = Sphere::new()
+    let right = Shape::sphere()
         .with_transform(scaling(0.5, 0.5, 0.5).then(&translation(1.5, 0.5, -0.5)))
         .with_material(middle_material.with_pattern(Gradient::new(Color::LIGHT_BLUE, Color::RED)));
 
@@ -66,7 +66,7 @@ pub fn make_world() -> World {
         .with_diffuse(0.7)
         .with_specular(0.3);
 
-    let left = Sphere::new()
+    let left = Shape::sphere()
         .with_transform(scaling(0.33, 0.33, 0.33).then(&translation(-1.5, 0.33, -0.75)))
         .with_material(left_material);
 

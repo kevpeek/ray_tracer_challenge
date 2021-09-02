@@ -28,7 +28,7 @@ pub fn make_world() -> World {
     let backdrop_transform = transformations::rotation_x(PI / 2.0)
         .then(&translation(0, 0, 10));
 
-    let backdrop = Plane::new()
+    let backdrop = Shape::plane()
         .with_transform(backdrop_transform)
         .with_material(backdrop_material);
 
@@ -45,7 +45,7 @@ pub fn make_world() -> World {
     for (origin, radius) in sphere_details {
         let sphere_material = random_material(&mut rng);
 
-        let sphere = Sphere::new()
+        let sphere = Shape::sphere()
             .with_transform(
                 transformations::scaling(radius, radius, radius)
                     .then(&transformations::translation(origin.x, origin.y, origin.z))

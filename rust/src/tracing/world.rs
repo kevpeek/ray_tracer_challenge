@@ -120,10 +120,10 @@ impl World {
 
 fn default_spheres() -> Vec<BoxedShape> {
     let outer_sphere_material = Material::solid_colored(Color::new(0.8, 1.0, 0.6), 0.1, 0.7, 0.2, 200.0, 0.0);
-    let outer_sphere = Sphere::new()
+    let outer_sphere = Shape::sphere()
         .without_transform()
         .with_material(outer_sphere_material);
-    let inner_sphere = Sphere::new().with_transform(scaling(0.5, 0.5, 0.5));
+    let inner_sphere = Shape::sphere().with_transform(scaling(0.5, 0.5, 0.5));
 
     vec![outer_sphere, inner_sphere]
 }
@@ -143,6 +143,7 @@ mod tests {
     use crate::tracing::shapes::sphere::Sphere;
     use crate::tracing::world::{default_spheres, BoxedShape, World};
     use crate::tracing::shapes::plane::Plane;
+    use crate::tracing::shapes::shape::Shape;
 
     #[test]
     fn creating_a_world() {
@@ -216,12 +217,12 @@ mod tests {
     #[test]
     fn the_color_with_an_intersection_behind_the_ray() {
         let outer_sphere_material = Material::solid_colored(Color::new(0.8, 1.0, 0.6), 1.0, 0.7, 0.2, 200.0, 0.0);
-        let outer_sphere = Sphere::new()
+        let outer_sphere = Shape::sphere()
             .without_transform()
             .with_material(outer_sphere_material);
         let material = Material::default().with_ambient(1.0);
         let inner_sphere =
-            Sphere::new()
+            Shape::sphere()
                 .with_transform(scaling(0.5, 0.5, 0.5))
                 .with_material(material);
 
@@ -268,8 +269,8 @@ mod tests {
     fn shade_hit_is_given_an_intersection_in_shadow() {
         let light = PointLight::new(Point::at(0, 0, -10), Color::WHITE);
 
-        let sphere_one = Sphere::new().without_transform();
-        let sphere_two = Sphere::new().with_transform(translation(0, 0, 10));
+        let sphere_one = Shape::sphere().without_transform();
+        let sphere_two = Shape::sphere().with_transform(translation(0, 0, 10));
 
         let mut objects: Vec<BoxedShape> = Vec::new();
         objects.push(sphere_one);
@@ -289,7 +290,7 @@ mod tests {
     fn the_hit_should_offset_the_point() {
         let ray = Ray::new(Point::at(0, 0, -5), Vector::new(0, 0, 1));
         let sphere =
-            Sphere::new().with_transform(transformations::translation(0, 0, 1));
+            Shape::sphere().with_transform(transformations::translation(0, 0, 1));
         let intersection = Intersection::new(5.0, &sphere);
         let pre_computations = intersection.pre_computations(&ray);
         assert!(pre_computations.over_point.z < -EPSILON / 2.0);
@@ -298,7 +299,7 @@ mod tests {
 
     #[test]
     fn reflected_color_of_non_reflective_surface() {
-        let shape = Sphere::new().without_transform().with_material(Material::default().with_ambient(1.0));
+        let shape = Shape::sphere().without_transform().with_material(Material::default().with_ambient(1.0));
         let world = World::new(vec![shape.clone()], PointLight::default());
         let ray = Ray::new(Point::origin(), Vector::new(0, 0, 1));
         let intersection = Intersection::new(1.0, &shape);
@@ -309,7 +310,7 @@ mod tests {
 
     #[test]
     fn reflective_color_of_reflective_material() {
-        let shape = Plane::new()
+        let shape = Shape::plane()
             .with_transform(transformations::translation(0, -1, 0))
             .with_material(Material::default().with_reflective(0.5));
         let world = World::default().plus_shape(shape.clone());
@@ -322,7 +323,7 @@ mod tests {
 
     #[test]
     fn shade_hit_with_reflective_material() {
-        let shape = Plane::new()
+        let shape = Shape::plane()
             .with_transform(transformations::translation(0, -1, 0))
             .with_material(Material::default().with_reflective(0.5));
         let world = World::default().plus_shape(shape.clone());
@@ -339,7 +340,7 @@ mod tests {
         let light = PointLight::new(Point::origin(), Color::WHITE);
 
         // Placing the Ray inside a reflective sphere should produce infinite reflection if we don't stop it.
-        let sphere = Sphere::new().without_transform().with_material(Material::default().with_reflective(1.0));
+        let sphere = Shape::sphere().without_transform().with_material(Material::default().with_reflective(1.0));
         let world = World::new(vec![sphere], light);
 
         let ray = Ray::new(Point::origin(), Vector::new(0, 1, 0));

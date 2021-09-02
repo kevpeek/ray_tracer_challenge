@@ -9,6 +9,8 @@ use crate::tracing::material::Material;
 use crate::tracing::ray::Ray;
 use crate::display::color::Color;
 use crate::tracing::point_light::PointLight;
+use crate::tracing::shapes::sphere::Sphere;
+use crate::tracing::shapes::plane::Plane;
 
 pub type WorldShape<'a> = &'a Shape;
 
@@ -45,6 +47,14 @@ impl Shape {
         }
     }
 
+    pub fn sphere() -> Shape {
+        Shape::using(Box::new(Sphere::new()))
+    }
+
+    pub fn plane() -> Shape {
+        Shape::using(Box::new(Plane::new()))
+    }
+
     pub fn new(delegate: Box<dyn ShapeGeometry>, transformation: Matrix) -> Shape {
         Shape {
             transformation,
@@ -67,6 +77,10 @@ impl Shape {
             delegate: self.delegate,
             material: self.material,
         }
+    }
+
+    pub fn without_transform(self) -> Shape {
+        self
     }
 
     pub fn material(&self) -> &Material {

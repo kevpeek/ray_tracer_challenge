@@ -139,7 +139,7 @@ mod tests {
     use num::integer::Roots;
 
     fn test_shape() -> Shape {
-        Sphere::new().without_transform()
+        Shape::sphere().without_transform()
     }
 
     #[test]
@@ -172,7 +172,7 @@ mod tests {
     #[test]
     fn ray_misses_sphere() {
         let ray = Ray::new(Point::at(0, 2, -5), Vector::new(0, 0, 1));
-        let sphere = Sphere::new();
+        let sphere = Shape::sphere();
 
         let sphere_argument = &sphere;
         let ray_argument = &ray;
@@ -298,7 +298,7 @@ mod tests {
     fn intersecting_scaled_sphere_with_ray() {
         let ray = Ray::new(Point::at(0, 0, -5), Vector::new(0, 0, 1));
         let sphere =
-            Sphere::new().with_transform(scaling(2, 2, 2));
+            Shape::sphere().with_transform(scaling(2, 2, 2));
 
         let sphere_argument = &sphere;
         let ray_argument = &ray;
@@ -314,7 +314,7 @@ mod tests {
     fn intersecting_translated_sphere_with_ray() {
         let ray = Ray::new(Point::at(0, 0, -5), Vector::new(0, 0, 1));
         let sphere =
-            Sphere::new().with_transform(translation(5, 0, 0));
+            Shape::sphere().with_transform(translation(5, 0, 0));
 
         let sphere_argument = &sphere;
         let ray_argument = &ray;
@@ -326,7 +326,7 @@ mod tests {
     #[test]
     fn precomputing_state_of_an_intersection() {
         let ray = Ray::new(Point::at(0, 0, -5), Vector::new(0, 0, 1));
-        let shape = Sphere::new().without_transform();
+        let shape = Shape::sphere().without_transform();
         let intersection = &shape.intersect(&ray).intersections[0];
 
         let comps = intersection.pre_computations(&ray);
@@ -341,7 +341,7 @@ mod tests {
     #[test]
     fn hit_when_intersection_occurs_on_the_outside() {
         let ray = Ray::new(Point::at(0, 0, -5), Vector::new(0, 0, 1));
-        let shape = Sphere::new().without_transform();
+        let shape = Shape::sphere().without_transform();
 
         let intersect = &&shape.intersect(&ray).intersections[0];
 
@@ -353,7 +353,7 @@ mod tests {
     fn the_hit_when_an_intersection_occurs_on_the_inside() {
         let ray = Ray::new(Point::at(0, 0, 0), Vector::new(0, 0, 1));
 
-        let sphere = &Sphere::new().without_transform();
+        let sphere = &Shape::sphere().without_transform();
         let intersect = &sphere.intersect(&ray).intersections[1];
 
         let comps = intersect.pre_computations(&ray);
@@ -365,7 +365,7 @@ mod tests {
 
     #[test]
     fn precompute_reflective_vector() {
-        let shape = Plane::new().without_transform();
+        let shape = Shape::plane().without_transform();
         let ray = Ray::new(Point::at(0, 1, -1), Vector::new(0.0, -2.0_f64.sqrt()/2.0, 2.0_f64.sqrt()/2.0));
         let intersection = Intersection::new(2.0_f64.sqrt(), &shape);
 

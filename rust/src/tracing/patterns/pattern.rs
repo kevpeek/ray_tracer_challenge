@@ -91,6 +91,7 @@ mod tests {
     use crate::tracing::point_light::PointLight;
     use crate::geometry::vector::Vector;
     use std::any::Any;
+    use crate::tracing::shapes::shape::Shape;
 
     // high level tests copied from original StripedPattern
 
@@ -98,7 +99,7 @@ mod tests {
     fn stripes_with_object_transform() {
         let pattern = StripePattern::new(Color::WHITE, Color::BLACK);
 
-        let object = Sphere::new()
+        let object = Shape::sphere()
             .with_transform(transformations::scaling(2, 2, 2))
             .with_material(Material::default().with_pattern(pattern).with_ambient(1.0));
 
@@ -117,7 +118,7 @@ mod tests {
         let pattern = StripePattern::new(Color::WHITE, Color::BLACK)
             .with_transform(transformations::scaling(2, 2, 2));
 
-        let object = Sphere::new().without_transform()
+        let object = Shape::sphere().without_transform()
             .with_material(Material::default().with_pattern(pattern).with_ambient(1.0));
 
         let color = object.lighting(
@@ -135,7 +136,7 @@ mod tests {
         let pattern = StripePattern::new(Color::WHITE, Color::BLACK)
             .with_transform(transformations::translation(0.5, 0.0, 0.0));
 
-        let object = Sphere::new()
+        let object = Shape::sphere()
             .with_transform(transformations::scaling(2, 2, 2))
             .with_material(Material::default().with_pattern(pattern).with_ambient(1.0));
 

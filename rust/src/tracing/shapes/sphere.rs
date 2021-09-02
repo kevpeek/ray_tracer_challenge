@@ -19,14 +19,6 @@ impl Sphere {
             origin: Point::origin(),
         }
     }
-
-    pub fn with_transform(self, new_transform: Matrix) -> Shape {
-        Shape::new(Box::new(self), new_transform)
-    }
-
-    pub fn without_transform(self) -> Shape {
-        Shape::using(Box::new(self))
-    }
 }
 
 impl ShapeGeometry for Sphere {
@@ -67,13 +59,13 @@ mod tests {
     use crate::geometry::transformations::{rotation_z, scaling, translation};
     use crate::geometry::vector::Vector;
     use crate::tracing::material::Material;
-    use crate::tracing::shapes::shape::ShapeGeometry;
+    use crate::tracing::shapes::shape::{ShapeGeometry, Shape};
     use crate::tracing::shapes::sphere::Sphere;
     use std::f64::consts::PI;
 
     #[test]
     fn normal_on_sphere_at_point_on_x_axis() {
-        let sphere = Sphere::new();
+        let sphere = Shape::sphere();
         let normal = sphere.normal_at(Point::at(1, 0, 0));
 
         assert_eq!(Vector::new(1, 0, 0), normal);
@@ -81,7 +73,7 @@ mod tests {
 
     #[test]
     fn normal_on_sphere_at_point_on_y_axis() {
-        let sphere = Sphere::new();
+        let sphere = Shape::sphere();
         let normal = sphere.normal_at(Point::at(0, 1, 0));
 
         assert_eq!(Vector::new(0, 1, 0), normal);
@@ -89,7 +81,7 @@ mod tests {
 
     #[test]
     fn normal_on_sphere_at_point_on_z_axis() {
-        let sphere = Sphere::new();
+        let sphere = Shape::sphere();
         let normal = sphere.normal_at(Point::at(0, 0, 1));
 
         assert_eq!(Vector::new(0, 0, 1), normal);
@@ -97,7 +89,7 @@ mod tests {
 
     #[test]
     fn normal_on_sphere_at_nonaxial_point() {
-        let sphere = Sphere::new();
+        let sphere = Shape::sphere();
         let normal = sphere.normal_at(Point::at(
             3.0_f64.sqrt() / 3.0,
             3.0_f64.sqrt() / 3.0,
@@ -116,7 +108,7 @@ mod tests {
 
     #[test]
     fn normal_is_normalized_vector() {
-        let sphere = Sphere::new();
+        let sphere = Shape::sphere();
         let normal = sphere.normal_at(Point::at(
             3.0_f64.sqrt() / 3.0,
             3.0_f64.sqrt() / 3.0,
@@ -127,7 +119,7 @@ mod tests {
 
     #[test]
     fn computing_normal_on_translated_sphere() {
-        let sphere = Sphere::new().with_transform(translation(0, 1, 0));
+        let sphere = Shape::sphere().with_transform(translation(0, 1, 0));
 
         let normal = sphere.normal_at(Point::at(0.0, 1.70711, -0.70711));
         assert_eq!(Vector::new(0.0, 0.70711, -0.70711), normal);
@@ -136,7 +128,7 @@ mod tests {
     #[test]
     fn computing_normal_on_transformed_sphere() {
         let sphere =
-            Sphere::new().with_transform(&scaling(1.0, 0.5, 1.0) * &rotation_z(PI / 5.0));
+            Shape::sphere().with_transform(&scaling(1.0, 0.5, 1.0) * &rotation_z(PI / 5.0));
 
         let normal = sphere.normal_at(Point::at(0.0, 2.0_f64.sqrt() / 2.0, -2.0_f64.sqrt() / 2.0));
         assert_eq!(Vector::new(0.0, 0.97014, -0.24254), normal);
