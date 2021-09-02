@@ -121,7 +121,6 @@ impl World {
 fn default_spheres() -> Vec<BoxedShape> {
     let outer_sphere_material = Material::solid_colored(Color::new(0.8, 1.0, 0.6), 0.1, 0.7, 0.2, 200.0, 0.0);
     let outer_sphere = Shape::sphere()
-        .without_transform()
         .with_material(outer_sphere_material);
     let inner_sphere = Shape::sphere().with_transform(scaling(0.5, 0.5, 0.5));
 
@@ -218,7 +217,6 @@ mod tests {
     fn the_color_with_an_intersection_behind_the_ray() {
         let outer_sphere_material = Material::solid_colored(Color::new(0.8, 1.0, 0.6), 1.0, 0.7, 0.2, 200.0, 0.0);
         let outer_sphere = Shape::sphere()
-            .without_transform()
             .with_material(outer_sphere_material);
         let material = Material::default().with_ambient(1.0);
         let inner_sphere =
@@ -269,7 +267,7 @@ mod tests {
     fn shade_hit_is_given_an_intersection_in_shadow() {
         let light = PointLight::new(Point::at(0, 0, -10), Color::WHITE);
 
-        let sphere_one = Shape::sphere().without_transform();
+        let sphere_one = Shape::sphere();
         let sphere_two = Shape::sphere().with_transform(translation(0, 0, 10));
 
         let mut objects: Vec<BoxedShape> = Vec::new();
@@ -299,7 +297,7 @@ mod tests {
 
     #[test]
     fn reflected_color_of_non_reflective_surface() {
-        let shape = Shape::sphere().without_transform().with_material(Material::default().with_ambient(1.0));
+        let shape = Shape::sphere().with_material(Material::default().with_ambient(1.0));
         let world = World::new(vec![shape.clone()], PointLight::default());
         let ray = Ray::new(Point::origin(), Vector::new(0, 0, 1));
         let intersection = Intersection::new(1.0, &shape);
@@ -340,7 +338,7 @@ mod tests {
         let light = PointLight::new(Point::origin(), Color::WHITE);
 
         // Placing the Ray inside a reflective sphere should produce infinite reflection if we don't stop it.
-        let sphere = Shape::sphere().without_transform().with_material(Material::default().with_reflective(1.0));
+        let sphere = Shape::sphere().with_material(Material::default().with_reflective(1.0));
         let world = World::new(vec![sphere], light);
 
         let ray = Ray::new(Point::origin(), Vector::new(0, 1, 0));

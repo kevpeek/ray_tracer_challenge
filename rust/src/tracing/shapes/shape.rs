@@ -25,28 +25,20 @@ pub trait ShapeGeometry: ShapeClone + Any + Send + Sync + Debug {
 
 #[derive(Debug, Clone)]
 pub struct Shape {
-    transformation: Matrix,
-    delegate: Box<dyn ShapeGeometry>,
+    geometry: Box<dyn ShapeGeometry>,
     material: Material,
+    transformation: Matrix,
 }
 
 impl PartialEq for Shape {
     fn eq(&self, other: &Shape) -> bool {
-        self.delegate.name() == other.delegate.name()
+        self.geometry.name() == other.geometry.name()
             && self.transformation == other.transformation
             && self.material == other.material
     }
 }
 
 impl Shape {
-    pub fn using(geometry: Box<dyn ShapeGeometry>) -> Shape {
-        Shape {
-            transformation: Matrix::identity(4),
-            delegate: geometry,
-            material: Material::default()
-        }
-    }
-
     pub fn sphere() -> Shape {
         Shape::using(Box::new(Sphere::new()))
     }
@@ -55,32 +47,28 @@ impl Shape {
         Shape::using(Box::new(Plane::new()))
     }
 
-    pub fn new(delegate: Box<dyn ShapeGeometry>, transformation: Matrix) -> Shape {
+    pub fn using(geometry: Box<dyn ShapeGeometry>) -> Shape {
         Shape {
-            transformation,
-            delegate,
-            material: Material::default()
+            geometry,
+            material: Material::default(),
+            transformation: Matrix::identity(4),
         }
     }
 
     pub fn with_material(self, material: Material) -> Shape {
         Shape {
+            geometry: self.geometry,
+            material,
             transformation: self.transformation,
-            delegate: self.delegate,
-            material
         }
     }
 
-    pub fn with_transform(self, new_transform: Matrix) -> Shape {
+    pub fn with_transform(self, transformation: Matrix) -> Shape {
         Shape {
-            transformation: new_transform,
-            delegate: self.delegate,
+            geometry: self.geometry,
             material: self.material,
+            transformation,
         }
-    }
-
-    pub fn without_transform(self) -> Shape {
-        self
     }
 
     pub fn material(&self) -> &Material {
@@ -90,7 +78,7 @@ impl Shape {
     pub fn intersect(&self, ray: &Ray) -> Intersections {
         let local_ray = ray.transform(self.transformation.inverse());
 
-        let delegate_intersections = self.delegate.intersect(&local_ray);
+        let delegate_intersections = self.geometry.intersect(&local_ray);
 
         let corrected_intersections = delegate_intersections
             .into_iter()
@@ -102,7 +90,7 @@ impl Shape {
 
     pub fn normal_at(&self, point: Point) -> Vector {
         let local_point = &self.transformation.inverse() * point;
-        let local_normal = self.delegate.normal_at(local_point);
+        let local_normal = self.geometry.normal_at(local_point);
         let world_normal = &self.transformation.inverse().transpose() * local_normal;
         world_normal.normalize()
     }
@@ -197,7 +185,7 @@ mod tests {
 
         let transform = transformations::scaling(2, 2, 2);
         let shape = TestShape::with_ray(expected_ray);
-        let transformed_shape = Shape::new(Box::new(shape), transform);
+        let transformed_shape = Shape::using(Box::new(shape)).with_transform(transform);
 
         transformed_shape.intersect(&ray);
     }
@@ -209,7 +197,7 @@ mod tests {
 
         let shape = TestShape::with_ray(expected_ray);
         let transform = transformations::translation(5, 0, 0);
-        let transformed_shape = Shape::new(Box::new(shape), transform);
+        let transformed_shape = Shape::using(Box::new(shape)).with_transform(transform);
 
         transformed_shape.intersect(&ray);
     }
@@ -219,7 +207,7 @@ mod tests {
         let shape = TestShape::new();
         let transform = transformations::translation(0, 1, 0);
 
-        let transformed_shape = Shape::new(Box::new(shape), transform);
+        let transformed_shape = Shape::using(Box::new(shape)).with_transform(transform);
 
         let expected_normal = Vector::new(0.0, 0.70711, -0.70711);
         let actual_normal = transformed_shape.normal_at(Point::at(0.0, 1.70711, -0.70711));
@@ -232,7 +220,7 @@ mod tests {
         let scaling = transformations::scaling(1.0, 0.5, 1.0);
         let rotation = transformations::rotation_z(PI / 5.0);
         let transform = &scaling * &rotation;
-        let transformed_shape = Shape::new(Box::new(shape), transform);
+        let transformed_shape = Shape::using(Box::new(shape)).with_transform(transform);
         let actual_normal = transformed_shape.normal_at(Point::at(
             0.0,
             2.0_f64.sqrt() / 2.0,

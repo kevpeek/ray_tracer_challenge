@@ -28,7 +28,6 @@ pub fn make_world() -> World {
         .with_reflective(1.0);
 
     let floor = Shape::plane()
-        .without_transform()
         .with_material(wall_material.clone());
 
     let wall_transform = rotation_x(PI / 2.0).then(&translation(0, 0, 5));

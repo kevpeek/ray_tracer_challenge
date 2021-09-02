@@ -118,7 +118,7 @@ mod tests {
         let pattern = StripePattern::new(Color::WHITE, Color::BLACK)
             .with_transform(transformations::scaling(2, 2, 2));
 
-        let object = Shape::sphere().without_transform()
+        let object = Shape::sphere()
             .with_material(Material::default().with_pattern(pattern).with_ambient(1.0));
 
         let color = object.lighting(
