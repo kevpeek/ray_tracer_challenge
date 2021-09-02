@@ -29,8 +29,8 @@ pub fn make_world() -> World {
         .then(&translation(0, 0, 10));
 
     let backdrop = Plane::new()
-        .with_material(backdrop_material)
-        .with_transform(backdrop_transform);
+        .with_transform(backdrop_transform)
+        .with_material(backdrop_material);
 
     // ===== Spheres =====
 
@@ -39,22 +39,20 @@ pub fn make_world() -> World {
     println!("The seed for this render was {}", seed);
     let mut rng = StdRng::seed_from_u64(seed);
 
-    let mut objects: Vec<Box<dyn Shape>> = vec![
-        Box::new(backdrop),
-    ];
+    let mut objects: Vec<Shape> = vec![backdrop];
 
     let sphere_details = make_sphere_origins(&mut rng);
     for (origin, radius) in sphere_details {
         let sphere_material = random_material(&mut rng);
 
-        let sphere = Sphere::default()
-            .with_material(sphere_material)
+        let sphere = Sphere::new()
             .with_transform(
                 transformations::scaling(radius, radius, radius)
                     .then(&transformations::translation(origin.x, origin.y, origin.z))
-            );
+            )
+            .with_material(sphere_material);
 
-        objects.push(Box::new(sphere));
+        objects.push(sphere);
     }
 
     World::new(objects, light_source)

@@ -5,29 +5,36 @@ use crate::intersections;
 use crate::tracing::intersection::{Intersection, Intersections};
 use crate::tracing::material::Material;
 use crate::tracing::ray::Ray;
-use crate::tracing::shapes::shape::{Shape, TransformedShape};
+use crate::tracing::shapes::shape::{Shape, ShapeGeometry};
 use std::any::Any;
 
 #[derive(Eq, PartialEq, Debug, Clone)]
 pub struct Sphere {
     origin: Point,
-    material: Material,
 }
 
-impl Shape for Sphere {
-    fn as_any(&self) -> &dyn Any {
-        self
+impl Sphere {
+    pub fn new() -> Sphere {
+        Sphere {
+            origin: Point::origin(),
+        }
     }
 
-    fn equals_shape(&self, other: &dyn Any) -> bool {
-        other.downcast_ref::<Self>().map_or(false, |a| self == a)
+    pub fn with_transform(self, new_transform: Matrix) -> Shape {
+        Shape::new(Box::new(self), new_transform)
     }
 
-    fn material(&self) -> &Material {
-        &self.material
+    pub fn without_transform(self) -> Shape {
+        Shape::using(Box::new(self))
+    }
+}
+
+impl ShapeGeometry for Sphere {
+    fn name(&self) -> &'static str {
+        "sphere"
     }
 
-    fn intersect(&self, ray: &Ray) -> Intersections {
+    fn intersect(&self, ray: &Ray) -> Vec<f64> {
         let sphere_to_ray = ray.origin() - self.origin;
         let a = ray.direction().dot(ray.direction());
         let b = 2.0 * ray.direction().dot(sphere_to_ray);
@@ -36,13 +43,13 @@ impl Shape for Sphere {
         let discriminant = b * b - 4.0 * a * c;
 
         if discriminant < 0.0 {
-            return intersections![];
+            return vec![];
         }
 
         let t1 = (-b - discriminant.sqrt()) / (2.0 * a);
         let t2 = (-b + discriminant.sqrt()) / (2.0 * a);
 
-        intersections![Intersection::new(t1, self), Intersection::new(t2, self)]
+        vec![t1, t2]
     }
 
     /**
@@ -53,30 +60,6 @@ impl Shape for Sphere {
     }
 }
 
-impl Sphere {
-    pub fn default() -> Sphere {
-        Sphere {
-            origin: Point::origin(),
-            material: Material::default(),
-        }
-    }
-
-    pub fn new(origin: Point, material: Material) -> Sphere {
-        Sphere { origin, material }
-    }
-
-    pub fn with_origin(self, new_origin: Point) -> Sphere {
-        Sphere::new(new_origin, self.material)
-    }
-
-    pub fn with_material(self, new_material: Material) -> Sphere {
-        Sphere::new(self.origin, new_material)
-    }
-
-    pub fn with_transform(self, new_transform: Matrix) -> TransformedShape {
-        TransformedShape::new(Box::new(self), new_transform)
-    }
-}
 
 #[cfg(test)]
 mod tests {
@@ -84,13 +67,13 @@ mod tests {
     use crate::geometry::transformations::{rotation_z, scaling, translation};
     use crate::geometry::vector::Vector;
     use crate::tracing::material::Material;
-    use crate::tracing::shapes::shape::Shape;
+    use crate::tracing::shapes::shape::ShapeGeometry;
     use crate::tracing::shapes::sphere::Sphere;
     use std::f64::consts::PI;
 
     #[test]
     fn normal_on_sphere_at_point_on_x_axis() {
-        let sphere = Sphere::default();
+        let sphere = Sphere::new();
         let normal = sphere.normal_at(Point::at(1, 0, 0));
 
         assert_eq!(Vector::new(1, 0, 0), normal);
@@ -98,7 +81,7 @@ mod tests {
 
     #[test]
     fn normal_on_sphere_at_point_on_y_axis() {
-        let sphere = Sphere::default();
+        let sphere = Sphere::new();
         let normal = sphere.normal_at(Point::at(0, 1, 0));
 
         assert_eq!(Vector::new(0, 1, 0), normal);
@@ -106,7 +89,7 @@ mod tests {
 
     #[test]
     fn normal_on_sphere_at_point_on_z_axis() {
-        let sphere = Sphere::default();
+        let sphere = Sphere::new();
         let normal = sphere.normal_at(Point::at(0, 0, 1));
 
         assert_eq!(Vector::new(0, 0, 1), normal);
@@ -114,7 +97,7 @@ mod tests {
 
     #[test]
     fn normal_on_sphere_at_nonaxial_point() {
-        let sphere = Sphere::default();
+        let sphere = Sphere::new();
         let normal = sphere.normal_at(Point::at(
             3.0_f64.sqrt() / 3.0,
             3.0_f64.sqrt() / 3.0,
@@ -133,7 +116,7 @@ mod tests {
 
     #[test]
     fn normal_is_normalized_vector() {
-        let sphere = Sphere::default();
+        let sphere = Sphere::new();
         let normal = sphere.normal_at(Point::at(
             3.0_f64.sqrt() / 3.0,
             3.0_f64.sqrt() / 3.0,
@@ -144,7 +127,7 @@ mod tests {
 
     #[test]
     fn computing_normal_on_translated_sphere() {
-        let sphere = Sphere::default().with_transform(translation(0, 1, 0));
+        let sphere = Sphere::new().with_transform(translation(0, 1, 0));
 
         let normal = sphere.normal_at(Point::at(0.0, 1.70711, -0.70711));
         assert_eq!(Vector::new(0.0, 0.70711, -0.70711), normal);
@@ -153,25 +136,9 @@ mod tests {
     #[test]
     fn computing_normal_on_transformed_sphere() {
         let sphere =
-            Sphere::default().with_transform(&scaling(1.0, 0.5, 1.0) * &rotation_z(PI / 5.0));
+            Sphere::new().with_transform(&scaling(1.0, 0.5, 1.0) * &rotation_z(PI / 5.0));
 
         let normal = sphere.normal_at(Point::at(0.0, 2.0_f64.sqrt() / 2.0, -2.0_f64.sqrt() / 2.0));
         assert_eq!(Vector::new(0.0, 0.97014, -0.24254), normal);
-    }
-
-    #[test]
-    fn sphere_has_default_material() {
-        let sphere = Sphere::default();
-
-        assert_eq!(Material::default(), sphere.material);
-    }
-
-    #[test]
-    fn sphere_may_be_assigned_material() {
-        let material = Material::default();
-        let mut sphere = Sphere::default();
-        sphere.material = material.clone();
-
-        assert_eq!(material, sphere.material);
     }
 }

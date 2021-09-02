@@ -14,6 +14,7 @@ use crate::tracing::patterns::stripe_pattern::StripePattern;
 use crate::geometry::transformations;
 use crate::tracing::patterns::gradient::Gradient;
 use crate::tracing::patterns::checkers::Checkers;
+use crate::geometry::matrix::Matrix;
 
 
 pub fn make_world() -> World {
@@ -26,7 +27,9 @@ pub fn make_world() -> World {
         .with_specular(0.0)
         .with_reflective(1.0);
 
-    let floor = Plane::new().with_material(wall_material.clone());
+    let floor = Plane::new()
+        .without_transform()
+        .with_material(wall_material.clone());
 
     let wall_transform = rotation_x(PI / 2.0).then(&translation(0, 0, 5));
 
@@ -45,13 +48,13 @@ pub fn make_world() -> World {
         .with_diffuse(0.7)
         .with_specular(0.3);
 
-    let middle = Sphere::default()
-        .with_material(middle_material.clone())
-        .with_transform(translation(-0.5, 1.0, 0.5));
+    let middle = Sphere::new()
+        .with_transform(translation(-0.5, 1.0, 0.5))
+        .with_material(middle_material.clone());
 
-    let right = Sphere::default()
-        .with_material(middle_material.with_pattern(Gradient::new(Color::LIGHT_BLUE, Color::RED)))
-        .with_transform(scaling(0.5, 0.5, 0.5).then(&translation(1.5, 0.5, -0.5)));
+    let right = Sphere::new()
+        .with_transform(scaling(0.5, 0.5, 0.5).then(&translation(1.5, 0.5, -0.5)))
+        .with_material(middle_material.with_pattern(Gradient::new(Color::LIGHT_BLUE, Color::RED)));
 
     let left_material = Material::default()
         // .with_color(Color::MUSTARD_YELLOW)
@@ -63,17 +66,17 @@ pub fn make_world() -> World {
         .with_diffuse(0.7)
         .with_specular(0.3);
 
-    let left = Sphere::default()
-        .with_material(left_material)
-        .with_transform(scaling(0.33, 0.33, 0.33).then(&translation(-1.5, 0.33, -0.75)));
+    let left = Sphere::new()
+        .with_transform(scaling(0.33, 0.33, 0.33).then(&translation(-1.5, 0.33, -0.75)))
+        .with_material(left_material);
 
-    let objects: Vec<Box<dyn Shape>> = vec![
-        Box::new(floor),
-        // Box::new(left_wall),
-        // Box::new(right_wall),
-        Box::new(middle),
-        Box::new(right),
-        Box::new(left),
+    let objects: Vec<Shape> = vec![
+        floor,
+        // left_wall,
+        // right_wall,
+        middle,
+        right,
+        left,
     ];
 
     World::new(objects, light_source)

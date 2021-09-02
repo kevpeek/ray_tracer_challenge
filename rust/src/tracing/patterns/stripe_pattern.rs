@@ -40,7 +40,6 @@ mod tests {
     use crate::tracing::shapes::sphere::Sphere;
     use crate::geometry::transformations;
     use crate::tracing::material::Material;
-    use crate::tracing::shapes::shape::Shape;
     use crate::tracing::point_light::PointLight;
     use crate::geometry::vector::Vector;
     use crate::tracing::patterns::pattern::Pattern;

@@ -6,55 +6,42 @@ use crate::intersections;
 use crate::tracing::intersection::{Intersection, Intersections};
 use crate::tracing::material::Material;
 use crate::tracing::ray::Ray;
-use crate::tracing::shapes::shape::{Shape, TransformedShape};
+use crate::tracing::shapes::shape::{Shape, ShapeGeometry};
 use std::any::Any;
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Plane {
-    material: Material,
 }
 
 impl Plane {
     pub fn new() -> Plane {
-        Plane {
-            material: Material::default(),
-        }
+        Plane {}
     }
 
-    pub fn with_material(self, new_material: Material) -> Plane {
-        Plane {
-            material: new_material,
-        }
+    pub fn with_transform(self, new_transform: Matrix) -> Shape {
+        Shape::new(Box::new(self), new_transform)
     }
 
-    pub fn with_transform(self, new_transform: Matrix) -> TransformedShape {
-        TransformedShape::new(Box::new(self), new_transform)
+    pub fn without_transform(self) -> Shape {
+        Shape::using(Box::new(self))
     }
 }
 
-impl Shape for Plane {
-    fn as_any(&self) -> &dyn Any {
-        self
+impl ShapeGeometry for Plane {
+    fn name(&self) -> &'static str {
+        "plane"
     }
 
-    fn equals_shape(&self, other: &dyn Any) -> bool {
-        other.downcast_ref::<Self>().map_or(false, |a| self == a)
-    }
-
-    fn material(&self) -> &Material {
-        &self.material
-    }
-
-    fn intersect(&self, ray: &Ray) -> Intersections {
+    fn intersect(&self, ray: &Ray) -> Vec<f64> {
         if ray.direction().y.abs() < EPSILON {
-            return Intersections::empty();
+            return vec![];
         }
 
         let time = -ray.origin().y / ray.direction().y;
-        intersections![Intersection::new(time, self)]
+        vec![time]
     }
 
-    fn normal_at(&self, _: Point) -> Vector {
+    fn normal_at(&self, point: Point) -> Vector {
         Vector::new(0, 1, 0)
     }
 }
@@ -67,7 +54,7 @@ mod tests {
     use crate::tracing::intersection::Intersection;
     use crate::tracing::shapes::plane::Plane;
     use crate::tracing::ray::Ray;
-    use crate::tracing::shapes::shape::Shape;
+    use crate::tracing::shapes::shape::ShapeGeometry;
 
     #[test]
     fn normal_of_plane_is_constant() {
@@ -97,7 +84,7 @@ mod tests {
         let ray = Ray::new(Point::at(0, 1, 0), Vector::new(0, -1, 0));
         let intersections = plane.intersect(&ray);
 
-        let expected = intersections![Intersection::new(1.0, &plane)];
+        let expected = vec![1.0];
         assert_eq!(expected, intersections);
     }
 
@@ -107,7 +94,7 @@ mod tests {
         let ray = Ray::new(Point::at(0, -1, 0), Vector::new(0, 1, 0));
         let intersections = plane.intersect(&ray);
 
-        let expected = intersections![Intersection::new(1.0, &plane)];
+        let expected = vec![1.0];
         assert_eq!(expected, intersections);
     }
 }
