@@ -23,9 +23,8 @@ pub fn make_world() -> World {
     // ===== Walls =====
 
     let wall_material = Material::default()
-        .with_pattern(Checkers::new(Color::LIGHT_BLUE, Color::LIGHT_BLUE))
-        .with_specular(0.0)
-        .with_reflective(1.0);
+        .with_pattern(Checkers::new(Color::WHITE, Color::BLACK))
+        .with_specular(0.0);
 
     let floor = Shape::plane()
         .with_material(wall_material.clone());
@@ -46,7 +45,6 @@ pub fn make_world() -> World {
         .with_color(Color::LIGHT_GREEN)
         .with_diffuse(0.7)
         .with_specular(0.3);
-
     let middle = Shape::sphere()
         .with_transform(translation(-0.5, 1.0, 0.5))
         .with_material(middle_material.clone());
@@ -56,7 +54,6 @@ pub fn make_world() -> World {
         .with_material(middle_material.with_pattern(Gradient::new(Color::LIGHT_BLUE, Color::RED)));
 
     let left_material = Material::default()
-        // .with_color(Color::MUSTARD_YELLOW)
         .with_pattern(
             StripePattern::new(Color::MUSTARD_YELLOW, Color::BLACK)
                 .with_transform(transformations::scaling(0.2, 0.2, 0.2)
