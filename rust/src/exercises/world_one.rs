@@ -23,7 +23,7 @@ pub fn make_world() -> World {
     // ===== Walls =====
 
     let wall_material = Material::default()
-        .with_pattern(Checkers::new(Color::WHITE, Color::BLACK))
+        .with_pattern(Checkers::new(Color::LIGHT_BLUE, Color::LIGHT_BLUE))
         .with_specular(0.0)
         .with_reflective(1.0);
 

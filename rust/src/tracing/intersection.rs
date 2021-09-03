@@ -3,6 +3,8 @@ use crate::geometry::vector::Vector;
 use crate::helper::{almost, EPSILON};
 use crate::tracing::ray::Ray;
 use crate::tracing::shapes::shape::WorldShape;
+use crate::display::color::Color;
+use crate::tracing::point_light::PointLight;
 
 #[derive(Debug, PartialEq)]
 pub struct Intersections<'a> {
@@ -62,14 +64,36 @@ impl<'a> Intersections<'a> {
  * Precompute details about the intersection.
  */
 pub struct PreComputedIntersection<'a> {
-    pub time: f64,
-    pub thing: WorldShape<'a>,
-    pub inside: bool,
-    pub point: Point,
-    pub over_point: Point,
-    pub eye_vector: Vector,
-    pub normal_vector: Vector,
-    pub reflect_vector: Vector,
+    time: f64,
+    thing: WorldShape<'a>,
+    inside: bool,
+    point: Point,
+    over_point: Point,
+    eye_vector: Vector,
+    normal_vector: Vector,
+    reflect_vector: Vector,
+}
+
+impl<'a> PreComputedIntersection<'a> {
+    pub fn is_reflective(&self) -> bool {
+        self.thing.material().reflective() > 0.0
+    }
+
+    pub fn scale_reflection(&self, color: Color) -> Color {
+        color * self.thing.material().reflective()
+    }
+
+    pub fn reflect_ray(&self) -> Ray {
+        Ray::new(self.over_point, self.reflect_vector)
+    }
+
+    pub fn lighting(&self, light: &PointLight, in_shadow: bool) -> Color {
+        self.thing.lighting(light, self.over_point, self.eye_vector, self.normal_vector, in_shadow)
+    }
+
+    pub fn over_point(&self) -> Point {
+        self.over_point
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -137,6 +161,8 @@ mod tests {
     use crate::tracing::shapes::sphere::Sphere;
     use crate::tracing::shapes::plane::Plane;
     use num::integer::Roots;
+    use crate::geometry::transformations;
+    use crate::helper::EPSILON;
 
     fn test_shape() -> Shape {
         Shape::sphere()
@@ -371,5 +397,16 @@ mod tests {
 
         let pre_computations = intersection.pre_computations(&ray);
         assert_eq!(Vector::new(0.0, 2.0_f64.sqrt()/2.0, 2.0_f64.sqrt()/2.0), pre_computations.reflect_vector);
+    }
+
+    #[test]
+    fn the_hit_should_offset_the_point() {
+        let ray = Ray::new(Point::at(0, 0, -5), Vector::new(0, 0, 1));
+        let sphere =
+            Shape::sphere().with_transform(transformations::translation(0, 0, 1));
+        let intersection = Intersection::new(5.0, &sphere);
+        let pre_computations = intersection.pre_computations(&ray);
+        assert!(pre_computations.over_point.z < -EPSILON / 2.0);
+        assert!(pre_computations.point.z > pre_computations.over_point.z);
     }
 }

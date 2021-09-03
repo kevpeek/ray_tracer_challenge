@@ -68,14 +68,10 @@ impl World {
      * Determine the Color given a PreComputedIntersection.
      */
     fn shade_hit(&self, pre_computations: PreComputedIntersection, recursion_limit: usize) -> Color {
-        let in_shadow = self.is_shadowed(pre_computations.over_point);
+        let in_shadow = self.is_shadowed(pre_computations.over_point());
         let light = &self.light_source;
-        // Using over_point here fixes fuzziness with checker pattern.
-        let position = pre_computations.over_point;
-        let eye_vector_argument = pre_computations.eye_vector;
-        let normal = pre_computations.normal_vector;
 
-        let surface_color = pre_computations.thing.lighting(light, position, eye_vector_argument, normal, in_shadow);
+        let surface_color = pre_computations.lighting(light, in_shadow);
         let reflected_color = self.reflect_color(pre_computations, recursion_limit);
         surface_color + reflected_color
     }
@@ -84,13 +80,12 @@ impl World {
         if recursion_limit == 0 {
             return Color::BLACK;
         }
-        if pre_computations.thing.material().reflective() == 0.0 {
+        if !pre_computations.is_reflective() {
             return Color::BLACK;
         }
 
-        let reflect_ray = Ray::new(pre_computations.over_point, pre_computations.reflect_vector);
-        let color = self.color_at_internal(&reflect_ray, recursion_limit - 1);
-        color * pre_computations.thing.material().reflective()
+        let color = self.color_at_internal(&pre_computations.reflect_ray(), recursion_limit - 1);
+        pre_computations.scale_reflection(color)
     }
 
     pub fn intersected_by(&self, ray: &Ray) -> Intersections {
@@ -282,17 +277,6 @@ mod tests {
         let pre_computations = intersection.pre_computations(&ray);
         let color = world.shade_hit(pre_computations, 5);
         assert_eq!(Color::new(0.1, 0.1, 0.1), color);
-    }
-
-    #[test]
-    fn the_hit_should_offset_the_point() {
-        let ray = Ray::new(Point::at(0, 0, -5), Vector::new(0, 0, 1));
-        let sphere =
-            Shape::sphere().with_transform(transformations::translation(0, 0, 1));
-        let intersection = Intersection::new(5.0, &sphere);
-        let pre_computations = intersection.pre_computations(&ray);
-        assert!(pre_computations.over_point.z < -EPSILON / 2.0);
-        assert!(pre_computations.point.z > pre_computations.over_point.z);
     }
 
     #[test]
