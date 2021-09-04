@@ -140,7 +140,6 @@ mod tests {
     use crate::geometry::point::Point;
     use crate::geometry::transformations;
     use crate::geometry::vector::Vector;
-    use crate::intersections;
     use crate::tracing::intersection::Intersections;
     use crate::tracing::material::Material;
     use crate::tracing::ray::Ray;

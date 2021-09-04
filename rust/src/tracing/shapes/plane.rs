@@ -1,13 +1,8 @@
-use crate::geometry::matrix::Matrix;
 use crate::geometry::point::Point;
 use crate::geometry::vector::Vector;
 use crate::helper::EPSILON;
-use crate::intersections;
-use crate::tracing::intersection::{Intersection, Intersections};
-use crate::tracing::material::Material;
 use crate::tracing::ray::Ray;
-use crate::tracing::shapes::shape::{Shape, ShapeGeometry};
-use std::any::Any;
+use crate::tracing::shapes::shape::ShapeGeometry;
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Plane {}
@@ -32,7 +27,7 @@ impl ShapeGeometry for Plane {
         vec![time]
     }
 
-    fn normal_at(&self, point: Point) -> Vector {
+    fn normal_at(&self, _: Point) -> Vector {
         Vector::new(0, 1, 0)
     }
 }
@@ -41,10 +36,9 @@ impl ShapeGeometry for Plane {
 mod tests {
     use crate::geometry::point::Point;
     use crate::geometry::vector::Vector;
-    use crate::intersections;
     use crate::tracing::intersection::Intersection;
-    use crate::tracing::shapes::plane::Plane;
     use crate::tracing::ray::Ray;
+    use crate::tracing::shapes::plane::Plane;
     use crate::tracing::shapes::shape::ShapeGeometry;
 
     #[test]

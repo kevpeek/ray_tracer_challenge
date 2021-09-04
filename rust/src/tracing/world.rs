@@ -1,14 +1,11 @@
-use std::ops::Deref;
-
 use crate::display::color::Color;
 use crate::geometry::point::Point;
 use crate::geometry::transformations::scaling;
-use crate::tracing::intersection::{Intersections, PreComputedIntersection};
+use crate::tracing::intersection::{Intersections, PreComputedIntersection, Intersection};
 use crate::tracing::material::{Material};
 use crate::tracing::point_light::PointLight;
 use crate::tracing::ray::Ray;
 use crate::tracing::shapes::shape::{WorldShape, Shape};
-use crate::tracing::shapes::sphere::Sphere;
 
 type BoxedShape = Shape;
 
@@ -114,7 +111,7 @@ impl World {
 }
 
 fn default_spheres() -> Vec<BoxedShape> {
-    let outer_sphere_material = Material::solid_colored(Color::new(0.8, 1.0, 0.6), 0.1, 0.7, 0.2, 200.0, 0.0);
+    let outer_sphere_material = Material::solid_colored(Color::new(0.8, 1.0, 0.6), 0.1, 0.7, 0.2, 200.0, 0.0, 0.0, 1.0);
     let outer_sphere = Shape::sphere()
         .with_material(outer_sphere_material);
     let inner_sphere = Shape::sphere().with_transform(scaling(0.5, 0.5, 0.5));
@@ -154,7 +151,6 @@ mod tests {
         let ray_argument = &ray;
         let intersections = world.intersected_by(ray_argument);
 
-        let intersections = intersections.intersections;
         assert_eq!(4, intersections.len());
         assert_eq!(4.0, intersections[0].time());
         assert_eq!(4.5, intersections[1].time());
@@ -168,7 +164,7 @@ mod tests {
         let ray = Ray::new(Point::at(0, 0, -5), Vector::new(0, 0, 1));
         let shape = world.objects.first().unwrap().clone();
         let sphere = &shape;
-        let intersect = &sphere.intersect(&ray).intersections[0];
+        let intersect = &sphere.intersect(&ray)[0];
 
         let comps = intersect.pre_computations(&ray);
 
@@ -182,7 +178,7 @@ mod tests {
         let world = World::new(default_spheres(), light_source);
         let ray = Ray::new(Point::origin(), Vector::new(0, 0, 1));
         let sphere = &world.objects[1];
-        let intersect = &sphere.intersect(&ray).intersections[1];
+        let intersect = &sphere.intersect(&ray)[1];
 
         let comps = intersect.pre_computations(&ray);
 
@@ -210,7 +206,7 @@ mod tests {
 
     #[test]
     fn the_color_with_an_intersection_behind_the_ray() {
-        let outer_sphere_material = Material::solid_colored(Color::new(0.8, 1.0, 0.6), 1.0, 0.7, 0.2, 200.0, 0.0);
+        let outer_sphere_material = Material::solid_colored(Color::new(0.8, 1.0, 0.6), 1.0, 0.7, 0.2, 200.0, 0.0, 0.0, 1.0);
         let outer_sphere = Shape::sphere()
             .with_material(outer_sphere_material);
         let material = Material::default().with_ambient(1.0);
@@ -227,7 +223,7 @@ mod tests {
         let ray = Ray::new(Point::at(0.0, 0.0, 0.75), Vector::new(0, 0, -1));
 
         let color = world.color_at(&ray);
-        assert_eq!(Material::default().color(), color);
+        assert_eq!(Color::WHITE, color);
     }
 
     #[test]

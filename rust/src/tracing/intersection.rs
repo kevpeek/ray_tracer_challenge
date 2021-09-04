@@ -5,10 +5,12 @@ use crate::tracing::ray::Ray;
 use crate::tracing::shapes::shape::WorldShape;
 use crate::display::color::Color;
 use crate::tracing::point_light::PointLight;
+use std::ops::Index;
+use std::vec::IntoIter;
 
 #[derive(Debug, PartialEq)]
 pub struct Intersections<'a> {
-    pub intersections: Vec<Intersection<'a>>,
+    intersections: Vec<Intersection<'a>>,
 }
 
 /*
@@ -28,25 +30,25 @@ macro_rules! intersections {
 }
 
 impl<'a> Intersections<'a> {
-    pub fn combine(others: Vec<Intersections>) -> Intersections {
-        let mut values: Vec<Intersection> =
-            others.into_iter().flat_map(|it| it.intersections).collect();
-        values.sort_by(|a, b| a.time().partial_cmp(&b.time()).unwrap());
-        Intersections {
-            intersections: values,
-        }
-    }
-
     pub fn new(intersections: Vec<Intersection>) -> Intersections {
         Intersections { intersections }
     }
 
-    pub fn empty() -> Intersections<'a> {
-        intersections!()
-    }
-
     pub fn is_empty(&self) -> bool {
         self.intersections.is_empty()
+    }
+
+    pub fn len(&self) -> usize {
+        self.intersections.len()
+    }
+
+    pub fn combine(others: Vec<Intersections>) -> Intersections {
+        let mut values: Vec<Intersection> =
+        others.into_iter().flat_map(|it| it.intersections).collect();
+        values.sort_by(|a, b| a.time().partial_cmp(&b.time()).unwrap());
+        Intersections {
+        intersections: values,
+        }
     }
 
     /**
@@ -57,6 +59,13 @@ impl<'a> Intersections<'a> {
             .iter()
             .filter(|it| it.time.is_sign_positive())
             .min_by(|a, b| a.time.partial_cmp(&b.time).unwrap())
+    }
+}
+
+impl<'a> Index<usize> for Intersections<'a> {
+    type Output = Intersection<'a>;
+    fn index(&self, i: usize) -> &Self::Output {
+        &self.intersections[i]
     }
 }
 

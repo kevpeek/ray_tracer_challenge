@@ -1,23 +1,21 @@
-use crate::geometry::matrix::Matrix;
 use crate::geometry::point::Point;
 use crate::geometry::vector::Vector;
-use crate::intersections;
-use crate::tracing::intersection::{Intersection, Intersections};
-use crate::tracing::material::Material;
 use crate::tracing::ray::Ray;
-use crate::tracing::shapes::shape::{Shape, ShapeGeometry};
-use std::any::Any;
+use crate::tracing::shapes::shape::ShapeGeometry;
 
+/**
+ * Sphere represents a unit sphere centered at the origin.
+*/
 #[derive(Eq, PartialEq, Debug, Clone)]
-pub struct Sphere {
-    origin: Point,
-}
+pub struct Sphere {}
 
 impl Sphere {
     pub fn new() -> Sphere {
-        Sphere {
-            origin: Point::origin(),
-        }
+        Sphere {}
+    }
+
+    fn origin(&self) -> Point {
+        Point::origin()
     }
 }
 
@@ -27,7 +25,7 @@ impl ShapeGeometry for Sphere {
     }
 
     fn intersect(&self, ray: &Ray) -> Vec<f64> {
-        let sphere_to_ray = ray.origin() - self.origin;
+        let sphere_to_ray = ray.origin() - self.origin();
         let a = ray.direction().dot(ray.direction());
         let b = 2.0 * ray.direction().dot(sphere_to_ray);
         let c = sphere_to_ray.dot(sphere_to_ray) - 1.0;
@@ -48,7 +46,7 @@ impl ShapeGeometry for Sphere {
      * Return the Vector normal to this sphere at the supplied point.
      */
     fn normal_at(&self, point: Point) -> Vector {
-        point - self.origin
+        point - self.origin()
     }
 }
 

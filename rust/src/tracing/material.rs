@@ -13,7 +13,9 @@ pub struct Material {
     diffuse: f64,
     specular: f64,
     shininess: f64,
-    reflective: f64
+    reflective: f64,
+    transparency: f64,
+    refractive_index: f64,
 }
 
 impl Material {
@@ -24,7 +26,9 @@ impl Material {
             diffuse: 0.9,
             specular: 0.9,
             shininess: 200.0,
-            reflective: 0.0
+            reflective: 0.0,
+            transparency: 0.0,
+            refractive_index: 1.0,
         }
     }
 
@@ -35,6 +39,8 @@ impl Material {
         specular: f64,
         shininess: f64,
         reflective: f64,
+        transparency: f64,
+        refractive_index: f64,
     ) -> Material {
         Material {
             pattern,
@@ -42,7 +48,9 @@ impl Material {
             diffuse,
             specular,
             shininess,
-            reflective
+            reflective,
+            transparency,
+            refractive_index,
         }
     }
 
@@ -53,16 +61,11 @@ impl Material {
         specular: f64,
         shininess: f64,
         reflective: f64,
+        transparency: f64,
+        refractive_index: f64,
     ) -> Material {
         let pattern= Solid::new(color);
-        Material {
-            pattern,
-            ambient,
-            diffuse,
-            specular,
-            shininess,
-            reflective
-        }
+        Material::new(pattern, ambient, diffuse, specular, shininess, reflective, transparency, refractive_index)
     }
 
     pub fn with_color(self, color: Color) -> Material {
@@ -73,6 +76,8 @@ impl Material {
             self.specular,
             self.shininess,
             self.reflective,
+            self.transparency,
+            self.refractive_index,
         )
     }
 
@@ -84,6 +89,8 @@ impl Material {
             self.specular,
             self.shininess,
             self.reflective,
+            self.transparency,
+            self.refractive_index,
         )
     }
 
@@ -95,6 +102,8 @@ impl Material {
             self.specular,
             self.shininess,
             self.reflective,
+            self.transparency,
+            self.refractive_index,
         )
     }
 
@@ -106,6 +115,8 @@ impl Material {
             self.specular,
             self.shininess,
             self.reflective,
+            self.transparency,
+            self.refractive_index,
         )
     }
 
@@ -117,6 +128,8 @@ impl Material {
             specular,
             self.shininess,
             self.reflective,
+            self.transparency,
+            self.refractive_index,
         )
     }
 
@@ -128,6 +141,8 @@ impl Material {
             self.specular,
             shininess,
             self.reflective,
+            self.transparency,
+            self.refractive_index,
         )
     }
 
@@ -139,12 +154,35 @@ impl Material {
             self.specular,
             self.shininess,
             reflective,
+            self.transparency,
+            self.refractive_index,
         )
     }
 
-    pub fn color(&self) -> Color {
-        let point = Point::origin();
-        self.pattern.pattern_at(point)
+    pub fn with_transparency(self, transparency: f64) -> Material {
+        Material::new(
+            self.pattern,
+            self.ambient,
+            self.diffuse,
+            self.specular,
+            self.shininess,
+            self.reflective,
+            transparency,
+            self.refractive_index,
+        )
+    }
+
+    pub fn with_refractive_index(self, refractive_index: f64) -> Material {
+        Material::new(
+            self.pattern,
+            self.ambient,
+            self.diffuse,
+            self.specular,
+            self.shininess,
+            self.reflective,
+            self.transparency,
+            refractive_index,
+        )
     }
 
     pub fn reflective(&self) -> f64 {
@@ -238,10 +276,20 @@ mod test {
     use crate::tracing::material::{Material};
     use crate::tracing::point_light::PointLight;
     use crate::tracing::patterns::stripe_pattern::StripePattern;
+    use crate::tracing::shapes::shape::{Shape, ShapeGeometry};
+    use crate::tracing::shapes::sphere::Sphere;
+    use crate::geometry::transformations;
+    use crate::tracing::ray::Ray;
+
+    fn glass_sphere() -> Shape {
+        Sphere::new().into_shape()
+            .with_material(Material::default()
+                .with_transparency(1.0)
+                .with_refractive_index(1.5))
+    }
 
     #[test]
     fn default_material() {
-        assert_eq!(Color::new(1, 1, 1), Material::default().color());
         assert_eq!(0.1, Material::default().ambient);
         assert_eq!(0.9, Material::default().diffuse);
         assert_eq!(0.9, Material::default().specular);
@@ -335,7 +383,7 @@ mod test {
     #[test]
     fn lighting_with_pattern() {
         let pattern = StripePattern::new(Color::WHITE, Color::BLACK);
-        let material = Material::new(pattern, 1.0, 0.0, 0.0, 200.0, 0.0);
+        let material = Material::new(pattern, 1.0, 0.0, 0.0, 200.0, 0.0, 0.0, 1.0);
         let eye_vector = Vector::new(0, 0, -1);
         let normal = Vector::new(0, 0, -1);
         let light = PointLight::new(Point::at(0, 0, -10), Color::WHITE);
@@ -351,5 +399,28 @@ mod test {
         let color_two = material_argument.lighting(light_argument, position, eye_vector, normal, in_shadow);
         assert_eq!(Color::WHITE, color_one);
         assert_eq!(Color::BLACK, color_two);
+    }
+
+    #[test]
+    fn finding_n1_and_n2_at_various_intersections() {
+        let glass = Material::default()
+            .with_transparency(1.0);
+
+        let sphere_a = glass_sphere()
+            .with_transform(transformations::scaling(2, 2, 2))
+            .with_material(glass.clone().with_refractive_index(1.5));
+
+        let sphere_b = glass_sphere()
+            .with_transform(transformations::translation(0.0, 0.0, -0.25))
+            .with_material(glass.clone().with_refractive_index(2.0));
+
+        let sphere_c  = glass_sphere()
+            .with_transform(transformations::translation(0.0, 0.0, 0.25))
+            .with_material(glass.clone().with_refractive_index(2.5));
+
+        let ray = Ray::new(Point::at(0, 0, -4), Vector::new(0, 0, 1));
+
+        // let intersections = vec![];
+        todo!()
     }
 }

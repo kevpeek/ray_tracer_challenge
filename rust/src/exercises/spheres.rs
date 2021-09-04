@@ -1,14 +1,12 @@
 use crate::tracing::world::World;
 use crate::tracing::shapes::shape::Shape;
 use crate::geometry::transformations::{translation};
-use crate::tracing::shapes::sphere::Sphere;
 use crate::tracing::point_light::PointLight;
 use crate::tracing::material::Material;
 use crate::tracing::patterns::stripe_pattern::StripePattern;
 use crate::display::color::Color;
 use crate::geometry::transformations;
 use std::f64::consts::PI;
-use crate::tracing::shapes::plane::Plane;
 use rand::prelude::*;
 use crate::geometry::point::Point;
 use std::ops::{Sub};
