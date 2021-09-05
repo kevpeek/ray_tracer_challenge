@@ -86,9 +86,9 @@ impl World {
     }
 
     pub fn intersected_by(&self, ray: &Ray) -> Intersections {
-        let intersections: Vec<Intersections> =
-            self.objects().iter().map(|it| it.intersect(ray)).collect();
-        Intersections::combine(intersections)
+        let intersections: Vec<Intersection> =
+            self.objects().iter().flat_map(|it| it.intersect(ray).into_iter()).collect();
+        Intersections::new(intersections)
     }
 
     pub fn is_shadowed(&self, point: Point) -> bool {

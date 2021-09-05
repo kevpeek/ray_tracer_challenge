@@ -31,6 +31,8 @@ macro_rules! intersections {
 
 impl<'a> Intersections<'a> {
     pub fn new(intersections: Vec<Intersection>) -> Intersections {
+        let mut intersections = intersections;
+        intersections.sort_by(|a, b| a.time().partial_cmp(&b.time()).unwrap());
         Intersections { intersections }
     }
 
@@ -42,13 +44,8 @@ impl<'a> Intersections<'a> {
         self.intersections.len()
     }
 
-    pub fn combine(others: Vec<Intersections>) -> Intersections {
-        let mut values: Vec<Intersection> =
-        others.into_iter().flat_map(|it| it.intersections).collect();
-        values.sort_by(|a, b| a.time().partial_cmp(&b.time()).unwrap());
-        Intersections {
-        intersections: values,
-        }
+    pub fn into_iter(self) -> IntoIter<Intersection<'a>> {
+        self.intersections.into_iter()
     }
 
     /**
