@@ -189,6 +189,14 @@ impl Material {
         self.reflective
     }
 
+    pub fn transparency(&self) -> f64 {
+        self.transparency
+    }
+
+    pub fn refractive_index(&self) -> f64 {
+        self.refractive_index
+    }
+
     pub fn lighting(
         &self,
         light: &PointLight,
@@ -280,13 +288,7 @@ mod test {
     use crate::tracing::shapes::sphere::Sphere;
     use crate::geometry::transformations;
     use crate::tracing::ray::Ray;
-
-    fn glass_sphere() -> Shape {
-        Sphere::new().into_shape()
-            .with_material(Material::default()
-                .with_transparency(1.0)
-                .with_refractive_index(1.5))
-    }
+    use crate::tracing::intersection::{Intersection, Intersections};
 
     #[test]
     fn default_material() {
@@ -406,21 +408,42 @@ mod test {
         let glass = Material::default()
             .with_transparency(1.0);
 
-        let sphere_a = glass_sphere()
+        let sphere_a = Sphere::new().into_shape()
             .with_transform(transformations::scaling(2, 2, 2))
             .with_material(glass.clone().with_refractive_index(1.5));
 
-        let sphere_b = glass_sphere()
+        let sphere_b = Sphere::new().into_shape()
             .with_transform(transformations::translation(0.0, 0.0, -0.25))
             .with_material(glass.clone().with_refractive_index(2.0));
 
-        let sphere_c  = glass_sphere()
+        let sphere_c  = Sphere::new().into_shape()
             .with_transform(transformations::translation(0.0, 0.0, 0.25))
             .with_material(glass.clone().with_refractive_index(2.5));
 
         let ray = Ray::new(Point::at(0, 0, -4), Vector::new(0, 0, 1));
 
-        // let intersections = vec![];
-        todo!()
+        let intersections = Intersections::new(vec![
+            Intersection::new(2.0, &sphere_a),
+            Intersection::new(2.75, &sphere_b),
+            Intersection::new(3.25, &sphere_c),
+            Intersection::new(4.75, &sphere_b),
+            Intersection::new(5.25, &sphere_c),
+            Intersection::new(6.0, &sphere_a),
+        ]);
+
+        let expectations = vec![
+            (0, 1.0, 1.5),
+            (1, 1.5, 2.0),
+            (2, 2.0, 2.5),
+            (3, 2.5, 2.5),
+            (4, 2.5, 1.5),
+            (5, 1.5, 1.0),
+        ];
+
+        for (index, n1, n2) in expectations {
+            let details = intersections[index].pre_computations(&ray, &intersections);
+            assert_eq!(n1, details.n1());
+            assert_eq!(n2, details.n2());
+        }
     }
 }

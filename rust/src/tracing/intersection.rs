@@ -2,11 +2,12 @@ use crate::geometry::point::Point;
 use crate::geometry::vector::Vector;
 use crate::helper::{almost, EPSILON};
 use crate::tracing::ray::Ray;
-use crate::tracing::shapes::shape::WorldShape;
+use crate::tracing::shapes::shape::{WorldShape, Shape};
 use crate::display::color::Color;
 use crate::tracing::point_light::PointLight;
 use std::ops::Index;
 use std::vec::IntoIter;
+use std::slice::Iter;
 
 #[derive(Debug, PartialEq)]
 pub struct Intersections<'a> {
@@ -36,12 +37,20 @@ impl<'a> Intersections<'a> {
         Intersections { intersections }
     }
 
+    pub fn empty() -> Intersections<'a> {
+        Self::new(Vec::new())
+    }
+
     pub fn is_empty(&self) -> bool {
         self.intersections.is_empty()
     }
 
     pub fn len(&self) -> usize {
         self.intersections.len()
+    }
+
+    pub fn iter(&self) -> Iter<'_, Intersection<'a>> {
+        self.intersections.iter()
     }
 
     pub fn into_iter(self) -> IntoIter<Intersection<'a>> {
@@ -75,9 +84,12 @@ pub struct PreComputedIntersection<'a> {
     inside: bool,
     point: Point,
     over_point: Point,
+    under_point: Point,
     eye_vector: Vector,
     normal_vector: Vector,
     reflect_vector: Vector,
+    n1: f64,
+    n2: f64,
 }
 
 impl<'a> PreComputedIntersection<'a> {
@@ -93,12 +105,32 @@ impl<'a> PreComputedIntersection<'a> {
         Ray::new(self.over_point, self.reflect_vector)
     }
 
+    pub fn is_opaque(&self) -> bool {
+        self.thing.material().transparency() == 0.0
+    }
+
     pub fn lighting(&self, light: &PointLight, in_shadow: bool) -> Color {
         self.thing.lighting(light, self.over_point, self.eye_vector, self.normal_vector, in_shadow)
     }
 
     pub fn over_point(&self) -> Point {
         self.over_point
+    }
+
+    pub fn n1(&self) -> f64 {
+        self.n1
+    }
+
+    pub fn n2(&self) -> f64 {
+        self.n2
+    }
+
+    pub fn eye_vector(&self) -> &Vector {
+        &self.eye_vector
+    }
+
+    pub fn normal(&self) -> &Vector {
+        &self.normal_vector
     }
 }
 
@@ -126,7 +158,7 @@ impl<'a> Intersection<'a> {
     /**
      * Calculate the PreComputed details.
      */
-    pub fn pre_computations(&self, ray: &Ray) -> PreComputedIntersection {
+    pub fn pre_computations(&self, ray: &Ray, intersections: &Intersections) -> PreComputedIntersection {
         let point = ray.position(self.time);
         let eye_vector = -ray.direction();
         let normal_vector = self.thing.normal_at(point).normalize();
@@ -139,8 +171,11 @@ impl<'a> Intersection<'a> {
         };
 
         let over_point = point + normal_vector * EPSILON;
+        let under_point = point - normal_vector * EPSILON;
 
         let reflect_vector = ray.direction().reflect(normal_vector);
+
+        let (n1, n2) = self.find_refractive_indexes(intersections);
 
         PreComputedIntersection {
             time: self.time,
@@ -148,10 +183,41 @@ impl<'a> Intersection<'a> {
             inside,
             point,
             over_point,
+            under_point,
             eye_vector,
             normal_vector,
-            reflect_vector
+            reflect_vector,
+            n1,
+            n2,
         }
+    }
+
+    /**
+    * Find the refractive index on each side of the intersection.
+    */
+    fn find_refractive_indexes(&self, intersections: &Intersections) -> (f64, f64) {
+        let mut containers: Vec<&Shape> = Vec::new();
+        let mut n1 = 0.0;
+        let mut n2 = 0.0;
+
+        for intersection in intersections.iter() {
+            if intersection == self {
+                n1 = containers.last().map_or(1.0, |it| it.material().refractive_index());
+            }
+
+            if containers.contains(&intersection.thing) {
+                let remove_index = containers.iter().position(|it| it == &intersection.thing).unwrap();
+                containers.remove(remove_index);
+            } else {
+                containers.push(intersection.thing);
+            }
+
+            if intersection == self {
+                n2 = containers.last().map_or(1.0, |it| it.material().refractive_index());
+                break;
+            }
+        }
+        (n1, n2)
     }
 }
 
@@ -160,7 +226,7 @@ mod tests {
     use crate::geometry::point::Point;
     use crate::geometry::transformations::{scaling, translation};
     use crate::geometry::vector::Vector;
-    use crate::tracing::intersection::Intersection;
+    use crate::tracing::intersection::{Intersection, Intersections};
     use crate::tracing::material::Material;
     use crate::tracing::ray::Ray;
     use crate::tracing::shapes::shape::{WorldShape, Shape, ShapeGeometry};
@@ -256,7 +322,7 @@ mod tests {
         let i1 = Intersection::new(1.0, &sphere);
         let i2 = Intersection::new(2.0, sphere);
 
-        let intersections = vec![i1.clone(), i2.clone()];
+        let intersections = Intersections::new(vec![i1.clone(), i2.clone()]);
 
         assert_eq!(2, intersections.len());
         assert_eq!(i1, intersections[0]);
@@ -361,7 +427,7 @@ mod tests {
         let shape = Shape::sphere();
         let intersection = &shape.intersect(&ray).intersections[0];
 
-        let comps = intersection.pre_computations(&ray);
+        let comps = intersection.pre_computations(&ray, &Intersections::empty());
 
         assert_eq!(intersection.time, comps.time);
         assert!(intersection.thing == comps.thing);
@@ -377,7 +443,7 @@ mod tests {
 
         let intersect = &&shape.intersect(&ray).intersections[0];
 
-        let comps = intersect.pre_computations(&ray);
+        let comps = intersect.pre_computations(&ray, &Intersections::empty());
         assert!(!comps.inside);
     }
 
@@ -388,7 +454,7 @@ mod tests {
         let sphere = &Shape::sphere();
         let intersect = &sphere.intersect(&ray).intersections[1];
 
-        let comps = intersect.pre_computations(&ray);
+        let comps = intersect.pre_computations(&ray, &Intersections::empty());
         assert!(comps.inside);
         assert_eq!(Point::at(0, 0, 1), comps.point);
         assert_eq!(Vector::new(0, 0, -1), comps.eye_vector);
@@ -401,7 +467,7 @@ mod tests {
         let ray = Ray::new(Point::at(0, 1, -1), Vector::new(0.0, -2.0_f64.sqrt()/2.0, 2.0_f64.sqrt()/2.0));
         let intersection = Intersection::new(2.0_f64.sqrt(), &shape);
 
-        let pre_computations = intersection.pre_computations(&ray);
+        let pre_computations = intersection.pre_computations(&ray, &Intersections::empty());
         assert_eq!(Vector::new(0.0, 2.0_f64.sqrt()/2.0, 2.0_f64.sqrt()/2.0), pre_computations.reflect_vector);
     }
 
@@ -411,8 +477,20 @@ mod tests {
         let sphere =
             Shape::sphere().with_transform(transformations::translation(0, 0, 1));
         let intersection = Intersection::new(5.0, &sphere);
-        let pre_computations = intersection.pre_computations(&ray);
+        let pre_computations = intersection.pre_computations(&ray, &Intersections::empty());
         assert!(pre_computations.over_point.z < -EPSILON / 2.0);
         assert!(pre_computations.point.z > pre_computations.over_point.z);
+    }
+
+    #[test]
+    fn under_point_is_below_surface() {
+        let ray = Ray::new(Point::at(0, 0, -5), Vector::new(0, 0, 1));
+        let shape = Sphere::new().into_shape().with_transform(transformations::translation(0, 0, 1));
+        let intersection = Intersection::new(5.0, &shape);
+        let intersections = Intersections::new(vec![intersection.clone()]);
+        let details = intersection.pre_computations(&ray, &intersections);
+        assert!(details.under_point.z > EPSILON / 2.0);
+        assert!(details.point.z < details.under_point.z);
+
     }
 }
