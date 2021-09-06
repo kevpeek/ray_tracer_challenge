@@ -6,3 +6,6 @@ pub mod ray;
 pub mod world;
 pub mod shapes;
 pub mod patterns;
+
+#[cfg(test)]
+mod test_helpers;

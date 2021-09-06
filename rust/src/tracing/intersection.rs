@@ -33,7 +33,9 @@ macro_rules! intersections {
 impl<'a> Intersections<'a> {
     pub fn new(intersections: Vec<Intersection>) -> Intersections {
         let mut intersections = intersections;
-        intersections.sort_by(|a, b| a.time().partial_cmp(&b.time()).unwrap());
+        intersections.sort_by(|a, b| {
+            a.time().partial_cmp(&b.time()).unwrap()
+        });
         Intersections { intersections }
     }
 
@@ -109,12 +111,20 @@ impl<'a> PreComputedIntersection<'a> {
         self.thing.material().transparency() == 0.0
     }
 
+    pub fn scale_refraction(&self, color: Color) -> Color {
+        color * self.thing.material().transparency()
+    }
+
     pub fn lighting(&self, light: &PointLight, in_shadow: bool) -> Color {
         self.thing.lighting(light, self.over_point, self.eye_vector, self.normal_vector, in_shadow)
     }
 
     pub fn over_point(&self) -> Point {
         self.over_point
+    }
+
+    pub fn under_point(&self) -> Point {
+        self.under_point
     }
 
     pub fn n1(&self) -> f64 {
@@ -217,6 +227,7 @@ impl<'a> Intersection<'a> {
                 break;
             }
         }
+
         (n1, n2)
     }
 }
@@ -235,10 +246,6 @@ mod tests {
     use num::integer::Roots;
     use crate::geometry::transformations;
     use crate::helper::EPSILON;
-
-    fn test_shape() -> Shape {
-        Shape::sphere()
-    }
 
     #[test]
     fn a_ray_intersects_sphere_at_two_points() {
@@ -309,7 +316,7 @@ mod tests {
 
     #[test]
     fn intersection_encapsulates_t_and_object() {
-        let sphere: WorldShape = &test_shape();
+        let sphere: WorldShape = &Shape::sphere();
         let intersection = Intersection::new(3.5, sphere);
 
         assert_eq!(3.5, intersection.time);
@@ -318,7 +325,7 @@ mod tests {
 
     #[test]
     fn aggregating_intersections() {
-        let sphere: WorldShape = &test_shape();
+        let sphere: WorldShape = &Shape::sphere();
         let i1 = Intersection::new(1.0, &sphere);
         let i2 = Intersection::new(2.0, sphere);
 
@@ -333,7 +340,7 @@ mod tests {
     fn intersect_sets_the_object_on_the_intersection() {
         let ray = Ray::new(Point::at(0, 0, -5), Vector::new(0, 0, 1));
 
-        let sphere: WorldShape = &test_shape();
+        let sphere: WorldShape = &Shape::sphere();
         let ray_argument = &ray;
         let intersections = sphere.intersect(ray_argument);
 
@@ -345,7 +352,7 @@ mod tests {
 
     #[test]
     fn hit_when_all_intersections_have_positive_t() {
-        let sphere: WorldShape = &test_shape();
+        let sphere: WorldShape = &Shape::sphere();
         let i1 = Intersection::new(1.0, &sphere);
         let i2 = Intersection::new(2.0, &sphere);
         let intersections = intersections![i1.clone(), i2.clone()];
@@ -356,7 +363,7 @@ mod tests {
 
     #[test]
     fn hit_when_some_intersections_have_negative_t() {
-        let sphere: WorldShape = &test_shape();
+        let sphere: WorldShape = &Shape::sphere();
         let i1 = Intersection::new(-1.0, sphere);
         let i2 = Intersection::new(1.0, sphere);
         let intersections = intersections![i1.clone(), i2.clone()];
@@ -368,7 +375,7 @@ mod tests {
 
     #[test]
     fn hit_when_all_intersections_have_negative_t() {
-        let sphere: WorldShape = &test_shape();
+        let sphere: WorldShape = &Shape::sphere();
         let i1 = Intersection::new(-2.0, sphere);
         let i2 = Intersection::new(-1.0, sphere);
         let intersections = intersections![i1, i2];
@@ -380,7 +387,7 @@ mod tests {
 
     #[test]
     fn hit_is_always_the_lowest_nonnegative_intersection() {
-        let sphere: WorldShape = &test_shape();
+        let sphere: WorldShape = &Shape::sphere();
         let i1 = Intersection::new(5.0, sphere);
         let i2 = Intersection::new(7.0, sphere);
         let i3 = Intersection::new(-3.0, sphere);
@@ -491,6 +498,5 @@ mod tests {
         let details = intersection.pre_computations(&ray, &intersections);
         assert!(details.under_point.z > EPSILON / 2.0);
         assert!(details.point.z < details.under_point.z);
-
     }
 }

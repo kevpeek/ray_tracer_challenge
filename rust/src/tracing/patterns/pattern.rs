@@ -92,6 +92,7 @@ mod tests {
     use crate::geometry::vector::Vector;
     use std::any::Any;
     use crate::tracing::shapes::shape::Shape;
+    use crate::tracing::test_helpers::TestPattern;
 
     // high level tests copied from original StripedPattern
 
@@ -152,27 +153,6 @@ mod tests {
 
     // New tests over generic Pattern
 
-    #[derive(Debug, Clone)]
-    struct TestPattern {}
-
-    impl TestPattern {
-        fn with_transform(self, transform: Matrix) -> TransformedPattern {
-            TransformedPattern { delegate: Box::new(self), transform }
-        }
-    }
-
-    impl Pattern for TestPattern {
-        fn as_any(&self) -> &dyn Any {
-            self
-        }
-
-        fn equals_pattern(&self, other: &dyn Any) -> bool {
-            todo!()
-        }
-        fn pattern_at(&self, point: Point) -> Color {
-            Color::new(point.x, point.y, point.z)
-        }
-    }
 
     #[test]
     fn pattern_with_transform() {
