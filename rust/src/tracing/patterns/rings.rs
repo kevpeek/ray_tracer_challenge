@@ -1,17 +1,20 @@
 use crate::display::color::Color;
-use crate::tracing::patterns::pattern::{PatternType, Pattern, TransformedPattern};
-use std::any::Any;
 use crate::geometry::point::Point;
+use crate::tracing::patterns::pattern::{Pattern, PatternType, TransformedPattern};
+use std::any::Any;
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Rings {
     color_one: Color,
-    color_two: Color
+    color_two: Color,
 }
 
 impl Rings {
     pub fn new(color_one: Color, color_two: Color) -> PatternType {
-        TransformedPattern::using_identity(Box::new(Rings { color_one, color_two }))
+        TransformedPattern::using_identity(Box::new(Rings {
+            color_one,
+            color_two,
+        }))
     }
 }
 
@@ -33,10 +36,10 @@ impl Pattern for Rings {
 
 #[cfg(test)]
 mod tests {
-    use crate::tracing::patterns::rings::Rings;
     use crate::display::color::Color;
-    use crate::tracing::patterns::pattern::Pattern;
     use crate::geometry::point::Point;
+    use crate::tracing::patterns::pattern::Pattern;
+    use crate::tracing::patterns::rings::Rings;
 
     #[test]
     fn rings_extend_in_both_x_and_z() {
@@ -44,7 +47,9 @@ mod tests {
         assert_eq!(Color::WHITE, pattern.pattern_at(Point::at(0, 0, 0)));
         assert_eq!(Color::BLACK, pattern.pattern_at(Point::at(1, 0, 0)));
         assert_eq!(Color::BLACK, pattern.pattern_at(Point::at(0, 0, 1)));
-        assert_eq!(Color::BLACK, pattern.pattern_at(Point::at(0.708, 0.0, 0.708)));
-
+        assert_eq!(
+            Color::BLACK,
+            pattern.pattern_at(Point::at(0.708, 0.0, 0.708))
+        );
     }
 }

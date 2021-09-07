@@ -1,7 +1,7 @@
 use crate::display::color::Color;
-use crate::tracing::patterns::pattern::{PatternType, TransformedPattern, Pattern};
-use std::any::Any;
 use crate::geometry::point::Point;
+use crate::tracing::patterns::pattern::{Pattern, PatternType, TransformedPattern};
+use std::any::Any;
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Solid {
@@ -28,10 +28,10 @@ impl Pattern for Solid {
 
 #[cfg(test)]
 mod tests {
-    use crate::tracing::patterns::rings::Rings;
     use crate::display::color::Color;
-    use crate::tracing::patterns::pattern::Pattern;
     use crate::geometry::point::Point;
+    use crate::tracing::patterns::pattern::Pattern;
+    use crate::tracing::patterns::rings::Rings;
     use crate::tracing::patterns::solid::Solid;
 
     #[test]

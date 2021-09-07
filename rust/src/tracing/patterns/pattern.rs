@@ -1,6 +1,6 @@
-use crate::geometry::point::Point;
 use crate::display::color::Color;
 use crate::geometry::matrix::Matrix;
+use crate::geometry::point::Point;
 use std::any::Any;
 use std::fmt::Debug;
 
@@ -18,7 +18,7 @@ impl PartialEq for Box<dyn Pattern> {
     }
 }
 
-pub trait Pattern:  PatternClone + Any + Send + Sync + Debug {
+pub trait Pattern: PatternClone + Any + Send + Sync + Debug {
     fn as_any(&self) -> &dyn Any;
     fn equals_pattern(&self, other: &dyn Any) -> bool;
     fn pattern_at(&self, point: Point) -> Color;
@@ -35,8 +35,8 @@ pub trait PatternClone {
 }
 
 impl<T> PatternClone for T
-    where
-        T: 'static + Pattern + Clone,
+where
+    T: 'static + Pattern + Clone,
 {
     fn clone_box(&self) -> Box<dyn Pattern> {
         Box::new(self.clone())
@@ -52,11 +52,17 @@ impl Clone for Box<dyn Pattern> {
 
 impl TransformedPattern {
     pub fn new(delegate: Box<dyn Pattern>, transform: Matrix) -> TransformedPattern {
-        TransformedPattern { delegate, transform }
+        TransformedPattern {
+            delegate,
+            transform,
+        }
     }
 
     pub fn using_identity(delegate: Box<dyn Pattern>) -> TransformedPattern {
-        TransformedPattern { delegate, transform: Matrix::identity(4) }
+        TransformedPattern {
+            delegate,
+            transform: Matrix::identity(4),
+        }
     }
 
     pub fn with_transform(self, transform: Matrix) -> PatternType {
@@ -80,19 +86,19 @@ impl Pattern for TransformedPattern {
 
 #[cfg(test)]
 mod tests {
-    use crate::tracing::patterns::pattern::{Pattern, TransformedPattern};
-    use crate::geometry::point::Point;
     use crate::display::color::Color;
-    use crate::geometry::transformations;
     use crate::geometry::matrix::Matrix;
-    use crate::tracing::patterns::stripe_pattern::StripePattern;
-    use crate::tracing::shapes::sphere::Sphere;
-    use crate::tracing::material::Material;
-    use crate::tracing::point_light::PointLight;
+    use crate::geometry::point::Point;
+    use crate::geometry::transformations;
     use crate::geometry::vector::Vector;
-    use std::any::Any;
+    use crate::tracing::material::Material;
+    use crate::tracing::patterns::pattern::{Pattern, TransformedPattern};
+    use crate::tracing::patterns::stripe_pattern::StripePattern;
+    use crate::tracing::point_light::PointLight;
     use crate::tracing::shapes::shape::Shape;
+    use crate::tracing::shapes::sphere::Sphere;
     use crate::tracing::test_helpers::TestPattern;
+    use std::any::Any;
 
     // high level tests copied from original StripedPattern
 
@@ -109,7 +115,7 @@ mod tests {
             Point::at(1.5, 0.0, 0.0),
             Vector::new(10, -10, 10),
             Vector::new(0, 0, 0),
-            true
+            true,
         );
         assert_eq!(Color::WHITE, color)
     }
@@ -127,7 +133,7 @@ mod tests {
             Point::at(1.5, 0.0, 0.0),
             Vector::new(10, -10, 10),
             Vector::new(0, 0, 0),
-            true
+            true,
         );
         assert_eq!(Color::WHITE, color)
     }
@@ -146,18 +152,16 @@ mod tests {
             Point::at(1.5, 0.0, 0.0),
             Vector::new(10, -10, 10),
             Vector::new(0, 0, 0),
-            true
+            true,
         );
         assert_eq!(Color::WHITE, color)
     }
 
     // New tests over generic Pattern
 
-
     #[test]
     fn pattern_with_transform() {
-        let pattern = TestPattern {}
-            .with_transform(transformations::scaling(2, 2, 2,));
+        let pattern = TestPattern {}.with_transform(transformations::scaling(2, 2, 2));
         let color = pattern.pattern_at(Point::at(2, 3, 4));
         assert_eq!(Color::new(1.0, 1.5, 2.0), color);
     }

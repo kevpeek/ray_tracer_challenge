@@ -1,13 +1,13 @@
-use crate::tracing::world::World;
-use crate::tracing::camera::Camera;
-pub use crate::display::ppm_writer;
-use crate::geometry::transformations::view_transform;
-use crate::geometry::point::Point;
-use crate::geometry::vector::Vector;
-use crate::display::resolution::Resolution;
-use std::f64::consts::PI;
 use crate::display::canvas::Canvas;
+pub use crate::display::ppm_writer;
+use crate::display::resolution::Resolution;
+use crate::geometry::point::Point;
+use crate::geometry::transformations::view_transform;
+use crate::geometry::vector::Vector;
+use crate::tracing::camera::Camera;
+use crate::tracing::world::World;
 use image::RgbImage;
+use std::f64::consts::PI;
 
 pub fn snapshot_world(world: World, camera: Camera) {
     let canvas = camera.render(world);
@@ -24,7 +24,8 @@ pub fn make_camera_one(resolution: Resolution) -> Camera {
 }
 
 fn write_jpg(file_name: &str, canvas: Canvas) {
-    let mut image_buffer: RgbImage = image::ImageBuffer::new(canvas.width as u32, canvas.height as u32);
+    let mut image_buffer: RgbImage =
+        image::ImageBuffer::new(canvas.width as u32, canvas.height as u32);
 
     for (x, y, pixel) in image_buffer.enumerate_pixels_mut() {
         let (red, green, blue) = canvas.pixel_at(x as usize, y as usize).to255();

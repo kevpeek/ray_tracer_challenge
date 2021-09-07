@@ -1,7 +1,7 @@
 use crate::display::color::Color;
-use crate::tracing::patterns::pattern::{PatternType, Pattern, TransformedPattern};
-use std::any::Any;
 use crate::geometry::point::Point;
+use crate::tracing::patterns::pattern::{Pattern, PatternType, TransformedPattern};
+use std::any::Any;
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Checkers {
@@ -11,7 +11,10 @@ pub struct Checkers {
 
 impl Checkers {
     pub fn new(color_one: Color, color_two: Color) -> PatternType {
-        TransformedPattern::using_identity(Box::new(Checkers { color_one, color_two }))
+        TransformedPattern::using_identity(Box::new(Checkers {
+            color_one,
+            color_two,
+        }))
     }
 }
 
@@ -31,13 +34,12 @@ impl Pattern for Checkers {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
     use crate::display::color::Color;
+    use crate::geometry::point::Point;
     use crate::tracing::patterns::checkers::Checkers;
     use crate::tracing::patterns::pattern::Pattern;
-    use crate::geometry::point::Point;
 
     #[test]
     fn checkers_repeat_in_x() {

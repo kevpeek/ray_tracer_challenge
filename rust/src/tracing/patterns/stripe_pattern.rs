@@ -1,6 +1,6 @@
 use crate::display::color::Color;
 use crate::geometry::point::Point;
-use crate::tracing::patterns::pattern::{Pattern, TransformedPattern, PatternType};
+use crate::tracing::patterns::pattern::{Pattern, PatternType, TransformedPattern};
 use std::any::Any;
 
 #[derive(Debug, Clone, Eq, PartialEq)]
@@ -11,7 +11,7 @@ pub struct StripePattern {
 
 impl StripePattern {
     pub fn new(color_a: Color, color_b: Color) -> PatternType {
-        TransformedPattern::using_identity(Box::new(StripePattern {color_a, color_b}))
+        TransformedPattern::using_identity(Box::new(StripePattern { color_a, color_b }))
     }
 }
 
@@ -27,7 +27,7 @@ impl Pattern for StripePattern {
             x if x >= 0.0 && x < 1.0 => self.color_a,
             x if x >= 1.0 => self.color_b,
             x if x < 0.0 && x >= -1.0 => self.color_b,
-            _ => self.color_a
+            _ => self.color_a,
         }
     }
 }
@@ -35,14 +35,14 @@ impl Pattern for StripePattern {
 #[cfg(test)]
 mod tests {
     use crate::display::color::Color;
-    use crate::tracing::patterns::stripe_pattern::StripePattern;
     use crate::geometry::point::Point;
-    use crate::tracing::shapes::sphere::Sphere;
     use crate::geometry::transformations;
-    use crate::tracing::material::Material;
-    use crate::tracing::point_light::PointLight;
     use crate::geometry::vector::Vector;
+    use crate::tracing::material::Material;
     use crate::tracing::patterns::pattern::Pattern;
+    use crate::tracing::patterns::stripe_pattern::StripePattern;
+    use crate::tracing::point_light::PointLight;
+    use crate::tracing::shapes::sphere::Sphere;
 
     #[test]
     fn stripe_pattern_is_constant_in_y() {

@@ -1,5 +1,5 @@
-use crate::exercises::snapshot;
 use crate::display::resolution::Resolution;
+use crate::exercises::snapshot;
 
 mod display;
 mod exercises;
@@ -12,4 +12,3 @@ fn main() {
     let camera = snapshot::make_camera_one(Resolution::LOW);
     exercises::snapshot::snapshot_world(world, camera)
 }
-

@@ -1,16 +1,15 @@
 use std::f64::consts::PI;
 
 use crate::display::color::Color;
+use crate::geometry::transformations;
 use crate::geometry::transformations::{scaling, translation};
 use crate::tracing::material::Material;
+use crate::tracing::patterns::checkers::Checkers;
+use crate::tracing::patterns::gradient::Gradient;
+use crate::tracing::patterns::stripe_pattern::StripePattern;
 use crate::tracing::point_light::PointLight;
 use crate::tracing::shapes::shape::Shape;
 use crate::tracing::world::World;
-use crate::tracing::patterns::stripe_pattern::StripePattern;
-use crate::geometry::transformations;
-use crate::tracing::patterns::gradient::Gradient;
-use crate::tracing::patterns::checkers::Checkers;
-
 
 pub fn make_world() -> World {
     let light_source = PointLight::default();
@@ -22,9 +21,7 @@ pub fn make_world() -> World {
         .with_specular(0.0)
         .with_reflective(1.0);
 
-    let floor = Shape::plane()
-        .with_material(wall_material.clone());
-
+    let floor = Shape::plane().with_material(wall_material.clone());
 
     // ===== Spheres =====
 
@@ -42,9 +39,10 @@ pub fn make_world() -> World {
 
     let left_material = Material::default()
         .with_pattern(
-            StripePattern::new(Color::MUSTARD_YELLOW, Color::BLACK)
-                .with_transform(transformations::scaling(0.2, 0.2, 0.2)
-                    .then(&transformations::rotation_z(PI / 2.0)))
+            StripePattern::new(Color::MUSTARD_YELLOW, Color::BLACK).with_transform(
+                transformations::scaling(0.2, 0.2, 0.2)
+                    .then(&transformations::rotation_z(PI / 2.0)),
+            ),
         )
         .with_diffuse(0.7)
         .with_specular(0.3);
@@ -54,12 +52,9 @@ pub fn make_world() -> World {
         .with_material(left_material);
 
     let objects: Vec<Shape> = vec![
-        floor,
-        // left_wall,
+        floor, // left_wall,
         // right_wall,
-        middle,
-        right,
-        left,
+        middle, right, left,
     ];
 
     World::new(objects, light_source)

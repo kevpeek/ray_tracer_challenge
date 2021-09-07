@@ -1,7 +1,7 @@
 use crate::display::color::Color;
-use crate::tracing::patterns::pattern::{PatternType, Pattern, TransformedPattern};
-use std::any::Any;
 use crate::geometry::point::Point;
+use crate::tracing::patterns::pattern::{Pattern, PatternType, TransformedPattern};
+use std::any::Any;
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Gradient {
@@ -11,7 +11,10 @@ pub struct Gradient {
 
 impl Gradient {
     pub fn new(color_one: Color, color_two: Color) -> PatternType {
-        TransformedPattern::using_identity(Box::new(Gradient{ color_one, color_two }))
+        TransformedPattern::using_identity(Box::new(Gradient {
+            color_one,
+            color_two,
+        }))
     }
 }
 
@@ -31,17 +34,26 @@ impl Pattern for Gradient {
 
 #[cfg(test)]
 mod tests {
-    use crate::tracing::patterns::gradient::Gradient;
     use crate::display::color::Color;
-    use crate::tracing::patterns::pattern::Pattern;
     use crate::geometry::point::Point;
+    use crate::tracing::patterns::gradient::Gradient;
+    use crate::tracing::patterns::pattern::Pattern;
 
     #[test]
     fn gradient_linearly_interpolates_between_colors() {
         let pattern = Gradient::new(Color::WHITE, Color::BLACK);
         assert_eq!(Color::WHITE, pattern.pattern_at(Point::at(0, 0, 0)));
-        assert_eq!(Color::new(0.75, 0.75, 0.75), pattern.pattern_at(Point::at(0.25, 0.0, 0.0)));
-        assert_eq!(Color::new(0.5, 0.5, 0.5), pattern.pattern_at(Point::at(0.5, 0.0, 0.0)));
-        assert_eq!(Color::new(0.25, 0.25, 0.25), pattern.pattern_at(Point::at(0.75, 0.0, 0.0)));
+        assert_eq!(
+            Color::new(0.75, 0.75, 0.75),
+            pattern.pattern_at(Point::at(0.25, 0.0, 0.0))
+        );
+        assert_eq!(
+            Color::new(0.5, 0.5, 0.5),
+            pattern.pattern_at(Point::at(0.5, 0.0, 0.0))
+        );
+        assert_eq!(
+            Color::new(0.25, 0.25, 0.25),
+            pattern.pattern_at(Point::at(0.75, 0.0, 0.0))
+        );
     }
 }

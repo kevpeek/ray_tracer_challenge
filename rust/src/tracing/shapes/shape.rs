@@ -1,16 +1,16 @@
 use std::any::Any;
 use std::fmt::Debug;
 
+use crate::display::color::Color;
 use crate::geometry::matrix::Matrix;
 use crate::geometry::point::Point;
 use crate::geometry::vector::Vector;
 use crate::tracing::intersection::{Intersection, Intersections};
 use crate::tracing::material::Material;
-use crate::tracing::ray::Ray;
-use crate::display::color::Color;
 use crate::tracing::point_light::PointLight;
-use crate::tracing::shapes::sphere::Sphere;
+use crate::tracing::ray::Ray;
 use crate::tracing::shapes::plane::Plane;
+use crate::tracing::shapes::sphere::Sphere;
 
 pub type WorldShape<'a> = &'a Shape;
 
@@ -21,7 +21,10 @@ pub trait ShapeGeometry: ShapeClone + Any + Send + Sync + Debug {
     fn name(&self) -> &'static str;
     fn intersect(&self, ray: &Ray) -> Vec<f64>;
     fn normal_at(&self, point: Point) -> Vector;
-    fn into_shape(self) -> Shape where Self: Sized {
+    fn into_shape(self) -> Shape
+    where
+        Self: Sized,
+    {
         Shape::using(self)
     }
 }
@@ -32,7 +35,6 @@ pub struct Shape {
     material: Material,
     transformation: Matrix,
 }
-
 
 impl Shape {
     pub fn sphere() -> Shape {
@@ -100,7 +102,8 @@ impl Shape {
         in_shadow: bool,
     ) -> Color {
         let transformed_point = &self.transformation.inverse() * position;
-        self.material().lighting(light, transformed_point, eye_vector, normal, in_shadow)
+        self.material()
+            .lighting(light, transformed_point, eye_vector, normal, in_shadow)
     }
 }
 

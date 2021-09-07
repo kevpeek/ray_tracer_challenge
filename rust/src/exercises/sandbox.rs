@@ -1,12 +1,11 @@
 use crate::display::color::Color;
+use crate::geometry::transformations;
 use crate::tracing::material::Material;
+use crate::tracing::patterns::checkers::Checkers;
 use crate::tracing::point_light::PointLight;
 use crate::tracing::shapes::shape::{Shape, ShapeGeometry};
-use crate::tracing::world::World;
-use crate::geometry::transformations;
-use crate::tracing::patterns::checkers::Checkers;
 use crate::tracing::shapes::sphere::Sphere;
-
+use crate::tracing::world::World;
 
 pub fn make_world() -> World {
     let light_source = PointLight::default();
@@ -17,8 +16,7 @@ pub fn make_world() -> World {
         .with_pattern(Checkers::new(Color::WHITE, Color::BLACK))
         .with_specular(0.0);
 
-    let floor = Shape::plane()
-        .with_material(wall_material.clone());
+    let floor = Shape::plane().with_material(wall_material.clone());
 
     // ===== Spheres =====
 
@@ -36,11 +34,16 @@ pub fn make_world() -> World {
     let mut objects: Vec<Shape> = vec![floor];
 
     for x in -3..3 {
-        objects.push(Shape::sphere()
-            .with_transform(scaling.then(&transformations::translation(x as f64 + 0.5, 0.5, 0.5)))
-            .with_material(glass.clone()));
+        objects.push(
+            Shape::sphere()
+                .with_transform(scaling.then(&transformations::translation(
+                    x as f64 + 0.5,
+                    0.5,
+                    0.5,
+                )))
+                .with_material(glass.clone()),
+        );
     }
-
 
     World::new(objects, light_source)
 }

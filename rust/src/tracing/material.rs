@@ -2,9 +2,9 @@ use crate::display::color::Color;
 use crate::geometry::point::Point;
 use crate::geometry::vector::Vector;
 use crate::helper::almost;
-use crate::tracing::point_light::PointLight;
 use crate::tracing::patterns::pattern::{Pattern, PatternType};
 use crate::tracing::patterns::solid::Solid;
+use crate::tracing::point_light::PointLight;
 
 #[derive(Debug, Clone)]
 pub struct Material {
@@ -64,8 +64,17 @@ impl Material {
         transparency: f64,
         refractive_index: f64,
     ) -> Material {
-        let pattern= Solid::new(color);
-        Material::new(pattern, ambient, diffuse, specular, shininess, reflective, transparency, refractive_index)
+        let pattern = Solid::new(color);
+        Material::new(
+            pattern,
+            ambient,
+            diffuse,
+            specular,
+            shininess,
+            reflective,
+            transparency,
+            refractive_index,
+        )
     }
 
     pub fn with_color(self, color: Color) -> Material {
@@ -280,15 +289,15 @@ impl Eq for Material {}
 mod test {
     use crate::display::color::Color;
     use crate::geometry::point::Point;
+    use crate::geometry::transformations;
     use crate::geometry::vector::Vector;
-    use crate::tracing::material::{Material};
-    use crate::tracing::point_light::PointLight;
+    use crate::tracing::intersection::{Intersection, Intersections};
+    use crate::tracing::material::Material;
     use crate::tracing::patterns::stripe_pattern::StripePattern;
+    use crate::tracing::point_light::PointLight;
+    use crate::tracing::ray::Ray;
     use crate::tracing::shapes::shape::{Shape, ShapeGeometry};
     use crate::tracing::shapes::sphere::Sphere;
-    use crate::geometry::transformations;
-    use crate::tracing::ray::Ray;
-    use crate::tracing::intersection::{Intersection, Intersections};
 
     #[test]
     fn default_material() {
@@ -393,30 +402,34 @@ mod test {
         let light_argument = &light;
         let position = Point::at(0.9, 0.0, 0.0);
         let in_shadow = false;
-        let color_one = material_argument.lighting(light_argument, position, eye_vector, normal, in_shadow);
+        let color_one =
+            material_argument.lighting(light_argument, position, eye_vector, normal, in_shadow);
         let material_argument = &material;
         let light_argument = &light;
         let position = Point::at(1.1, 0.0, 0.0);
         let in_shadow = false;
-        let color_two = material_argument.lighting(light_argument, position, eye_vector, normal, in_shadow);
+        let color_two =
+            material_argument.lighting(light_argument, position, eye_vector, normal, in_shadow);
         assert_eq!(Color::WHITE, color_one);
         assert_eq!(Color::BLACK, color_two);
     }
 
     #[test]
     fn finding_n1_and_n2_at_various_intersections() {
-        let glass = Material::default()
-            .with_transparency(1.0);
+        let glass = Material::default().with_transparency(1.0);
 
-        let sphere_a = Sphere::new().into_shape()
+        let sphere_a = Sphere::new()
+            .into_shape()
             .with_transform(transformations::scaling(2, 2, 2))
             .with_material(glass.clone().with_refractive_index(1.5));
 
-        let sphere_b = Sphere::new().into_shape()
+        let sphere_b = Sphere::new()
+            .into_shape()
             .with_transform(transformations::translation(0.0, 0.0, -0.25))
             .with_material(glass.clone().with_refractive_index(2.0));
 
-        let sphere_c  = Sphere::new().into_shape()
+        let sphere_c = Sphere::new()
+            .into_shape()
             .with_transform(transformations::translation(0.0, 0.0, 0.25))
             .with_material(glass.clone().with_refractive_index(2.5));
 

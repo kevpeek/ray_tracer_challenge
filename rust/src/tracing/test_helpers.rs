@@ -1,8 +1,8 @@
-use crate::geometry::matrix::Matrix;
-use crate::tracing::patterns::pattern::{TransformedPattern, Pattern};
-use std::any::Any;
-use crate::geometry::point::Point;
 use crate::display::color::Color;
+use crate::geometry::matrix::Matrix;
+use crate::geometry::point::Point;
+use crate::tracing::patterns::pattern::{Pattern, TransformedPattern};
+use std::any::Any;
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct TestPattern {}
