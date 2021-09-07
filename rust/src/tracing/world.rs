@@ -58,11 +58,11 @@ impl World {
         self.color_at_internal(ray, 5)
     }
 
-    fn color_at_internal(&self, ray: &Ray, recursion_limit: usize) -> Color {
+    fn color_at_internal(&self, ray: &Ray, recursion_remaining: usize) -> Color {
         let intersections = &self.intersected_by(ray);
         let hit = intersections.hit();
         match hit {
-            Some(hit) => self.shade_hit(hit.pre_computations(ray, &intersections), recursion_limit),
+            Some(hit) => self.shade_hit(hit.pre_computations(ray, &intersections), recursion_remaining),
             None => Color::BLACK,
         }
     }
@@ -73,14 +73,14 @@ impl World {
     fn shade_hit(
         &self,
         pre_computations: PreComputedIntersection,
-        recursion_limit: usize,
+        recursion_remaining: usize,
     ) -> Color {
         let in_shadow = self.is_shadowed(pre_computations.over_point());
         let light = &self.light_source;
 
         let surface_color = pre_computations.lighting(light, in_shadow);
-        let reflected_color = self.reflect_color(&pre_computations, recursion_limit);
-        let refracted_color = self.refracted_color(&pre_computations, recursion_limit);
+        let reflected_color = self.reflect_color(&pre_computations, recursion_remaining);
+        let refracted_color = self.refracted_color(&pre_computations, recursion_remaining);
 
         if pre_computations.is_reflective() && pre_computations.is_transparent() {
             let reflectance = pre_computations.schlick();
@@ -94,25 +94,25 @@ impl World {
     fn reflect_color(
         &self,
         pre_computations: &PreComputedIntersection,
-        recursion_limit: usize,
+        recursion_remaining: usize,
     ) -> Color {
-        if recursion_limit == 0 {
+        if recursion_remaining == 0 {
             return Color::BLACK;
         }
         if !pre_computations.is_reflective() {
             return Color::BLACK;
         }
 
-        let color = self.color_at_internal(&pre_computations.reflect_ray(), recursion_limit - 1);
+        let color = self.color_at_internal(&pre_computations.reflect_ray(), recursion_remaining - 1);
         pre_computations.scale_reflection(color)
     }
 
     fn refracted_color(
         &self,
         pre_computations: &PreComputedIntersection,
-        recursion_limit: usize,
+        recursion_remaining: usize,
     ) -> Color {
-        if recursion_limit == 0 {
+        if recursion_remaining == 0 {
             return Color::BLACK;
         }
 
@@ -120,23 +120,12 @@ impl World {
             return Color::BLACK;
         }
 
-        let n_ratio = pre_computations.n1() / pre_computations.n2();
-        let cos_i = pre_computations
-            .eye_vector()
-            .dot(*pre_computations.normal());
-        let sin2_t = n_ratio.pow(2) * (1.0 - cos_i.pow(2));
-
-        if sin2_t > 1.0 {
+        if pre_computations.has_total_internal_reflection() {
             return Color::BLACK;
         }
 
-        let cos_t = f64::sqrt(1.0 - sin2_t);
-
-        let direction = *pre_computations.normal() * (n_ratio * cos_i - cos_t)
-            - *pre_computations.eye_vector() * n_ratio;
-        let refracted_ray = Ray::new(pre_computations.under_point(), direction);
-
-        let color = self.color_at_internal(&refracted_ray, recursion_limit - 1);
+        let refracted_ray = pre_computations.refracted_ray();
+        let color = self.color_at_internal(&refracted_ray, recursion_remaining - 1);
         pre_computations.scale_refraction(color)
     }
 

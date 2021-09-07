@@ -148,17 +148,27 @@ impl<'a> PreComputedIntersection<'a> {
         &self.normal_vector
     }
 
+    pub fn has_total_internal_reflection(&self) -> bool {
+        self.sin2_t() > 1.0
+    }
+
+    pub fn refracted_ray(&self) -> Ray {
+        let sin2_t = self.sin2_t();
+        let cos_t = f64::sqrt(1.0 - sin2_t);
+        let direction = *self.normal() * (self.n_ratio() * self.cos_i() - cos_t) - *self.eye_vector() * self.n_ratio();
+        Ray::new(self.under_point(), direction)
+    }
+
     pub fn schlick(&self) -> f64 {
         if !self.is_transparent() || !self.is_reflective() {
             // If these are not BOTH true, no need to calculate Schlick's
             return 1.0;
         }
 
-        let mut cos = self.eye_vector.dot(self.normal_vector);
+        let mut cos = self.cos_i();
 
         if self.n1 > self.n2 {
-            let n = self.n1 / self.n2;
-            let sin2_t = n.pow(2) * (1.0 - cos.pow(2));
+            let sin2_t = self.sin2_t();
             if sin2_t > 1.0 {
                 return 1.0;
             }
@@ -169,6 +179,22 @@ impl<'a> PreComputedIntersection<'a> {
 
         let r0 = ((self.n1 - self.n2) / (self.n1 + self.n2)).pow(2);
         r0 + (1.0 - r0) * (1.0 - cos).pow(5)
+    }
+
+    // TODO -- pre-compute these if you want
+
+    pub fn cos_i(&self) -> f64 {
+        self.eye_vector.dot(self.normal_vector)
+    }
+
+    pub fn n_ratio(&self) -> f64 {
+        self.n1() / self.n2()
+    }
+
+
+    pub fn sin2_t(&self) -> f64 {
+        let cos_i = self.cos_i();
+        self.n_ratio().pow(2) * (1.0 - cos_i.pow(2))
     }
 }
 
