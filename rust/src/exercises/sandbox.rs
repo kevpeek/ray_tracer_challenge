@@ -23,30 +23,24 @@ pub fn make_world() -> World {
     // ===== Spheres =====
 
     let glass = Material::default()
-        .with_color(Color::BLACK)
+        .with_color(Color::RED)
         .with_transparency(1.0)
         .with_refractive_index(1.5)
-        .with_ambient(0.0)
-        .with_diffuse(0.0)
-        .with_specular(0.0);
-    let middle = Shape::sphere()
-        .with_transform(transformations::translation(-0.5, 1.0, 0.5))
-        .with_material(glass.clone());
+        .with_reflective(0.9)
+        .with_ambient(0.1)
+        .with_diffuse(0.1)
+        .with_specular(300.0);
 
-    let middle_material = Material::default()
-        .with_color(Color::LIGHT_GREEN)
-        .with_diffuse(0.7)
-        .with_specular(0.3);
+    let scaling = transformations::scaling(0.25, 0.5, 0.25);
 
-    let back = Sphere::new().into_shape()
-        .with_material(middle_material)
-        .with_transform(transformations::translation(0, 1, 10));
+    let mut objects: Vec<Shape> = vec![floor];
 
-    let objects: Vec<Shape> = vec![
-        floor,
-        middle,
-        back,
-    ];
+    for x in -3..3 {
+        objects.push(Shape::sphere()
+            .with_transform(scaling.then(&transformations::translation(x as f64 + 0.5, 0.5, 0.5)))
+            .with_material(glass.clone()));
+    }
+
 
     World::new(objects, light_source)
 }

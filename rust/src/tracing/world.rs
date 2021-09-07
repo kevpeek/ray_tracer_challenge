@@ -73,6 +73,11 @@ impl World {
         let surface_color = pre_computations.lighting(light, in_shadow);
         let reflected_color = self.reflect_color(&pre_computations, recursion_limit);
         let refracted_color = self.refracted_color(&pre_computations, recursion_limit);
+
+        if (pre_computations.is_reflective() && !pre_computations.is_opaque()) {
+            let reflectance = pre_computations.schlick();
+            return surface_color + reflected_color * reflectance + refracted_color * (1.0 - reflectance)
+        }
         surface_color + reflected_color + refracted_color
     }
 
@@ -456,6 +461,39 @@ mod tests {
         let details = intersections[0].pre_computations(&ray, &intersections);
         assert_eq!(
             Color::new(0.90391, 0.65391, 0.65391),
+            world.shade_hit(details, 5)
+        );
+    }
+
+    #[test]
+    fn shade_hit_with_transparent_and_reflective_material() {
+        let floor = Plane::new().into_shape()
+            .with_transform(transformations::translation(0, -1, 0))
+            .with_material(
+                Material::default()
+                    .with_reflective(0.5)
+                    .with_transparency(0.5)
+                    .with_refractive_index(1.5));
+        let ball = Sphere::new().into_shape()
+            .with_material(Material::default()
+                .with_color(Color::new(1, 0,0))
+                .with_ambient(0.5))
+            .with_transform(transformations::translation(0.0, -3.5, -0.5));
+        let world = World::default()
+            .plus_shape(floor.clone())
+            .plus_shape(ball.clone());
+
+        let ray = Ray::new(
+            Point::at(0, 0, -3),
+            Vector::new(0.0, -2_f64.sqrt()/2.0, 2_f64.sqrt()/2.0)
+        );
+        let intersections = Intersections::new(vec![
+            Intersection::new(2_f64.sqrt(), &floor)
+        ]);
+
+        let details = intersections[0].pre_computations(&ray, &intersections);
+        assert_eq!(
+            Color::new(0.9014, 0.66392,  0.65991),
             world.shade_hit(details, 5)
         );
     }

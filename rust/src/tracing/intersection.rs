@@ -8,6 +8,7 @@ use crate::tracing::point_light::PointLight;
 use std::ops::Index;
 use std::vec::IntoIter;
 use std::slice::Iter;
+use num::traits::Pow;
 
 #[derive(Debug, PartialEq)]
 pub struct Intersections<'a> {
@@ -142,6 +143,24 @@ impl<'a> PreComputedIntersection<'a> {
     pub fn normal(&self) -> &Vector {
         &self.normal_vector
     }
+
+    pub fn schlick(&self) -> f64 {
+        let mut cos = self.eye_vector.dot(self.normal_vector);
+
+        if self.n1 > self.n2 {
+            let n = self.n1 / self.n2;
+            let sin2_t = n.pow(2) * (1.0 - cos.pow(2));
+            if sin2_t > 1.0 {
+                return 1.0;
+            }
+
+            let cos_t = f64::sqrt(1.0 - sin2_t);
+            cos = cos_t;
+        }
+
+        let r0 = ((self.n1 - self.n2) / (self.n1 + self.n2)).pow(2);
+        r0 + (1.0 - r0) * (1.0 - cos).pow(5)
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -245,7 +264,7 @@ mod tests {
     use crate::tracing::shapes::plane::Plane;
     use num::integer::Roots;
     use crate::geometry::transformations;
-    use crate::helper::EPSILON;
+    use crate::helper::{EPSILON, almost};
 
     #[test]
     fn a_ray_intersects_sphere_at_two_points() {
@@ -498,5 +517,61 @@ mod tests {
         let details = intersection.pre_computations(&ray, &intersections);
         assert!(details.under_point.z > EPSILON / 2.0);
         assert!(details.point.z < details.under_point.z);
+    }
+
+    #[test]
+    fn schlick_with_total_internal_reflection() {
+        let glass = Material::default()
+            .with_transparency(1.0)
+            .with_refractive_index(1.5);
+        let sphere = Sphere::new().into_shape()
+            .with_material(glass);
+
+        let ray = Ray::new(Point::at(0.0, 0.0, 2_f64.sqrt()/2.0), Vector::new(0, 1, 0));
+        let intersections = Intersections::new(vec![
+            Intersection::new(-2_f64.sqrt()/2.0, &sphere),
+            Intersection::new(2_f64.sqrt()/2.0, &sphere),
+        ]);
+
+        let details = intersections[1].pre_computations(&ray, &intersections);
+        let reflectance = details.schlick();
+        assert_eq!(1.0, reflectance);
+    }
+
+    #[test]
+    fn schlick_with_perpendicular_angle() {
+        let glass = Material::default()
+            .with_transparency(1.0)
+            .with_refractive_index(1.5);
+        let sphere = Sphere::new().into_shape()
+            .with_material(glass);
+
+        let ray = Ray::new(Point::at(0.0, 0.0, 0.0), Vector::new(0, 1, 0));
+        let intersections = Intersections::new(vec![
+            Intersection::new(-1.0, &sphere),
+            Intersection::new(1.0, &sphere),
+        ]);
+
+        let details = intersections[1].pre_computations(&ray, &intersections);
+        let reflectance = details.schlick();
+        assert!(almost(0.04, reflectance));
+    }
+
+    #[test]
+    fn schlick_with_small_angle_and_n2_greater_n1() {
+        let glass = Material::default()
+            .with_transparency(1.0)
+            .with_refractive_index(1.5);
+        let sphere = Sphere::new().into_shape()
+            .with_material(glass);
+
+        let ray = Ray::new(Point::at(0.0, 0.99, -2.0), Vector::new(0, 0, 1));
+        let intersections = Intersections::new(vec![
+            Intersection::new(1.8589, &sphere),
+        ]);
+
+        let details = intersections[0].pre_computations(&ray, &intersections);
+        let reflectance = details.schlick();
+        assert!(almost(0.48873, reflectance));
     }
 }
