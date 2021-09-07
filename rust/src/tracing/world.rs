@@ -74,7 +74,7 @@ impl World {
         let reflected_color = self.reflect_color(&pre_computations, recursion_limit);
         let refracted_color = self.refracted_color(&pre_computations, recursion_limit);
 
-        if (pre_computations.is_reflective() && !pre_computations.is_opaque()) {
+        if pre_computations.is_reflective() && pre_computations.is_transparent() {
             let reflectance = pre_computations.schlick();
             return surface_color + reflected_color * reflectance + refracted_color * (1.0 - reflectance)
         }
@@ -98,7 +98,7 @@ impl World {
             return Color::BLACK;
         }
 
-        if pre_computations.is_opaque() {
+        if !pre_computations.is_transparent() {
             return Color::BLACK;
         }
 

@@ -108,8 +108,8 @@ impl<'a> PreComputedIntersection<'a> {
         Ray::new(self.over_point, self.reflect_vector)
     }
 
-    pub fn is_opaque(&self) -> bool {
-        self.thing.material().transparency() == 0.0
+    pub fn is_transparent(&self) -> bool {
+        self.thing.material().transparency() != 0.0
     }
 
     pub fn scale_refraction(&self, color: Color) -> Color {
@@ -145,6 +145,11 @@ impl<'a> PreComputedIntersection<'a> {
     }
 
     pub fn schlick(&self) -> f64 {
+        if !self.is_transparent() || !self.is_reflective() {
+            // If these are not BOTH true, no need to calculate Schlick's
+            return 1.0
+        }
+
         let mut cos = self.eye_vector.dot(self.normal_vector);
 
         if self.n1 > self.n2 {
@@ -542,7 +547,8 @@ mod tests {
     fn schlick_with_perpendicular_angle() {
         let glass = Material::default()
             .with_transparency(1.0)
-            .with_refractive_index(1.5);
+            .with_refractive_index(1.5)
+            .with_reflective(0.9);
         let sphere = Sphere::new().into_shape()
             .with_material(glass);
 
@@ -561,7 +567,8 @@ mod tests {
     fn schlick_with_small_angle_and_n2_greater_n1() {
         let glass = Material::default()
             .with_transparency(1.0)
-            .with_refractive_index(1.5);
+            .with_refractive_index(1.5)
+            .with_reflective(0.9);
         let sphere = Sphere::new().into_shape()
             .with_material(glass);
 
