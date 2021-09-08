@@ -56,9 +56,11 @@ impl ShapeGeometry for Cube {
     }
 
     fn normal_at(&self, point: Point) -> Vector {
-        return if point.x > point.y && point.x > point.z {
+        let max_c = point.x.abs().max(point.y.abs()).max(point.z.abs());
+
+        return if max_c == point.x.abs() {
             Vector::new(point.x, 0.0, 0.0)
-        } else if point.y > point.x && point.y > point.z {
+        } else if max_c == point.y.abs() {
             Vector::new(0.0, point.y, 0.0)
         } else {
             Vector::new(0.0, 0.0, point.z)
@@ -116,14 +118,14 @@ mod tests {
     #[test]
     fn normal_on_surface_of_cube() {
         let cases = vec![
-            Point::at(1.0, 0.5, -0.8) , Vector::new(1, 0, 0) ,
-            Point::at(-1.0, -0.2, 0.9), Vector::new(-1, 0, 0),
-            Point::at(-0.4, 1.0, -0.1), Vector::new(0, 1, 0) ,
-            Point::at(0.3, -1.0, -0.7), Vector::new(0, -1, 0),
-            Point::at(-0.6, 0.3, 1.0) , Vector::new(0, 0, 1) ,
-            Point::at(0.4, 0.4, -1.0) , Vector::new(0, 0, -1),
-            Point::at(1, 1, 1)      , Vector::new(1, 0, 0) ,
-            Point::at(-1, -1, -1)   , Vector::new(-1, 0, 0),
+            (Point::at(1.0, 0.5, -0.8) , Vector::new(1, 0, 0)) ,
+            (Point::at(-1.0, -0.2, 0.9), Vector::new(-1, 0, 0)),
+            (Point::at(-0.4, 1.0, -0.1), Vector::new(0, 1, 0)),
+            (Point::at(0.3, -1.0, -0.7), Vector::new(0, -1, 0)),
+            (Point::at(-0.6, 0.3, 1.0), Vector::new(0, 0, 1)),
+            (Point::at(0.4, 0.4, -1.0), Vector::new(0, 0, -1)),
+            (Point::at(1, 1, 1), Vector::new(1, 0, 0)),
+            (Point::at(-1, -1, -1), Vector::new(-1, 0, 0)),
         ];
 
         for (point, expected_normal) in cases {
