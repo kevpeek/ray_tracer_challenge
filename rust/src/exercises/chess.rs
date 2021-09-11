@@ -43,33 +43,40 @@ pub fn make_world() -> (World, Camera) {
     let pawn_elevation = 0.75;
     let back_row_elevation = 1.0;
 
+    let rotation = transformations::rotation_y(PI / 2.0);
+
     objects.push(
         Shape::sphere()
-            .with_transform(pawn_scaling.then(&transformations::translation(1.5, pawn_elevation, -2.5, )))
+            .with_transform(pawn_scaling.then(&transformations::translation(1.5, pawn_elevation, -2.5, ))
+                .then(&rotation))
             .with_material(material_helpers::colored_glass(Color::WHITE)),
     );
 
     objects.push(
         Shape::sphere()
-            .with_transform(pawn_scaling.then(&transformations::translation(2.5, pawn_elevation, -0.5, )))
+            .with_transform(pawn_scaling.then(&transformations::translation(2.5, pawn_elevation, -0.5, ))
+                .then(&rotation))
             .with_material(material_helpers::colored_glass(Color::RED)),
     );
 
     objects.push(
         Shape::sphere()
-            .with_transform(pawn_scaling.then(&transformations::translation(1.5, pawn_elevation, 1.5, )))
+            .with_transform(pawn_scaling.then(&transformations::translation(1.5, pawn_elevation, 1.5, ))
+                .then(&rotation))
             .with_material(material_helpers::colored_glass(Color::RED)),
     );
 
     objects.push(
         Shape::sphere()
-            .with_transform(back_row_scaling.then(&transformations::translation(0.5, back_row_elevation, 0.5, )))
+            .with_transform(back_row_scaling.then(&transformations::translation(0.5, back_row_elevation, 0.5, ))
+                .then(&rotation))
             .with_material(material_helpers::colored_glass(Color::RED)),
     );
 
     objects.push(
         Shape::sphere()
-            .with_transform(back_row_scaling.then(&transformations::translation(2.5, back_row_elevation, 1.5, )))
+            .with_transform(back_row_scaling.then(&transformations::translation(2.5, back_row_elevation, 1.5, ))
+                .then(&rotation))
             .with_material(material_helpers::colored_glass(Color::WHITE)),
     );
 
@@ -79,9 +86,9 @@ pub fn make_world() -> (World, Camera) {
 
 fn make_camera() -> Camera {
     let camera_transform = transformations::view_transform(
-        Point::at(0.0, 2.5, -9.5),
+        Point::at(-2.0, 3.5, -10.0),
         Point::at(0, 1, 0),
         Vector::new(0, 1, 0),
     );
-    Camera::new(Resolution::FHD, PI / 3.0, camera_transform)
+    Camera::new(Resolution::LOW, PI / 3.0, camera_transform)
 }

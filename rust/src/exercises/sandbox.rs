@@ -15,64 +15,25 @@ pub fn make_world() -> World {
 
     // ===== Base =====
 
-    let floor_material = Material::default().with_color(Color::LIGHT_BLUE);
+    let floor_material = Material::default()
+        .with_pattern(Checkers::new(Color::WHITE, Color::BLACK));
     let floor = Shape::plane().with_material(floor_material);
 
-    let board_material = Material::default()
-        .with_pattern(Checkers::new(Color::WHITE, Color::BLACK)
-            .with_transform(transformations::scaling(0.25, 1.0, 0.25)))
-        .with_specular(0.0);
-
-    let board = Cube::new().into_shape().
-        with_material(board_material)
-        .with_transform(transformations::scaling(4.0, 0.25, 4.0));
 
     // ===== Spheres =====
 
-    let pawn_scaling = transformations::scaling(0.25, 0.5, 0.25);
-    let back_row_scaling = transformations::scaling(0.25, 0.75, 0.25);
 
-    let mut objects: Vec<Shape> = vec![floor, board];
+    let ball_material = Material::default()
+        .with_color(Color::LIGHT_GREEN)
+        .with_diffuse(0.7)
+        .with_specular(10.00)
+        .with_shininess(100.0)
+        .with_reflective(1.0);
+    let ball = Shape::sphere()
+        .with_transform(transformations::translation(-0.5, 1.0, 0.5))
+        .with_material(ball_material);
 
-    let front_row_translation = transformations::translation(-2.5, 0.5, 0.5, );
-    objects.push(
-        Shape::sphere()
-            .with_transform(pawn_scaling.then(&front_row_translation))
-            .with_material(material_helpers::glass()),
-    );
-
-
-    // for z in -1..7 {
-    //     let z = z as f64;
-    //     let front_row_translation = transformations::translation(-2.5, 0.5, z + 0.5, );
-    //     let back_row_translation = transformations::translation(-3.5, 0.5, z + 0.5, );
-    //     objects.push(
-    //         Shape::sphere()
-    //             .with_transform(pawn_scaling.then(&front_row_translation))
-    //             .with_material(material_helpers::glass()),
-    //     );
-    //     objects.push(
-    //         Shape::sphere()
-    //             .with_transform(back_row_scaling.then(&back_row_translation))
-    //             .with_material(material_helpers::glass()),
-    //     );
-    // }
-
-    // for z in -1..7 {
-    //     let z = z as f64;
-    //     let front_row_translation = transformations::translation(2.5, 0.5, z + 0.5, );
-    //     let back_row_translation = transformations::translation(3.5, 0.5, z + 0.5, );
-    //     objects.push(
-    //         Shape::sphere()
-    //             .with_transform(pawn_scaling.then(&front_row_translation))
-    //             .with_material(material_helpers::colored_glass(Color::WHITE)),
-    //     );
-    //     objects.push(
-    //         Shape::sphere()
-    //             .with_transform(back_row_scaling.then(&back_row_translation))
-    //             .with_material(material_helpers::colored_glass(Color::WHITE)),
-    //     );
-    // }
+    let mut objects: Vec<Shape> = vec![floor, ball];
 
     World::new(objects, light_source)
 }
