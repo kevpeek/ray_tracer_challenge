@@ -9,6 +9,7 @@ use crate::tracing::world::World;
 use crate::exercises::material_helpers;
 use crate::tracing::shapes::cube::Cube;
 use crate::tracing::camera::Camera;
+use crate::tracing::shapes::cylinder::Cylinder;
 
 pub fn make_world() -> World {
     let light_source = PointLight::default();
@@ -23,17 +24,17 @@ pub fn make_world() -> World {
     // ===== Spheres =====
 
 
-    let ball_material = Material::default()
+    let object_material = Material::default()
         .with_color(Color::LIGHT_GREEN)
         .with_diffuse(0.7)
-        .with_specular(10.00)
-        .with_shininess(100.0)
+        .with_specular(100.00)
+        .with_shininess(300.0)
         .with_reflective(1.0);
-    let ball = Shape::sphere()
-        .with_transform(transformations::translation(-0.5, 1.0, 0.5))
-        .with_material(ball_material);
+    let object = Cylinder::new(0.0, 1.0).into_shape()
+        // .with_transform(transformations::translation(-0.5, 0.0, 0.5))
+        .with_material(object_material);
 
-    let mut objects: Vec<Shape> = vec![floor, ball];
+    let mut objects: Vec<Shape> = vec![floor, object];
 
     World::new(objects, light_source)
 }
