@@ -1,7 +1,7 @@
 use crate::geometry::matrix::Matrix;
-use crate::helper::almost;
 use num::NumCast;
 use std::ops::{Add, Div, Mul, Neg, Sub};
+use crate::helpers::approximate::Approximate;
 
 #[derive(Debug, Copy, Clone)]
 pub struct Vector {
@@ -108,7 +108,9 @@ impl Div<f64> for Vector {
 
 impl PartialEq for Vector {
     fn eq(&self, other: &Self) -> bool {
-        almost(self.x, other.x) && almost(self.y, other.y) && almost(self.z, other.z)
+        self.x.almost(other.x) &&
+        self.y.almost(other.y) &&
+        self.z.almost(other.z)
     }
 }
 impl Eq for Vector {}

@@ -1,8 +1,9 @@
 use crate::geometry::point::Point;
 use crate::geometry::vector::Vector;
-use crate::helper::{almost, enumerate_coordinates};
+use crate::helper::{enumerate_coordinates};
 use num::{Integer, NumCast};
 use std::ops::{Index, Mul};
+use crate::helpers::approximate::Approximate;
 
 #[derive(Debug, Clone)]
 pub struct Matrix {
@@ -180,7 +181,7 @@ impl PartialEq for Matrix {
         self.values
             .iter()
             .zip(other.values.iter())
-            .all(|(a, b)| almost(*a, *b))
+            .all(|(a, b)| a.almost(*b))
     }
 }
 impl Eq for Matrix {}

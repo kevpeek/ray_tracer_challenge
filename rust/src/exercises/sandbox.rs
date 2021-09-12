@@ -10,6 +10,7 @@ use crate::exercises::material_helpers;
 use crate::tracing::shapes::cube::Cube;
 use crate::tracing::camera::Camera;
 use crate::tracing::shapes::cylinder::Cylinder;
+use std::f64::consts::PI;
 
 pub fn make_world() -> World {
     let light_source = PointLight::default();
@@ -31,7 +32,7 @@ pub fn make_world() -> World {
         .with_shininess(300.0)
         .with_reflective(1.0);
     let object = Cylinder::new(0.0, 1.0).into_shape()
-        // .with_transform(transformations::translation(-0.5, 0.0, 0.5))
+        .with_transform(transformations::rotation_x(-PI / 4.0))
         .with_material(object_material);
 
     let mut objects: Vec<Shape> = vec![floor, object];

@@ -6,6 +6,7 @@ mod exercises;
 mod geometry;
 mod helper;
 mod tracing;
+mod helpers;
 
 fn main() {
     let world = exercises::sandbox::make_world();

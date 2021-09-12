@@ -3,23 +3,54 @@ use crate::tracing::ray::Ray;
 use crate::geometry::point::Point;
 use crate::geometry::vector::Vector;
 use num::traits::Pow;
-use crate::helper::almost;
 use num::traits::real::Real;
+use crate::helpers::approximate;
+use crate::helpers::approximate::Approximate;
 
 #[derive(PartialEq, Debug, Clone)]
 pub struct Cylinder {
     min: f64,
     max: f64,
+    capped: bool,
 }
 
 impl Cylinder {
     pub fn new(min: f64, max: f64) -> Cylinder {
-        Cylinder { min, max }
+        Cylinder { min, max, capped: false }
     }
 
     pub fn infinite() -> Cylinder {
         Cylinder::new(f64::NEG_INFINITY, f64::INFINITY)
     }
+
+    pub fn capped(self) -> Cylinder {
+        Cylinder { min: self.min , max: self.max, capped: true }
+    }
+
+    // Find intersections with cylinder end caps.
+    fn intersect_caps(&self, ray: &Ray) -> Vec<f64> {
+        if !self.capped {
+            return Vec::new();
+        }
+
+        let value = ray.direction().y;
+        if value.almost_zero() {
+            return Vec::new();
+        }
+
+        vec![self.min, self.max].into_iter()
+            .map(|y_value| (y_value - ray.origin().y) / ray.direction().y)
+            .filter(|time| check_cap(ray, *time))
+            .collect()
+    }
+}
+
+// Determine if the Ray would be within the cylinder's radius at the time supplied.
+fn check_cap(ray: &Ray, time: f64) -> bool {
+    let x = ray.origin().x + time * ray.direction().x;
+    let z = ray.origin().z + time * ray.direction().z;
+
+    x.pow(2) + z.pow(2) <= 1.0
 }
 
 impl ShapeGeometry for Cylinder {
@@ -28,43 +59,51 @@ impl ShapeGeometry for Cylinder {
     }
 
     fn intersect(&self, ray: &Ray) -> Vec<f64> {
-        let a = ray.direction().x.pow(2) + ray.direction().z.pow(2);
-        if almost(a, 0.0) {
-            return Vec::new();
+        let a: f64 = (ray.direction().x.pow(2) + ray.direction().z.pow(2));
+        if a.almost_zero() {
+            return self.intersect_caps(ray);
         }
 
         let b = 2.0 * ray.direction().x * ray.origin().x + 2.0 * ray.direction().z * ray.origin().z;
         let c = ray.origin().x.pow(2) + ray.origin().z.pow(2) - 1.0;
 
-        let discriminant: f64 = b.pow(2) - 4.0 * a * c;
+        let discriminant: f64 = b.pow(2) - 4.0 * (ray.direction().x.pow(2) + ray.direction().z.pow(2)) * c;
 
         if discriminant < 0.0 {
             return Vec::new();
         }
 
-        let t0 = (-b - discriminant.sqrt()) / (2.0 * a);
-        let t1 = (-b + discriminant.sqrt()) / (2.0 * a);
+        let t0 = (-b - discriminant.sqrt()) / (2.0 * (ray.direction().x.pow(2) + ray.direction().z.pow(2)));
+        let t1 = (-b + discriminant.sqrt()) / (2.0 * (ray.direction().x.pow(2) + ray.direction().z.pow(2)));
 
-        let mut intersections = Vec::new();
+        // Ensure t0 and t1 are ordered
+        let (t0, t1) = if t0 <= t1 {
+            (t0, t1)
+        } else {
+            (t1, t0)
+        };
 
-        let t_min = t0.min(t1);
+        let mut intersections: Vec<f64> = vec![t0, t1].into_iter()
+            .map(|time| (time ,ray.origin().y + time * ray.direction().y))
+            .filter(|(time, y_value)| self.min < *y_value && *y_value < self.max)
+            .map(|(time, _)| time)
+            .collect();
 
-        let y_min = ray.origin().y + t_min * ray.direction().y;
-        if self.min < y_min && y_min < self.max {
-            intersections.push(t_min);
-        }
-
-        let t_max = t0.max(t1);
-        let y_max = ray.origin().y + t_max * ray.direction().y;
-        if self.min < y_max && y_max < self.max {
-            intersections.push(t_max);
-        }
-
-
+        intersections.append(&mut self.intersect_caps(ray));
         intersections
     }
 
     fn normal_at(&self, point: Point) -> Vector {
+        let distance = point.x.pow(2) + point.z.pow(2);
+
+        if distance < 1.0 && point.y >= self.max - approximate::EPSILON {
+            return Vector::new(0, 1, 0);
+        }
+
+        if distance < 1.0 && point.y <= self.min + approximate::EPSILON {
+            return Vector::new(0, -1, 0);
+        }
+
         Vector::new(point.x, 0.0, point.z)
     }
 }
@@ -77,7 +116,7 @@ mod tests {
     use crate::geometry::vector::Vector;
     use crate::tracing::ray::Ray;
     use crate::tracing::shapes::shape::ShapeGeometry;
-    use crate::helper::almost;
+    use crate::helpers::approximate::Approximate;
 
     #[test]
     fn ray_misses_a_cylinder() {
@@ -108,8 +147,8 @@ mod tests {
             let direction = direction.normalize();
             let ray = Ray::new(origin, direction);
             let intersections = cylinder.intersect(&ray);
-            assert!(almost(t1, intersections[0]));
-            assert!(almost(t2, intersections[1]));
+            assert!(intersections[0].almost(t1));
+            assert!(intersections[1].almost(t2));
         }
     }
 
@@ -144,6 +183,41 @@ mod tests {
             let direction = direction.normalize();
             let ray = Ray::new(origin, direction);
             assert_eq!(count, cylinder.intersect(&ray).len());
+        }
+    }
+
+    #[test]
+    fn intersect_caps_of_closed_cylinder() {
+        let cases = vec![
+            (Point::at(0, 3, 0), Vector::new(0, -1, 0), 2),
+            (Point::at(0, 3, -2), Vector::new(0, -1, 2), 2),
+            (Point::at(0, 4, -2), Vector::new(0, -1, 1), 2),
+            (Point::at(0, 0, -2), Vector::new(0, 1, 2), 2),
+            (Point::at(0, -1, -2), Vector::new(0, 1, 1), 2),
+        ];
+
+        for (point, direction, count) in cases {
+            let cylinder = Cylinder::new(1.0, 2.0).capped();
+            let direction = direction.normalize();
+            let ray = Ray::new(point, direction);
+            assert_eq!(count, cylinder.intersect(&ray).len());
+        }
+    }
+
+    #[test]
+    fn normal_at_end_caps() {
+        let cases = vec![
+            (Point::at(0, 1, 0), Vector::new(0, -1, 0)),
+            (Point::at(0.5, 1.0, 0.0), Vector::new(0, -1, 0)),
+            (Point::at(0.0, 1.0, 0.5), Vector::new(0, -1, 0)),
+            (Point::at(0, 2, 0), Vector::new(0, 1, 0)),
+            (Point::at(0.5, 2.0, 0.0), Vector::new(0, 1, 0)),
+            (Point::at(0.0, 2.0, 0.5), Vector::new(0, 1, 0)),
+        ];
+
+        for (point, normal) in cases {
+            let cylinder = Cylinder::new(1.0, 2.0).capped();
+            assert_eq!(normal, cylinder.normal_at(point));
         }
     }
 }

@@ -1,10 +1,10 @@
 use crate::display::color::Color;
 use crate::geometry::point::Point;
 use crate::geometry::vector::Vector;
-use crate::helper::almost;
 use crate::tracing::patterns::pattern::{Pattern, PatternType};
 use crate::tracing::patterns::solid::Solid;
 use crate::tracing::point_light::PointLight;
+use crate::helpers::approximate::Approximate;
 
 #[derive(Debug, Clone)]
 pub struct Material {
@@ -277,10 +277,10 @@ impl Material {
 impl PartialEq for Material {
     fn eq(&self, other: &Self) -> bool {
         self.pattern == other.pattern
-            && almost(self.ambient, other.ambient)
-            && almost(self.diffuse, other.diffuse)
-            && almost(self.specular, other.specular)
-            && almost(self.shininess, other.shininess)
+            && self.ambient.almost(other.ambient)
+            && self.diffuse.almost(other.diffuse)
+            && self.specular.almost(other.specular)
+            && self.shininess.almost(other.shininess)
     }
 }
 impl Eq for Material {}
@@ -296,8 +296,8 @@ mod test {
     use crate::tracing::patterns::stripe_pattern::StripePattern;
     use crate::tracing::point_light::PointLight;
     use crate::tracing::ray::Ray;
-    use crate::tracing::shapes::shape::{Shape, ShapeGeometry};
     use crate::tracing::shapes::sphere::Sphere;
+    use crate::tracing::shapes::shape::ShapeGeometry;
 
     #[test]
     fn default_material() {

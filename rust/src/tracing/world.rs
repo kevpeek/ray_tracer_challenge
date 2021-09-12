@@ -181,7 +181,6 @@ mod tests {
     use crate::geometry::transformations;
     use crate::geometry::transformations::{scaling, translation};
     use crate::geometry::vector::Vector;
-    use crate::helper::EPSILON;
     use crate::tracing::intersection::{Intersection, Intersections};
     use crate::tracing::material::Material;
     use crate::tracing::point_light::PointLight;

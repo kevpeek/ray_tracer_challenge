@@ -2,8 +2,8 @@ use crate::tracing::shapes::shape::ShapeGeometry;
 use crate::tracing::ray::Ray;
 use crate::geometry::point::Point;
 use crate::geometry::vector::Vector;
-use crate::helper::EPSILON;
 use std::cmp::{max, min};
+use crate::helpers::approximate;
 
 
 #[derive(Eq, PartialEq, Debug, Clone)]
@@ -18,7 +18,7 @@ impl Cube {
         let tmin_numerator = -1.0 - origin;
         let tmax_numerator = 1.0 - origin;
 
-        let (tmin, tmax) = if direction.abs() >= EPSILON {
+        let (tmin, tmax) = if direction.abs() >= approximate::EPSILON {
             let tmin = tmin_numerator / direction;
             let tmax = tmax_numerator / direction;
             (tmin, tmax)

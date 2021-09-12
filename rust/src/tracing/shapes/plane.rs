@@ -1,8 +1,8 @@
 use crate::geometry::point::Point;
 use crate::geometry::vector::Vector;
-use crate::helper::EPSILON;
 use crate::tracing::ray::Ray;
 use crate::tracing::shapes::shape::ShapeGeometry;
+use crate::helpers::approximate;
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Plane {}
@@ -19,7 +19,7 @@ impl ShapeGeometry for Plane {
     }
 
     fn intersect(&self, ray: &Ray) -> Vec<f64> {
-        if ray.direction().y.abs() < EPSILON {
+        if ray.direction().y.abs() < approximate::EPSILON {
             return vec![];
         }
 

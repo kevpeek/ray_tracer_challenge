@@ -1,7 +1,6 @@
 use crate::display::color::Color;
 use crate::geometry::point::Point;
 use crate::geometry::vector::Vector;
-use crate::helper::{almost, EPSILON};
 use crate::tracing::point_light::PointLight;
 use crate::tracing::ray::Ray;
 use crate::tracing::shapes::shape::{Shape, WorldShape};
@@ -9,6 +8,8 @@ use num::traits::Pow;
 use std::ops::Index;
 use std::slice::Iter;
 use std::vec::IntoIter;
+use crate::helpers::approximate;
+use crate::helpers::approximate::Approximate;
 
 #[derive(Debug, PartialEq)]
 pub struct Intersections<'a> {
@@ -206,7 +207,7 @@ pub struct Intersection<'a> {
 
 impl<'a> PartialEq for Intersection<'a> {
     fn eq(&self, other: &Intersection) -> bool {
-        almost(self.time, other.time) && &self.thing == &other.thing
+        self.time.almost(other.time) && &self.thing == &other.thing
     }
 }
 
@@ -238,8 +239,8 @@ impl<'a> Intersection<'a> {
             normal_vector
         };
 
-        let over_point = point + normal_vector * EPSILON;
-        let under_point = point - normal_vector * EPSILON;
+        let over_point = point + normal_vector * approximate::EPSILON;
+        let under_point = point - normal_vector * approximate::EPSILON;
 
         let reflect_vector = ray.direction().reflect(normal_vector);
 
@@ -303,14 +304,14 @@ mod tests {
     use crate::geometry::transformations;
     use crate::geometry::transformations::{scaling, translation};
     use crate::geometry::vector::Vector;
-    use crate::helper::{almost, EPSILON};
     use crate::tracing::intersection::{Intersection, Intersections};
     use crate::tracing::material::Material;
     use crate::tracing::ray::Ray;
-    use crate::tracing::shapes::plane::Plane;
     use crate::tracing::shapes::shape::{Shape, ShapeGeometry, WorldShape};
     use crate::tracing::shapes::sphere::Sphere;
     use num::integer::Roots;
+    use crate::helpers::approximate;
+    use crate::helpers::approximate::Approximate;
 
     #[test]
     fn a_ray_intersects_sphere_at_two_points() {
@@ -553,7 +554,7 @@ mod tests {
         let sphere = Shape::sphere().with_transform(transformations::translation(0, 0, 1));
         let intersection = Intersection::new(5.0, &sphere);
         let pre_computations = intersection.pre_computations(&ray, &Intersections::empty());
-        assert!(pre_computations.over_point.z < -EPSILON / 2.0);
+        assert!(pre_computations.over_point.z < -approximate::EPSILON / 2.0);
         assert!(pre_computations.point.z > pre_computations.over_point.z);
     }
 
@@ -566,7 +567,7 @@ mod tests {
         let intersection = Intersection::new(5.0, &shape);
         let intersections = Intersections::new(vec![intersection.clone()]);
         let details = intersection.pre_computations(&ray, &intersections);
-        assert!(details.under_point.z > EPSILON / 2.0);
+        assert!(details.under_point.z > approximate::EPSILON / 2.0);
         assert!(details.point.z < details.under_point.z);
     }
 
@@ -607,7 +608,7 @@ mod tests {
 
         let details = intersections[1].pre_computations(&ray, &intersections);
         let reflectance = details.schlick();
-        assert!(almost(0.04, reflectance));
+        assert!(reflectance.almost(0.04));
     }
 
     #[test]
@@ -623,6 +624,8 @@ mod tests {
 
         let details = intersections[0].pre_computations(&ray, &intersections);
         let reflectance = details.schlick();
-        assert!(almost(0.48873, reflectance));
+        let a = 0.48873;
+        let b = reflectance;
+        assert!(a.almost(b));
     }
 }

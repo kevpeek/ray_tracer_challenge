@@ -1,8 +1,8 @@
 use crate::geometry::matrix::Matrix;
 use crate::geometry::vector::Vector;
-use crate::helper::almost;
 use num::NumCast;
 use std::ops::{Add, Sub};
+use crate::helpers::approximate::Approximate;
 
 #[derive(Debug, Copy, Clone)]
 pub struct Point {
@@ -56,7 +56,9 @@ impl Sub<Point> for Point {
 
 impl PartialEq for Point {
     fn eq(&self, other: &Self) -> bool {
-        almost(self.x, other.x) && almost(self.y, other.y) && almost(self.z, other.z)
+        self.x.almost(other.x) &&
+        self.y.almost(other.y) &&
+        self.z.almost(other.z)
     }
 }
 impl Eq for Point {}
