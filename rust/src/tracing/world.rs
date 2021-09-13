@@ -320,10 +320,7 @@ mod tests {
         let sphere_one = Shape::sphere();
         let sphere_two = Shape::sphere().with_transform(translation(0, 0, 10));
 
-        let mut objects: Vec<BoxedShape> = Vec::new();
-        objects.push(sphere_one);
-        objects.push(sphere_two.clone());
-
+        let objects: Vec<BoxedShape> = vec![sphere_one, sphere_two.clone()];
         let world = World::new(objects, light);
 
         let ray = Ray::new(Point::at(0, 0, 5), Vector::new(0, 0, 1));

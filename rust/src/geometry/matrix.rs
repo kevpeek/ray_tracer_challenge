@@ -1,9 +1,9 @@
 use crate::geometry::point::Point;
 use crate::geometry::vector::Vector;
-use crate::helper::{enumerate_coordinates};
 use num::{Integer, NumCast};
 use std::ops::{Index, Mul};
 use crate::helpers::approximate::Approximate;
+use crate::helpers::general;
 
 #[derive(Debug, Clone)]
 pub struct Matrix {
@@ -25,7 +25,7 @@ impl Matrix {
     }
 
     pub fn identity(size: usize) -> Matrix {
-        let values = enumerate_coordinates(0..size, 0..size)
+        let values = general::enumerate_coordinates(0..size, 0..size)
             .iter()
             .map(|(row, col)| if row == col { 1.0 } else { 0.0 })
             .collect();
@@ -78,7 +78,9 @@ impl Matrix {
      * Returns the sub matrix created by removing the specified row and column.
      */
     pub fn submatrix(&self, row: usize, column: usize) -> Matrix {
-        let values_to_keep = enumerate_coordinates(0..self.height, 0..self.width)
+        let xs = 0..self.height;
+        let ys = 0..self.width;
+        let values_to_keep = general::enumerate_coordinates(xs, ys)
             .iter()
             // calculate the indexes to keep
             .filter(|(r, c)| *r != row && *c != column)
@@ -113,7 +115,9 @@ impl Matrix {
             panic!("Attempt to invert a non-invertible matrix{:?}", self);
         }
         let determinant = self.determinant();
-        let inverse_values: Vec<f64> = enumerate_coordinates(0..self.width, 0..self.height)
+        let xs = 0..self.width;
+        let ys = 0..self.height;
+        let inverse_values: Vec<f64> = general::enumerate_coordinates(xs, ys)
             .iter()
             .map(|(c, r)| self.cofactor(*r, *c) / determinant)
             .collect();

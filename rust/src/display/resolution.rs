@@ -1,4 +1,4 @@
-use crate::helper::enumerate_coordinates;
+use crate::helpers::general;
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub struct Resolution {
@@ -36,6 +36,6 @@ impl Resolution {
     }
 
     pub fn coordinates(&self) -> Vec<(usize, usize)> {
-        enumerate_coordinates(0..self.hsize, 0..self.vsize)
+        general::enumerate_coordinates(0..self.hsize, 0..self.vsize)
     }
 }

@@ -6,6 +6,7 @@ use num::traits::Pow;
 use num::traits::real::Real;
 use crate::helpers::approximate;
 use crate::helpers::approximate::Approximate;
+use crate::helpers::general::OrderedTuple;
 
 #[derive(PartialEq, Debug, Clone)]
 pub struct Cylinder {
@@ -73,24 +74,21 @@ impl ShapeGeometry for Cylinder {
             return Vec::new();
         }
 
-        let t0 = (-b - discriminant.sqrt()) / (2.0 * (ray.direction().x.pow(2) + ray.direction().z.pow(2)));
-        let t1 = (-b + discriminant.sqrt()) / (2.0 * (ray.direction().x.pow(2) + ray.direction().z.pow(2)));
+        let t0: f64 = (-b - discriminant.sqrt()) / (2.0 * (ray.direction().x.pow(2) + ray.direction().z.pow(2)));
+        let t1: f64 = (-b + discriminant.sqrt()) / (2.0 * (ray.direction().x.pow(2) + ray.direction().z.pow(2)));
 
         // Ensure t0 and t1 are ordered
-        let (t0, t1) = if t0 <= t1 {
-            (t0, t1)
-        } else {
-            (t1, t0)
-        };
+        let (t0, t1) = (t0, t1).ordered();
 
-        let mut intersections: Vec<f64> = vec![t0, t1].into_iter()
+        let intersections: Vec<f64> = vec![t0, t1].into_iter()
             .map(|time| (time ,ray.origin().y + time * ray.direction().y))
             .filter(|(time, y_value)| self.min < *y_value && *y_value < self.max)
             .map(|(time, _)| time)
             .collect();
 
-        intersections.append(&mut self.intersect_caps(ray));
-        intersections
+        let mut cap_intersections = self.intersect_caps(ray);
+        cap_intersections.extend_from_slice(&intersections);
+        cap_intersections
     }
 
     fn normal_at(&self, point: Point) -> Vector {

@@ -4,7 +4,6 @@ use crate::exercises::snapshot;
 mod display;
 mod exercises;
 mod geometry;
-mod helper;
 mod tracing;
 mod helpers;
 
