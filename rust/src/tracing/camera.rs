@@ -96,10 +96,10 @@ mod tests {
     use crate::geometry::point::Point;
     use crate::geometry::transformations::{rotation_y, translation, view_transform};
     use crate::geometry::vector::Vector;
+    use crate::helpers::approximate::Approximate;
     use crate::tracing::camera::Camera;
     use crate::tracing::world::World;
     use std::f64::consts::PI;
-    use crate::helpers::approximate::Approximate;
 
     #[test]
     fn constructing_a_camera() {

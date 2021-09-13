@@ -1,6 +1,8 @@
 use crate::display::color::Color;
 use crate::geometry::point::Point;
 use crate::geometry::vector::Vector;
+use crate::helpers::approximate;
+use crate::helpers::approximate::Approximate;
 use crate::tracing::point_light::PointLight;
 use crate::tracing::ray::Ray;
 use crate::tracing::shapes::shape::{Shape, WorldShape};
@@ -8,8 +10,6 @@ use num::traits::Pow;
 use std::ops::Index;
 use std::slice::Iter;
 use std::vec::IntoIter;
-use crate::helpers::approximate;
-use crate::helpers::approximate::Approximate;
 
 #[derive(Debug, PartialEq)]
 pub struct Intersections<'a> {
@@ -156,7 +156,8 @@ impl<'a> PreComputedIntersection<'a> {
     pub fn refracted_ray(&self) -> Ray {
         let sin2_t = self.sin2_t();
         let cos_t = f64::sqrt(1.0 - sin2_t);
-        let direction = *self.normal() * (self.n_ratio() * self.cos_i() - cos_t) - *self.eye_vector() * self.n_ratio();
+        let direction = *self.normal() * (self.n_ratio() * self.cos_i() - cos_t)
+            - *self.eye_vector() * self.n_ratio();
         Ray::new(self.under_point(), direction)
     }
 
@@ -191,7 +192,6 @@ impl<'a> PreComputedIntersection<'a> {
     pub fn n_ratio(&self) -> f64 {
         self.n1() / self.n2()
     }
-
 
     pub fn sin2_t(&self) -> f64 {
         let cos_i = self.cos_i();
@@ -304,14 +304,14 @@ mod tests {
     use crate::geometry::transformations;
     use crate::geometry::transformations::{scaling, translation};
     use crate::geometry::vector::Vector;
+    use crate::helpers::approximate;
+    use crate::helpers::approximate::Approximate;
     use crate::tracing::intersection::{Intersection, Intersections};
     use crate::tracing::material::Material;
     use crate::tracing::ray::Ray;
     use crate::tracing::shapes::shape::{Shape, ShapeGeometry, WorldShape};
     use crate::tracing::shapes::sphere::Sphere;
     use num::integer::Roots;
-    use crate::helpers::approximate;
-    use crate::helpers::approximate::Approximate;
 
     #[test]
     fn a_ray_intersects_sphere_at_two_points() {

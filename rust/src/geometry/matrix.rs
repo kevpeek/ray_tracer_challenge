@@ -1,9 +1,9 @@
 use crate::geometry::point::Point;
 use crate::geometry::vector::Vector;
-use num::{Integer, NumCast};
-use std::ops::{Index, Mul};
 use crate::helpers::approximate::Approximate;
 use crate::helpers::general;
+use num::{Integer, NumCast};
+use std::ops::{Index, Mul};
 
 #[derive(Debug, Clone)]
 pub struct Matrix {

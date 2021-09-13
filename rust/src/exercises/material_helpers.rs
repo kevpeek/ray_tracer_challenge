@@ -1,5 +1,5 @@
-use crate::tracing::material::Material;
 use crate::display::color::Color;
+use crate::tracing::material::Material;
 
 pub fn glass() -> Material {
     colored_glass(Color::BLACK)

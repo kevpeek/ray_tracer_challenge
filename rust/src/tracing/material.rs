@@ -1,10 +1,10 @@
 use crate::display::color::Color;
 use crate::geometry::point::Point;
 use crate::geometry::vector::Vector;
+use crate::helpers::approximate::Approximate;
 use crate::tracing::patterns::pattern::{Pattern, PatternType};
 use crate::tracing::patterns::solid::Solid;
 use crate::tracing::point_light::PointLight;
-use crate::helpers::approximate::Approximate;
 
 #[derive(Debug, Clone)]
 pub struct Material {
@@ -296,8 +296,8 @@ mod test {
     use crate::tracing::patterns::stripe_pattern::StripePattern;
     use crate::tracing::point_light::PointLight;
     use crate::tracing::ray::Ray;
-    use crate::tracing::shapes::sphere::Sphere;
     use crate::tracing::shapes::shape::ShapeGeometry;
+    use crate::tracing::shapes::sphere::Sphere;
 
     #[test]
     fn default_material() {

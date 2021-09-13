@@ -4,8 +4,8 @@ use crate::exercises::snapshot;
 mod display;
 mod exercises;
 mod geometry;
-mod tracing;
 mod helpers;
+mod tracing;
 
 fn main() {
     let world = exercises::sandbox::make_world();

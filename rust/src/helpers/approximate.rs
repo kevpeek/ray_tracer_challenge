@@ -1,5 +1,3 @@
-
-
 pub const EPSILON: f64 = 0.00001;
 
 pub trait Approximate {

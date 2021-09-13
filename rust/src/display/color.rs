@@ -1,7 +1,7 @@
+use crate::helpers::approximate::Approximate;
 use num::NumCast;
 use std::cmp::{max, min};
 use std::ops::{Add, Mul, Sub};
-use crate::helpers::approximate::Approximate;
 
 #[derive(Clone, Copy, Debug)]
 pub struct Color {
@@ -105,9 +105,7 @@ impl Mul<f64> for Color {
 
 impl PartialEq for Color {
     fn eq(&self, other: &Self) -> bool {
-        self.red.almost(other.red)
-            && self.green.almost(other.green)
-            && self.blue.almost(other.blue)
+        self.red.almost(other.red) && self.green.almost(other.green) && self.blue.almost(other.blue)
     }
 }
 impl Eq for Color {}

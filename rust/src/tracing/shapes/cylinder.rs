@@ -1,12 +1,12 @@
-use crate::tracing::shapes::shape::ShapeGeometry;
-use crate::tracing::ray::Ray;
 use crate::geometry::point::Point;
 use crate::geometry::vector::Vector;
-use num::traits::Pow;
-use num::traits::real::Real;
 use crate::helpers::approximate;
 use crate::helpers::approximate::Approximate;
 use crate::helpers::general::OrderedTuple;
+use crate::tracing::ray::Ray;
+use crate::tracing::shapes::shape::ShapeGeometry;
+use num::traits::real::Real;
+use num::traits::Pow;
 
 #[derive(PartialEq, Debug, Clone)]
 pub struct Cylinder {
@@ -17,7 +17,11 @@ pub struct Cylinder {
 
 impl Cylinder {
     pub fn new(min: f64, max: f64) -> Cylinder {
-        Cylinder { min, max, capped: false }
+        Cylinder {
+            min,
+            max,
+            capped: false,
+        }
     }
 
     pub fn infinite() -> Cylinder {
@@ -25,7 +29,11 @@ impl Cylinder {
     }
 
     pub fn capped(self) -> Cylinder {
-        Cylinder { min: self.min , max: self.max, capped: true }
+        Cylinder {
+            min: self.min,
+            max: self.max,
+            capped: true,
+        }
     }
 
     // Find intersections with cylinder end caps.
@@ -39,7 +47,8 @@ impl Cylinder {
             return Vec::new();
         }
 
-        vec![self.min, self.max].into_iter()
+        vec![self.min, self.max]
+            .into_iter()
             .map(|y_value| (y_value - ray.origin().y) / ray.direction().y)
             .filter(|time| check_cap(ray, *time))
             .collect()
@@ -68,20 +77,24 @@ impl ShapeGeometry for Cylinder {
         let b = 2.0 * ray.direction().x * ray.origin().x + 2.0 * ray.direction().z * ray.origin().z;
         let c = ray.origin().x.pow(2) + ray.origin().z.pow(2) - 1.0;
 
-        let discriminant: f64 = b.pow(2) - 4.0 * (ray.direction().x.pow(2) + ray.direction().z.pow(2)) * c;
+        let discriminant: f64 =
+            b.pow(2) - 4.0 * (ray.direction().x.pow(2) + ray.direction().z.pow(2)) * c;
 
         if discriminant < 0.0 {
             return Vec::new();
         }
 
-        let t0: f64 = (-b - discriminant.sqrt()) / (2.0 * (ray.direction().x.pow(2) + ray.direction().z.pow(2)));
-        let t1: f64 = (-b + discriminant.sqrt()) / (2.0 * (ray.direction().x.pow(2) + ray.direction().z.pow(2)));
+        let t0: f64 = (-b - discriminant.sqrt())
+            / (2.0 * (ray.direction().x.pow(2) + ray.direction().z.pow(2)));
+        let t1: f64 = (-b + discriminant.sqrt())
+            / (2.0 * (ray.direction().x.pow(2) + ray.direction().z.pow(2)));
 
         // Ensure t0 and t1 are ordered
         let (t0, t1) = (t0, t1).ordered();
 
-        let intersections: Vec<f64> = vec![t0, t1].into_iter()
-            .map(|time| (time ,ray.origin().y + time * ray.direction().y))
+        let intersections: Vec<f64> = vec![t0, t1]
+            .into_iter()
+            .map(|time| (time, ray.origin().y + time * ray.direction().y))
             .filter(|(time, y_value)| self.min < *y_value && *y_value < self.max)
             .map(|(time, _)| time)
             .collect();
@@ -106,15 +119,14 @@ impl ShapeGeometry for Cylinder {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
-    use crate::tracing::shapes::cylinder::Cylinder;
     use crate::geometry::point::Point;
     use crate::geometry::vector::Vector;
-    use crate::tracing::ray::Ray;
-    use crate::tracing::shapes::shape::ShapeGeometry;
     use crate::helpers::approximate::Approximate;
+    use crate::tracing::ray::Ray;
+    use crate::tracing::shapes::cylinder::Cylinder;
+    use crate::tracing::shapes::shape::ShapeGeometry;
 
     #[test]
     fn ray_misses_a_cylinder() {
@@ -137,7 +149,12 @@ mod tests {
         let cases = vec![
             (Point::at(1, 0, -5), Vector::new(0, 0, 1), 5.0, 5.0),
             (Point::at(0, 0, -5), Vector::new(0, 0, 1), 4.0, 6.0),
-            (Point::at(0.5, 0.0, -5.0), Vector::new(0.1, 1.0, 1.0), 6.80798, 7.08872),
+            (
+                Point::at(0.5, 0.0, -5.0),
+                Vector::new(0.1, 1.0, 1.0),
+                6.80798,
+                7.08872,
+            ),
         ];
 
         for (origin, direction, t1, t2) in cases {
@@ -169,9 +186,9 @@ mod tests {
     fn intersecting_constrained_cylinder() {
         let cases = vec![
             (Point::at(0.0, 1.5, 0.0), Vector::new(0.1, 1.0, 0.0), 0),
-            (Point::at(0, 3, -5), Vector::new(0, 0, 1)   , 0),
-            (Point::at(0, 0, -5) , Vector::new(0, 0, 1), 0),
-            (Point::at(0, 2, -5) , Vector::new(0, 0, 1), 0),
+            (Point::at(0, 3, -5), Vector::new(0, 0, 1), 0),
+            (Point::at(0, 0, -5), Vector::new(0, 0, 1), 0),
+            (Point::at(0, 2, -5), Vector::new(0, 0, 1), 0),
             (Point::at(0, 1, -5), Vector::new(0, 0, 1), 0),
             (Point::at(0.0, 1.5, -2.0), Vector::new(0, 0, 1), 2),
         ];

@@ -62,7 +62,10 @@ impl World {
         let intersections = &self.intersected_by(ray);
         let hit = intersections.hit();
         match hit {
-            Some(hit) => self.shade_hit(hit.pre_computations(ray, &intersections), recursion_remaining),
+            Some(hit) => self.shade_hit(
+                hit.pre_computations(ray, &intersections),
+                recursion_remaining,
+            ),
             None => Color::BLACK,
         }
     }
@@ -103,7 +106,8 @@ impl World {
             return Color::BLACK;
         }
 
-        let color = self.color_at_internal(&pre_computations.reflect_ray(), recursion_remaining - 1);
+        let color =
+            self.color_at_internal(&pre_computations.reflect_ray(), recursion_remaining - 1);
         pre_computations.scale_reflection(color)
     }
 

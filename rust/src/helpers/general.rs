@@ -4,7 +4,6 @@ pub fn enumerate_coordinates(xs: Range<usize>, ys: Range<usize>) -> Vec<(usize, 
     xs.flat_map(|x| ys.clone().map(move |y| (x, y))).collect()
 }
 
-
 pub trait OrderedTuple {
     fn ordered(self) -> Self;
 }

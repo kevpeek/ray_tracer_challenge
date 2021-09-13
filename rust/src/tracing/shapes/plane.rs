@@ -1,8 +1,8 @@
 use crate::geometry::point::Point;
 use crate::geometry::vector::Vector;
+use crate::helpers::approximate;
 use crate::tracing::ray::Ray;
 use crate::tracing::shapes::shape::ShapeGeometry;
-use crate::helpers::approximate;
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Plane {}
