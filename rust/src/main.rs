@@ -8,7 +8,7 @@ mod helpers;
 mod tracing;
 
 fn main() {
-    let world = exercises::sandbox::make_world();
-    let camera = snapshot::make_camera_one(Resolution::LOW);
+    let (world, camera_maker) = exercises::sandbox::make_world();
+    let camera = camera_maker(Resolution::LOW);
     exercises::snapshot::snapshot_world(world, camera)
 }

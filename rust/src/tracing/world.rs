@@ -19,7 +19,7 @@ pub struct World {
 
 impl World {
     pub fn empty() -> World {
-        World::new(vec![], PointLight::black_light())
+        World::new(vec![], PointLight::default())
     }
     pub fn default() -> World {
         World::new(default_spheres(), PointLight::default())
@@ -51,13 +51,12 @@ impl World {
         self.objects.iter().collect()
     }
 
-    /**
-     * Calculate the color produced by firing ray at this World.
-     */
+    /// Calculate the color produced by firing ray at this World.
     pub fn color_at(&self, ray: &Ray) -> Color {
         self.color_at_internal(ray, 5)
     }
 
+    /// Internal implementation of color_at, providing a recursion limit.
     fn color_at_internal(&self, ray: &Ray, recursion_remaining: usize) -> Color {
         let intersections = &self.intersected_by(ray);
         let hit = intersections.hit();
@@ -70,9 +69,7 @@ impl World {
         }
     }
 
-    /**
-     * Determine the Color given a PreComputedIntersection.
-     */
+    /// Determine the Color given a PreComputedIntersection.
     fn shade_hit(
         &self,
         pre_computations: PreComputedIntersection,
@@ -133,7 +130,7 @@ impl World {
         pre_computations.scale_refraction(color)
     }
 
-    pub fn intersected_by(&self, ray: &Ray) -> Intersections {
+    fn intersected_by(&self, ray: &Ray) -> Intersections {
         let intersections: Vec<Intersection> = self
             .objects()
             .iter()
@@ -142,7 +139,9 @@ impl World {
         Intersections::new(intersections)
     }
 
-    pub fn is_shadowed(&self, point: Point) -> bool {
+    /// Determine whether the given point is in shadow.
+    fn is_shadowed(&self, point: Point) -> bool {
+        // TODO -- move shadow toggle onto individual Shapes
         if !self.shadows_enabled {
             return false;
         }
@@ -152,11 +151,9 @@ impl World {
         let direction = point_to_light.normalize();
 
         let ray = Ray::new(point, direction);
+
         let intersections = self.intersected_by(&ray);
-
-        let intersections_argument = &intersections;
-        let hit = intersections_argument.hit();
-
+        let hit = &intersections.hit();
         matches!(hit, Some(hit) if hit.time() < distance)
     }
 }
@@ -194,13 +191,6 @@ mod tests {
     use crate::tracing::shapes::sphere::Sphere;
     use crate::tracing::test_helpers::TestPattern;
     use crate::tracing::world::{default_spheres, BoxedShape, World};
-
-    #[test]
-    fn creating_a_world() {
-        let world = World::empty();
-        assert!(world.objects.is_empty());
-        assert_eq!(PointLight::black_light(), world.light_source);
-    }
 
     #[test]
     fn intersect_a_world_with_a_ray() {

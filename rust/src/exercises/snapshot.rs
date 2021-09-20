@@ -4,7 +4,7 @@ use crate::display::resolution::Resolution;
 use crate::geometry::point::Point;
 use crate::geometry::transformations::view_transform;
 use crate::geometry::vector::Vector;
-use crate::tracing::camera::Camera;
+use crate::tracing::camera::{Camera, CameraMaker};
 use crate::tracing::world::World;
 use image::RgbImage;
 use std::f64::consts::PI;
@@ -15,12 +15,16 @@ pub fn snapshot_world(world: World, camera: Camera) {
 }
 
 pub fn make_camera_one(resolution: Resolution) -> Camera {
+    camera_one_maker()(resolution)
+}
+
+pub fn camera_one_maker() -> CameraMaker {
     let camera_transform = view_transform(
         Point::at(0.0, 1.5, -5.0),
         Point::at(0, 1, 0),
         Vector::new(0, 1, 0),
     );
-    Camera::new(resolution, PI / 3.0, camera_transform)
+    Box::new(|resolution| Camera::new(resolution, PI / 3.0, camera_transform))
 }
 
 fn write_jpg(file_name: &str, canvas: Canvas) {

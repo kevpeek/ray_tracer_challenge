@@ -10,8 +10,10 @@ use crate::tracing::patterns::stripe_pattern::StripePattern;
 use crate::tracing::point_light::PointLight;
 use crate::tracing::shapes::shape::Shape;
 use crate::tracing::world::World;
+use crate::tracing::camera::CameraMaker;
+use crate::exercises::snapshot;
 
-pub fn make_world() -> World {
+pub fn make_world() -> (World, CameraMaker) {
     let light_source = PointLight::default();
 
     // ===== Walls =====
@@ -57,5 +59,5 @@ pub fn make_world() -> World {
         middle, right, left,
     ];
 
-    World::new(objects, light_source)
+    (World::new(objects, light_source), snapshot::camera_one_maker())
 }

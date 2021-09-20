@@ -14,21 +14,25 @@ use crate::tracing::shapes::sphere::Sphere;
 
 pub type WorldShape<'a> = &'a Shape;
 
-/**
- * ShapeGeometry is a Strategy defining the geometric formulas of a shape.
-*/
-pub trait ShapeGeometry: ShapeClone + Any + Send + Sync + Debug {
-    fn name(&self) -> &'static str;
+///ShapeGeometry is a Strategy defining the geometric formulas of a shape.
+pub trait ShapeGeometry: GeometryClone + Any + Send + Sync + Debug {
     fn intersect(&self, ray: &Ray) -> Vec<f64>;
     fn normal_at(&self, point: Point) -> Vector;
     fn into_shape(self) -> Shape
     where
         Self: Sized,
     {
-        Shape::using(self)
+        self.into()
     }
 }
 
+impl<T: ShapeGeometry> From<T> for Shape {
+    fn from(geometry: T) -> Self {
+        Shape::using(geometry)
+    }
+}
+
+/// A shape in the world. Combines the geometry with material and transformation.
 #[derive(Debug, Clone)]
 pub struct Shape {
     geometry: Box<dyn ShapeGeometry>,
@@ -73,19 +77,20 @@ impl Shape {
         &self.material
     }
 
+    /// Calculate when the supplied Ray intersects this shape.
     pub fn intersect(&self, ray: &Ray) -> Intersections {
         let local_ray = ray.transform(self.transformation.inverse());
 
-        let delegate_intersections = self.geometry.intersect(&local_ray);
-
-        let corrected_intersections = delegate_intersections
+        let intersection_times = self.geometry.intersect(&local_ray);
+        let intersections = intersection_times
             .into_iter()
             .map(|time| Intersection::new(time, self))
             .collect();
 
-        Intersections::new(corrected_intersections)
+        Intersections::new(intersections)
     }
 
+    /// The normal vector of this shape at the point provided.
     pub fn normal_at(&self, point: Point) -> Vector {
         let local_point = &self.transformation.inverse() * point;
         let local_normal = self.geometry.normal_at(local_point);
@@ -109,17 +114,27 @@ impl Shape {
 
 impl PartialEq for Shape {
     fn eq(&self, other: &Shape) -> bool {
-        self.geometry.name() == other.geometry.name()
+        // Originally written for tests but now used in non-test code (see Intersection::find_refractive_indexes).
+        // Perhaps not the right way to do this since two separate instances could resolve to equal.
+        // Nevertheless, two identical instances would be pointless in a World, so maybe safe to ignore.
+        compare_geometries(self.geometry.as_ref(), other.geometry.as_ref())
             && self.transformation == other.transformation
             && self.material == other.material
     }
 }
 
-pub trait ShapeClone {
+/// Determine if two ShapeGeometry instances are equal.
+fn compare_geometries(one: &dyn ShapeGeometry, two: &dyn ShapeGeometry) -> bool {
+    // Quick and dirty way to evaluate equality for two geometry instances
+    format!("{:?}", one) == format!("{:?}", two)
+}
+
+
+pub trait GeometryClone {
     fn clone_box(&self) -> Box<dyn ShapeGeometry>;
 }
 
-impl<T> ShapeClone for T
+impl<T> GeometryClone for T
 where
     T: 'static + ShapeGeometry + Clone,
 {
@@ -170,10 +185,6 @@ mod tests {
     }
 
     impl ShapeGeometry for TestGeometry {
-        fn name(&self) -> &'static str {
-            "test_shape"
-        }
-
         fn intersect(&self, ray: &Ray) -> Vec<f64> {
             assert_eq!(*ray, *self.expected_ray.as_ref().unwrap());
             vec![]

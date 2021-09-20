@@ -87,7 +87,6 @@ impl Pattern for TransformedPattern {
 #[cfg(test)]
 mod tests {
     use crate::display::color::Color;
-    use crate::geometry::matrix::Matrix;
     use crate::geometry::point::Point;
     use crate::geometry::transformations;
     use crate::geometry::vector::Vector;

@@ -7,6 +7,10 @@ use crate::tracing::ray::Ray;
 use crate::tracing::world::World;
 use rayon::prelude::*;
 
+/// Type mapping a resolution onto a Camera.
+/// Allows doing most of the setup for a camera without specifying the resolution.
+pub type CameraMaker = Box<dyn FnOnce(Resolution) -> Camera>;
+
 pub struct Camera {
     resolution: Resolution,
     transform: Matrix,

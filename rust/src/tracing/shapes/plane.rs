@@ -14,10 +14,6 @@ impl Plane {
 }
 
 impl ShapeGeometry for Plane {
-    fn name(&self) -> &'static str {
-        "plane"
-    }
-
     fn intersect(&self, ray: &Ray) -> Vec<f64> {
         if ray.direction().y.abs() < approximate::EPSILON {
             return vec![];

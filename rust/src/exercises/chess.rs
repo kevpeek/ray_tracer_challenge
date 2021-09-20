@@ -4,7 +4,7 @@ use crate::exercises::material_helpers;
 use crate::geometry::point::Point;
 use crate::geometry::transformations;
 use crate::geometry::vector::Vector;
-use crate::tracing::camera::Camera;
+use crate::tracing::camera::{Camera, CameraMaker};
 use crate::tracing::material::Material;
 use crate::tracing::patterns::checkers::Checkers;
 use crate::tracing::point_light::PointLight;
@@ -14,7 +14,7 @@ use crate::tracing::shapes::sphere::Sphere;
 use crate::tracing::world::World;
 use std::f64::consts::PI;
 
-pub fn make_world() -> (World, Camera) {
+pub fn make_world() -> (World, CameraMaker) {
     let light_source = PointLight::default();
 
     // ===== Base =====
@@ -97,14 +97,14 @@ pub fn make_world() -> (World, Camera) {
             .with_material(material_helpers::colored_glass(Color::WHITE)),
     );
 
-    (World::new(objects, light_source), make_camera())
+    (World::new(objects, light_source), camera_maker())
 }
 
-fn make_camera() -> Camera {
+fn camera_maker() -> CameraMaker {
     let camera_transform = transformations::view_transform(
         Point::at(-2.0, 3.5, -10.0),
         Point::at(0, 1, 0),
         Vector::new(0, 1, 0),
     );
-    Camera::new(Resolution::LOW, PI / 3.0, camera_transform)
+    Box::new(|resolution| Camera::new(resolution, PI / 3.0, camera_transform))
 }

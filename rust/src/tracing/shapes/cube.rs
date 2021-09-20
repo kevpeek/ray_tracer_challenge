@@ -36,10 +36,6 @@ impl Cube {
 }
 
 impl ShapeGeometry for Cube {
-    fn name(&self) -> &'static str {
-        "cube"
-    }
-
     fn intersect(&self, ray: &Ray) -> Vec<f64> {
         let (xmin, xmax) = self.check_axis(ray.origin().x, ray.direction().x);
         let (ymin, ymax) = self.check_axis(ray.origin().y, ray.direction().y);

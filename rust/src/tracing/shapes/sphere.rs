@@ -20,10 +20,6 @@ impl Sphere {
 }
 
 impl ShapeGeometry for Sphere {
-    fn name(&self) -> &'static str {
-        "sphere"
-    }
-
     fn intersect(&self, ray: &Ray) -> Vec<f64> {
         let sphere_to_ray = ray.origin() - self.origin();
         let a = ray.direction().dot(ray.direction());

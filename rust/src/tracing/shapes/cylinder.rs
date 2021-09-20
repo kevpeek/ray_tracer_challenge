@@ -64,10 +64,6 @@ fn check_cap(ray: &Ray, time: f64) -> bool {
 }
 
 impl ShapeGeometry for Cylinder {
-    fn name(&self) -> &'static str {
-        "cylinder"
-    }
-
     fn intersect(&self, ray: &Ray) -> Vec<f64> {
         let a: f64 = (ray.direction().x.pow(2) + ray.direction().z.pow(2));
         if a.almost_zero() {
