@@ -1,8 +1,10 @@
 use std::f64::consts::PI;
 
 use crate::display::color::Color;
+use crate::exercises::snapshot;
 use crate::geometry::transformations;
 use crate::geometry::transformations::{scaling, translation};
+use crate::tracing::camera::CameraMaker;
 use crate::tracing::material::Material;
 use crate::tracing::patterns::checkers::Checkers;
 use crate::tracing::patterns::gradient::Gradient;
@@ -10,8 +12,6 @@ use crate::tracing::patterns::stripe_pattern::StripePattern;
 use crate::tracing::point_light::PointLight;
 use crate::tracing::shapes::shape::Shape;
 use crate::tracing::world::World;
-use crate::tracing::camera::CameraMaker;
-use crate::exercises::snapshot;
 
 pub fn make_world() -> (World, CameraMaker) {
     let light_source = PointLight::default();
@@ -59,5 +59,8 @@ pub fn make_world() -> (World, CameraMaker) {
         middle, right, left,
     ];
 
-    (World::new(objects, light_source), snapshot::camera_one_maker())
+    (
+        World::new(objects, light_source),
+        snapshot::camera_one_maker(),
+    )
 }

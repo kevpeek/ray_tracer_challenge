@@ -1,4 +1,5 @@
 use crate::display::color::Color;
+use crate::exercises::snapshot;
 use crate::geometry::transformations;
 use crate::tracing::camera::{Camera, CameraMaker};
 use crate::tracing::material::Material;
@@ -10,7 +11,6 @@ use crate::tracing::shapes::shape::{Shape, ShapeGeometry};
 use crate::tracing::shapes::sphere::Sphere;
 use crate::tracing::world::World;
 use std::f64::consts::PI;
-use crate::exercises::snapshot;
 
 pub fn make_world() -> (World, CameraMaker) {
     let light_source = PointLight::default();
@@ -36,5 +36,8 @@ pub fn make_world() -> (World, CameraMaker) {
 
     let mut objects: Vec<Shape> = vec![floor, object];
 
-    (World::new(objects, light_source), snapshot::camera_one_maker())
+    (
+        World::new(objects, light_source),
+        snapshot::camera_one_maker(),
+    )
 }

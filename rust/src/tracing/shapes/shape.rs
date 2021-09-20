@@ -129,7 +129,6 @@ fn compare_geometries(one: &dyn ShapeGeometry, two: &dyn ShapeGeometry) -> bool 
     format!("{:?}", one) == format!("{:?}", two)
 }
 
-
 pub trait GeometryClone {
     fn clone_box(&self) -> Box<dyn ShapeGeometry>;
 }
