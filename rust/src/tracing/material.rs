@@ -78,120 +78,46 @@ impl Material {
     }
 
     pub fn with_color(self, color: Color) -> Material {
-        Material::solid_colored(
-            color,
-            self.ambient,
-            self.diffuse,
-            self.specular,
-            self.shininess,
-            self.reflective,
-            self.transparency,
-            self.refractive_index,
-        )
+        let pattern = Solid::new(color);
+        Material { pattern, ..self }
     }
 
     pub fn with_pattern(self, pattern: PatternType) -> Material {
-        Material::new(
-            pattern,
-            self.ambient,
-            self.diffuse,
-            self.specular,
-            self.shininess,
-            self.reflective,
-            self.transparency,
-            self.refractive_index,
-        )
+        Material { pattern, ..self }
     }
 
     pub fn with_ambient(self, ambient: f64) -> Material {
-        Material::new(
-            self.pattern,
-            ambient,
-            self.diffuse,
-            self.specular,
-            self.shininess,
-            self.reflective,
-            self.transparency,
-            self.refractive_index,
-        )
+        Material { ambient, ..self }
     }
 
     pub fn with_diffuse(self, diffuse: f64) -> Material {
-        Material::new(
-            self.pattern,
-            self.ambient,
-            diffuse,
-            self.specular,
-            self.shininess,
-            self.reflective,
-            self.transparency,
-            self.refractive_index,
-        )
+        Material { diffuse, ..self }
     }
 
     pub fn with_specular(self, specular: f64) -> Material {
-        Material::new(
-            self.pattern,
-            self.ambient,
-            self.diffuse,
-            specular,
-            self.shininess,
-            self.reflective,
-            self.transparency,
-            self.refractive_index,
-        )
+        Material { specular, ..self }
     }
 
     pub fn with_shininess(self, shininess: f64) -> Material {
-        Material::new(
-            self.pattern,
-            self.ambient,
-            self.diffuse,
-            self.specular,
-            shininess,
-            self.reflective,
-            self.transparency,
-            self.refractive_index,
-        )
+        Material { shininess, ..self }
     }
 
     pub fn with_reflective(self, reflective: f64) -> Material {
-        Material::new(
-            self.pattern,
-            self.ambient,
-            self.diffuse,
-            self.specular,
-            self.shininess,
-            reflective,
-            self.transparency,
-            self.refractive_index,
-        )
+        Material { reflective, ..self }
     }
 
     pub fn with_transparency(self, transparency: f64) -> Material {
-        Material::new(
-            self.pattern,
-            self.ambient,
-            self.diffuse,
-            self.specular,
-            self.shininess,
-            self.reflective,
+        Material {
             transparency,
-            self.refractive_index,
-        )
+            ..self
+        }
     }
 
     pub fn with_refractive_index(self, refractive_index: f64) -> Material {
-        Material::new(
-            self.pattern,
-            self.ambient,
-            self.diffuse,
-            self.specular,
-            self.shininess,
-            self.reflective,
-            self.transparency,
+        Material {
             refractive_index,
-        )
+            ..self
+        }
     }
 
     pub fn reflective(&self) -> f64 {
