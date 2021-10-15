@@ -1,5 +1,4 @@
 use crate::display::resolution::Resolution;
-use crate::exercises::snapshot;
 
 mod display;
 mod exercises;

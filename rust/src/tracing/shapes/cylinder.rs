@@ -5,7 +5,6 @@ use crate::helpers::approximate::Approximate;
 use crate::helpers::general::OrderedTuple;
 use crate::tracing::ray::Ray;
 use crate::tracing::shapes::shape::ShapeGeometry;
-use num::traits::real::Real;
 use num::traits::Pow;
 
 #[derive(PartialEq, Debug, Clone)]
@@ -65,7 +64,7 @@ fn check_cap(ray: &Ray, time: f64) -> bool {
 
 impl ShapeGeometry for Cylinder {
     fn intersect(&self, ray: &Ray) -> Vec<f64> {
-        let a: f64 = (ray.direction().x.pow(2) + ray.direction().z.pow(2));
+        let a: f64 = ray.direction().x.pow(2) + ray.direction().z.pow(2);
         if a.almost_zero() {
             return self.intersect_caps(ray);
         }
@@ -91,7 +90,7 @@ impl ShapeGeometry for Cylinder {
         let intersections: Vec<f64> = vec![t0, t1]
             .into_iter()
             .map(|time| (time, ray.origin().y + time * ray.direction().y))
-            .filter(|(time, y_value)| self.min < *y_value && *y_value < self.max)
+            .filter(|(_, y_value)| self.min < *y_value && *y_value < self.max)
             .map(|(time, _)| time)
             .collect();
 

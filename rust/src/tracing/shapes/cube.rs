@@ -3,7 +3,7 @@ use crate::geometry::vector::Vector;
 use crate::helpers::approximate;
 use crate::tracing::ray::Ray;
 use crate::tracing::shapes::shape::ShapeGeometry;
-use std::cmp::{max, min};
+use crate::helpers::approximate::Approximate;
 
 #[derive(Eq, PartialEq, Debug, Clone)]
 pub struct Cube {}
@@ -57,13 +57,13 @@ impl ShapeGeometry for Cube {
     fn normal_at(&self, point: Point) -> Vector {
         let max_c = point.x.abs().max(point.y.abs()).max(point.z.abs());
 
-        return if max_c == point.x.abs() {
+        if max_c.almost(point.x.abs()) {
             Vector::new(point.x, 0.0, 0.0)
-        } else if max_c == point.y.abs() {
+        } else if max_c.almost(point.y.abs()) {
             Vector::new(0.0, point.y, 0.0)
         } else {
             Vector::new(0.0, 0.0, point.z)
-        };
+        }
     }
 }
 

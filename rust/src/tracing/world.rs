@@ -6,8 +6,6 @@ use crate::tracing::material::Material;
 use crate::tracing::point_light::PointLight;
 use crate::tracing::ray::Ray;
 use crate::tracing::shapes::shape::{Shape, WorldShape};
-use num::traits::real::Real;
-use num::traits::Pow;
 
 type BoxedShape = Shape;
 
@@ -62,7 +60,7 @@ impl World {
         let hit = intersections.hit();
         match hit {
             Some(hit) => self.shade_hit(
-                hit.pre_computations(ray, &intersections),
+                hit.pre_computations(ray, intersections),
                 recursion_remaining,
             ),
             None => Color::BLACK,

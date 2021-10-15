@@ -1,5 +1,4 @@
 use crate::display::color::Color;
-use crate::display::resolution::Resolution;
 use crate::exercises::material_helpers;
 use crate::geometry::point::Point;
 use crate::geometry::transformations;
@@ -10,7 +9,6 @@ use crate::tracing::patterns::checkers::Checkers;
 use crate::tracing::point_light::PointLight;
 use crate::tracing::shapes::cube::Cube;
 use crate::tracing::shapes::shape::{Shape, ShapeGeometry};
-use crate::tracing::shapes::sphere::Sphere;
 use crate::tracing::world::World;
 use std::f64::consts::PI;
 

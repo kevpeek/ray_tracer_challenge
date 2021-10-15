@@ -24,9 +24,9 @@ impl Pattern for StripePattern {
     }
     fn pattern_at(&self, point: Point) -> Color {
         match point.x % 2.0 {
-            x if x >= 0.0 && x < 1.0 => self.color_a,
+            x if (0.0..1.0).contains(&x) => self.color_a,
             x if x >= 1.0 => self.color_b,
-            x if x < 0.0 && x >= -1.0 => self.color_b,
+            x if (-1.0..0.0).contains(&x) => self.color_b,
             _ => self.color_a,
         }
     }
