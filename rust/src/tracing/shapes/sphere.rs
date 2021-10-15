@@ -51,9 +51,9 @@ mod tests {
     use crate::geometry::point::Point;
     use crate::geometry::transformations::{rotation_z, scaling, translation};
     use crate::geometry::vector::Vector;
-    use crate::tracing::material::Material;
+    
     use crate::tracing::shapes::shape::{Shape, ShapeGeometry};
-    use crate::tracing::shapes::sphere::Sphere;
+    
     use std::f64::consts::PI;
 
     #[test]

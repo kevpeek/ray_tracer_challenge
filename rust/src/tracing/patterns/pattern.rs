@@ -91,13 +91,13 @@ mod tests {
     use crate::geometry::transformations;
     use crate::geometry::vector::Vector;
     use crate::tracing::material::Material;
-    use crate::tracing::patterns::pattern::{Pattern, TransformedPattern};
+    use crate::tracing::patterns::pattern::{Pattern};
     use crate::tracing::patterns::stripe_pattern::StripePattern;
     use crate::tracing::point_light::PointLight;
     use crate::tracing::shapes::shape::Shape;
-    use crate::tracing::shapes::sphere::Sphere;
+    
     use crate::tracing::test_helpers::TestPattern;
-    use std::any::Any;
+    
 
     // high level tests copied from original StripedPattern
 

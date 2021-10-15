@@ -384,7 +384,7 @@ mod tests {
         let ray = Ray::new(Point::origin(), Vector::new(0, 1, 0));
 
         // this should complete.
-        let color = world.color_at(&ray);
+        let _ = world.color_at(&ray);
     }
 
     #[test]

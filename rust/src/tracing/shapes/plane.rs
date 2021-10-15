@@ -32,7 +32,7 @@ impl ShapeGeometry for Plane {
 mod tests {
     use crate::geometry::point::Point;
     use crate::geometry::vector::Vector;
-    use crate::tracing::intersection::Intersection;
+    
     use crate::tracing::ray::Ray;
     use crate::tracing::shapes::plane::Plane;
     use crate::tracing::shapes::shape::ShapeGeometry;

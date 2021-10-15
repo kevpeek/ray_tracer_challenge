@@ -31,7 +31,7 @@ mod tests {
     use crate::display::color::Color;
     use crate::geometry::point::Point;
     use crate::tracing::patterns::pattern::Pattern;
-    use crate::tracing::patterns::rings::Rings;
+    
     use crate::tracing::patterns::solid::Solid;
 
     #[test]

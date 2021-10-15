@@ -36,13 +36,13 @@ impl Pattern for StripePattern {
 mod tests {
     use crate::display::color::Color;
     use crate::geometry::point::Point;
-    use crate::geometry::transformations;
-    use crate::geometry::vector::Vector;
-    use crate::tracing::material::Material;
+    
+    
+    
     use crate::tracing::patterns::pattern::Pattern;
     use crate::tracing::patterns::stripe_pattern::StripePattern;
-    use crate::tracing::point_light::PointLight;
-    use crate::tracing::shapes::sphere::Sphere;
+    
+    
 
     #[test]
     fn stripe_pattern_is_constant_in_y() {

@@ -160,16 +160,16 @@ impl Clone for Box<dyn ShapeGeometry> {
 
 #[cfg(test)]
 mod tests {
-    use std::any::Any;
+    
     use std::f64::consts::PI;
 
     use crate::geometry::point::Point;
     use crate::geometry::transformations;
     use crate::geometry::vector::Vector;
-    use crate::tracing::intersection::Intersections;
+    
     use crate::tracing::material::Material;
     use crate::tracing::ray::Ray;
-    use crate::tracing::shapes::shape::{Shape, ShapeGeometry};
+    use crate::tracing::shapes::shape::{ShapeGeometry};
 
     #[derive(Debug, Clone, PartialEq)]
     struct TestGeometry {
