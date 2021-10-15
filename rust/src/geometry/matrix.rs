@@ -12,9 +12,6 @@ pub struct Matrix {
     values: Vec<f64>,
 }
 
-// fn get_index_for(&self, row: usize, column: usize) -> usize {
-//     row * self.width + column
-// }
 impl Matrix {
     pub fn of_size(height: usize, width: usize) -> MatrixBuilder {
         MatrixBuilder { height, width }
@@ -247,7 +244,7 @@ mod tests {
     }
 
     #[test]
-    fn test_multiplication_todo() {
+    fn test_multiplication() {
         let matrix_a =
             Matrix::of_size(4, 4).of(vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 8, 7, 6, 5, 4, 3, 2]);
 

@@ -38,6 +38,11 @@ pub struct Shape {
     geometry: Box<dyn ShapeGeometry>,
     material: Material,
     transformation: Matrix,
+
+    // For performing computations, we really need the inverse and its transpose.
+    // Because we would calculate these multiple times per ray, let's precompute them.
+    transform_inverse: Matrix,
+    transform_inverse_transpose: Matrix,
 }
 
 impl Shape {
@@ -54,22 +59,26 @@ impl Shape {
             geometry: Box::new(geometry),
             material: Material::default(),
             transformation: Matrix::identity(4),
+            transform_inverse: Matrix::identity(4),
+            transform_inverse_transpose: Matrix::identity(4),
         }
     }
 
     pub fn with_material(self, material: Material) -> Shape {
         Shape {
-            geometry: self.geometry,
             material,
-            transformation: self.transformation,
+            ..self
         }
     }
 
     pub fn with_transform(self, transformation: Matrix) -> Shape {
+        let transform_inverse = transformation.inverse();
+        let transform_inverse_transpose = transform_inverse.transpose();
         Shape {
-            geometry: self.geometry,
-            material: self.material,
             transformation,
+            transform_inverse,
+            transform_inverse_transpose,
+            ..self
         }
     }
 
@@ -79,7 +88,7 @@ impl Shape {
 
     /// Calculate when the supplied Ray intersects this shape.
     pub fn intersect(&self, ray: &Ray) -> Intersections {
-        let local_ray = ray.transform(self.transformation.inverse());
+        let local_ray = ray.transform(self.transform_inverse.clone());
 
         let intersection_times = self.geometry.intersect(&local_ray);
         let intersections = intersection_times
@@ -92,9 +101,9 @@ impl Shape {
 
     /// The normal vector of this shape at the point provided.
     pub fn normal_at(&self, point: Point) -> Vector {
-        let local_point = &self.transformation.inverse() * point;
+        let local_point = &self.transform_inverse * point;
         let local_normal = self.geometry.normal_at(local_point);
-        let world_normal = &self.transformation.inverse().transpose() * local_normal;
+        let world_normal = &self.transform_inverse_transpose * local_normal;
         world_normal.normalize()
     }
 
@@ -106,7 +115,7 @@ impl Shape {
         normal: Vector,
         in_shadow: bool,
     ) -> Color {
-        let transformed_point = &self.transformation.inverse() * position;
+        let transformed_point = &self.transform_inverse * position;
         self.material()
             .lighting(light, transformed_point, eye_vector, normal, in_shadow)
     }
