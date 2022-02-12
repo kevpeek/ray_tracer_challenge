@@ -28,7 +28,7 @@ pub fn make_world() -> (World, CameraMaker) {
     // ===== Spheres =====
 
     let middle_material = Material::default()
-        .with_color(Color::LIGHT_GREEN)
+        .with_color(Color::PURPLE)
         .with_diffuse(0.7)
         .with_specular(0.3);
     let middle = Shape::sphere()
